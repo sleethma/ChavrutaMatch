@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">ChavrutaMatch</string>
+    <string name="action_settings">Settings</string>
+    <string name="motto">Hatzlacha \nTogether</string>
+    <string name="host_class_message_string">Include helpful info like:  \nMaterials that would be
+        helpful to bring\n  -About you and your background\n  -Why you enjoy hosting Torah\n
+        -Or any welcoming message</string>
+</resources>

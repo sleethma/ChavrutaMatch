@@ -1,0 +1,5 @@
+<bitmap
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:src="@drawable/star_of_david_bkgd"
+    android:tileMode="repeat"
+    android:dither="true" />
