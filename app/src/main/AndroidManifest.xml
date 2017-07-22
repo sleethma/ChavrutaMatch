@@ -20,6 +20,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".AddSelect"></activity>
+        <activity android:name=".HostSelect"></activity>
         <activity android:name=".NewHost"
             android:windowSoftInputMode="stateHidden"
             >
