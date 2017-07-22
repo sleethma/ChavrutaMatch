@@ -108,7 +108,6 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
                 }
             };
 
-
     public void onClick(View v) {
         // show clock if time related view clicked, DatePicker if not
         if (v == ibStartTime || v == ibHostEndTime) {
