@@ -36,6 +36,8 @@ public class AddSelect extends AppCompatActivity {
         Snackbar snackbar = Snackbar
                 .make(view, "To Open Chavurta Hosts-->", Snackbar.LENGTH_LONG);
         snackbar.show();
+        Intent hostSelectIntent = new Intent(this, HostSelect.class);
+        startActivity(hostSelectIntent);
     }
 
     public void onAddHostButtonClick(View view) {
