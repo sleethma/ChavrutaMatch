@@ -31,7 +31,6 @@ public class AddSelect extends AppCompatActivity {
         setContentView(R.layout.add_select);
         ButterKnife.bind(this);
     }
-
     public void onAddGuestButtonClick(View view) {
         Snackbar snackbar = Snackbar
                 .make(view, "To Open Chavurta Hosts-->", Snackbar.LENGTH_LONG);

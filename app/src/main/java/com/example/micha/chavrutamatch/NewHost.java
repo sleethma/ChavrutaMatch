@@ -29,7 +29,6 @@ import butterknife.ButterKnife;
  */
 
 public class NewHost extends AppCompatActivity implements View.OnClickListener {
-    //,DatePicker.OnDateChangedListener
 
     @BindView(R.id.tp_start_time)
     TimePicker tpStartTime;
