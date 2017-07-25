@@ -60,6 +60,7 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
     @BindView(R.id.et_host_class_message)
     EditText tvHostClassMessage;
     @BindView(R.id.host_it) ImageButton ibHostIt;
+    @BindView(R.id.tv_host_user_name) TextView tvAddHost;
 
     private String format;
     private View.OnClickListener listener;
