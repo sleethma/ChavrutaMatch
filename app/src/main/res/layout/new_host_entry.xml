@@ -25,6 +25,7 @@
             android:layout_marginTop="16dp"
             android:background="@drawable/rounded_corner"
             android:fontFamily="casual"
+            android:elevation="8dp"
             android:gravity="bottom|center_horizontal"
             android:text=" Host a Chavruta Session "
             android:textColor="@color/colorPrimaryDark"

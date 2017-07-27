@@ -4,9 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bkgd_repeat"
-    android:tileMode="repeat"
+    android:background="@color/colorPrimary"
     tools:context="com.example.micha.chavrutamatch.MainActivity">
+    <!--android:background="@drawable/bkgd_repeat"
+     android:tileMode="repeat"-->
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -37,6 +38,7 @@
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="0dp">
 
+
         <TextView
             android:id="@+id/tv_main_title"
             android:layout_width="126dp"
@@ -58,7 +60,9 @@
             app:layout_constraintLeft_toRightOf="@+id/iv_logo_chavruta"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.762" />
+            app:layout_constraintVertical_bias="0.762"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="3dp" />
 
 
         <ImageView
@@ -70,24 +74,18 @@
             android:src="@drawable/chavruta_match_logo"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:layout_editor_absoluteY="82dp" />
+            android:layout_marginStart="8dp" />
 
         <ListView
             android:id="@+id/lv_match"
-            android:layout_width="384dp"
-            android:layout_height="355dp"
-            android:layout_marginBottom="0dp"
-            android:layout_marginLeft="0dp"
-            android:layout_marginRight="0dp"
-            android:layout_marginTop="8dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/iv_no_match_add_match"
-            app:layout_constraintVertical_bias="0.52"
-            tools:layout_editor_absoluteX="0dp"
-            tools:layout_editor_absoluteY="236dp" />
+            app:layout_constraintVertical_bias="0.52" />
 
         <ImageView
             android:id="@+id/iv_no_match_add_match"
@@ -101,7 +99,9 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/iv_logo_chavruta"
-            app:srcCompat="@drawable/no_matches_screen_title" />
+            app:srcCompat="@drawable/no_matches_screen_title"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp" />
 
 
     </android.support.constraint.ConstraintLayout>
