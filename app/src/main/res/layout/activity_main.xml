@@ -26,6 +26,8 @@
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
+        android:elevation="4dp"
+        app:pressedTranslationZ="12dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
@@ -36,7 +38,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp">
+        tools:layout_editor_absoluteY="0dp"
+        android:stateListAnimator="@animator/button_raise"
+        android:background="@drawable/fab_ripple">
 
 
         <TextView
@@ -44,6 +48,7 @@
             android:layout_width="126dp"
             android:layout_height="76dp"
             android:layout_marginBottom="8dp"
+            android:elevation="4dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="3dp"
             android:layout_marginTop="8dp"
@@ -69,6 +74,7 @@
             android:id="@+id/iv_logo_chavruta"
             android:layout_width="203dp"
             android:layout_height="140dp"
+            android:elevation="4dp"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="70dp"
             android:src="@drawable/chavruta_match_logo"

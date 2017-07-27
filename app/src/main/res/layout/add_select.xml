@@ -19,7 +19,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="90dp"
-            android:background="@null"
+            android:background="@drawable/fab_ripple"
+            android:elevation="4dp"
+            android:stateListAnimator="@animator/button_raise"
             android:onClick="onAddHostButtonClick"
             android:src="@drawable/b_host_chavruta" />
 
@@ -41,8 +43,10 @@
             android:layout_gravity="center"
             android:layout_marginTop="90dp"
             android:onClick="onAddGuestButtonClick"
+            android:elevation="4dp"
+            android:stateListAnimator="@animator/button_raise"
             android:src="@drawable/b_learn_chavruta"
-            android:background="@null"/>
+            android:background="@drawable/fab_ripple" />
     </LinearLayout>
 
 </LinearLayout>
