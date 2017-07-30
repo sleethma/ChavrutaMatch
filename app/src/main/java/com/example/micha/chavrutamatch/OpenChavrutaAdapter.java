@@ -17,6 +17,9 @@ import com.example.micha.chavrutamatch.OpenChavrutaAdapter;
 
 public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.OpenChavrutaViewHolder> {
 
+//TODO use RoundedBitmapDrawable
+    //RoundedBitmapDrawable drawable = RoundedBitmapDrawableFactory.create(context.getResources(), bitmap); drawable.setCircular(true);
+
 
     // Holds on to the cursor to display the waitlist
     private Cursor mCursor;

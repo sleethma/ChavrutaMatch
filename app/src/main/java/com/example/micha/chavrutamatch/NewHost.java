@@ -1,5 +1,6 @@
 package com.example.micha.chavrutamatch;
 
+import android.animation.Animator;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.os.Build;
@@ -8,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -58,8 +60,10 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
     TextView tvHostMessageLabel;
     @BindView(R.id.et_host_class_message)
     EditText tvHostClassMessage;
-    @BindView(R.id.host_it) ImageButton ibHostIt;
-    @BindView(R.id.tv_host_user_name) TextView tvAddHost;
+    @BindView(R.id.host_it)
+    ImageButton ibHostIt;
+    @BindView(R.id.tv_host_user_name)
+    TextView tvAddHost;
 
     private String format;
     private View.OnClickListener listener;
@@ -118,6 +122,10 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         } else if (v == bTimeSet) { //when confirm time button click, set values
             confirmTime(v);
             setProfileView();
+        }
+        else if (v == ibHostIt) { //when confirm time button click, set values
+            setProfileView();
+
         } else {
             Log.e(NewHost.class.getSimpleName(), "View " + v + " has no match onClick");
         }

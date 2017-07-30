@@ -29,6 +29,8 @@ public class ChavrutaMatchDbHelper extends SQLiteOpenHelper {
                 ChavrutaHostEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 ChavrutaHostEntry.HOST_FIRST_NAME + " TEXT NOT NULL, " +
                 ChavrutaHostEntry.HOST_LAST_NAME + " INTEGER NOT NULL, " +
+                ChavrutaHostEntry.HOST_USER_NAME + " INTEGER NOT NULL, " +
+
                 ChavrutaHostEntry.SESSION_MESSAGE + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
                 ChavrutaHostEntry.SESSION_DATE + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 ChavrutaHostEntry.START_TIME + " TEXT NOT NULL, " +
@@ -38,10 +40,12 @@ public class ChavrutaMatchDbHelper extends SQLiteOpenHelper {
                 ChavrutaHostEntry.GUEST_FIRST_NAME+ " INTEGER NOT NULL, " +
                 ChavrutaHostEntry.GUEST_LAST_NAME + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
                 ChavrutaHostEntry.SESSION_CONFIRMED_BOOL + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                ChavrutaHostEntry.REOCCURING_BOOL + " TEXT NOT NULL, " +
                 ChavrutaHostEntry.SESSION_FREQUENCY + " INTEGER NOT NULL, " +
                 ChavrutaHostEntry.SESSION_CREATION_DATE + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
-                ChavrutaHostEntry.HOST_SESSION_CONNECT_ID + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
+                ChavrutaHostEntry.HOST_AVATAR + " INTEGER NOT NULL, " +
+                ChavrutaHostEntry.REQUESTING_GUEST_PROFILE + " INTEGER NOT NULL, " +
+
+                ChavrutaHostEntry.SESSION_ID + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
                 "); ";
 
         sqLiteDatabase.execSQL(SQL_CREATE_HOST_ENTRY_TABLE);
