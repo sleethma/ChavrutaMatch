@@ -3,6 +3,7 @@ package com.example.micha.chavrutamatch;
 import android.animation.Animator;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -18,6 +19,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
+
+import com.example.micha.chavrutamatch.Data.ServerConnect;
 
 import org.w3c.dom.Text;
 
@@ -64,6 +67,17 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
     ImageButton ibHostIt;
     @BindView(R.id.tv_host_user_name)
     TextView tvAddHost;
+    Context context = this;
+
+    //host strings to db
+    private String mHostFirstName;
+    private String mHostLastName;
+    private String mSessionMessage;
+    private String mSessionDate;
+    private String mStartTime;
+    private String mEndTime;
+    private String mSefer;
+    private String mLocation;
 
     private String format;
     private View.OnClickListener listener;
@@ -122,9 +136,10 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         } else if (v == bTimeSet) { //when confirm time button click, set values
             confirmTime(v);
             setProfileView();
-        }
-        else if (v == ibHostIt) { //when confirm time button click, set values
+        } else if (v == ibHostIt) { //when confirm time button click, set values
             setProfileView();
+            postNewHostSession();
+            //TODO intent to MainActivity here
 
         } else {
             Log.e(NewHost.class.getSimpleName(), "View " + v + " has no match onClick");
@@ -221,6 +236,21 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         mMonth = c.get(Calendar.MONTH);
         mDay = c.get(Calendar.DAY_OF_MONTH);
 
+    }
+
+    public void postNewHostSession() {
+        //TODO: import profile data of host mHostFirstName, mHostLastName
+        mSessionMessage = tvHostClassMessage.getText().toString();
+        mSessionDate = tvDate.getText().toString();
+        mStartTime = tv_StartTime.getText().toString();
+        mEndTime = tvEndTime.getText().toString();
+        mSefer = etHostTopic.getText().toString();
+        mLocation = etHostAddress.getText().toString();
+
+        String newHost = "new host";
+        ServerConnect postToServer = new ServerConnect(this);
+        postToServer.execute(newHost, mSefer, mSefer, mSefer, mSefer, mSefer, mSefer,
+                mSefer, mSefer);
     }
 
 }
