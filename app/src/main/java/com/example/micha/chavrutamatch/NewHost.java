@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -101,6 +102,15 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         ibDate.setOnClickListener(this);
         ibHostIt.setOnClickListener(this);
         setCurrentDateVars();
+
+        flHostPic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+             makeCircularRevealAnim(v);
+            }
+        });
+
+
     }
 
     @Override
@@ -251,6 +261,15 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         ServerConnect postToServer = new ServerConnect(this);
         postToServer.execute(newHost, mSefer, mSefer, mSefer, mSefer, mSefer, mSefer,
                 mSefer, mSefer);
+    }
+
+        private void makeCircularRevealAnim(View v){
+        int finalRadius = (int) Math.hypot(v.getWidth()/2, v.getHeight()/2);
+
+        Animator anim = ViewAnimationUtils.createCircularReveal(
+                v, (int) v.getWidth()/2, (int) v.getHeight()/2, 0, finalRadius);
+        v.setBackgroundColor(Color.GREEN);
+        anim.start();
     }
 
 }
