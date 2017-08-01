@@ -1,6 +1,7 @@
 package com.example.micha.chavrutamatch;
 
 import android.animation.Animator;
+import android.animation.ObjectAnimator;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -148,6 +149,8 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
             setProfileView();
         } else if (v == ibHostIt) { //when confirm time button click, set values
             setProfileView();
+            //animate button
+            animateHostIt(v);
             postNewHostSession();
             //TODO intent to MainActivity here
 
@@ -261,6 +264,14 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         ServerConnect postToServer = new ServerConnect(this);
         postToServer.execute(newHost, mSefer, mSefer, mSefer, mSefer, mSefer, mSefer,
                 mSefer, mSefer);
+    }
+
+    //Animations
+    private void animateHostIt(View view){
+        ObjectAnimator.ofFloat(
+                view, "translationY", 130f)
+        .setDuration(1000)
+        .start();
     }
 
         private void makeCircularRevealAnim(View v){
