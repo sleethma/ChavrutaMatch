@@ -274,7 +274,7 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         .start();
     }
 
-        private void makeCircularRevealAnim(View v){
+    private void makeCircularRevealAnim(View v){
         int finalRadius = (int) Math.hypot(v.getWidth()/2, v.getHeight()/2);
 
         Animator anim = ViewAnimationUtils.createCircularReveal(

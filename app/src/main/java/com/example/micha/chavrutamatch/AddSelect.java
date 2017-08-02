@@ -38,7 +38,7 @@ public class AddSelect extends AppCompatActivity {
     public void onAddGuestButtonClick(View view) {
         addHostButton.animate()
                 .alpha(0f)
-                .translationX(-addHostButton.getWidth())
+                .translationX(-addGuestButton.getWidth())
                 .setDuration(getResources().getInteger(
                         android.R.integer.config_shortAnimTime))
                 .withEndAction(new Runnable() {
