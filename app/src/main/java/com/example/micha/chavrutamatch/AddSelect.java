@@ -36,7 +36,7 @@ public class AddSelect extends AppCompatActivity {
     }
 //TODO fix bug on animate the imagebutton is gone on back pressed
     public void onAddGuestButtonClick(View view) {
-        addHostButton.animate()
+        addGuestButton.animate()
                 .alpha(0f)
                 .translationX(-addGuestButton.getWidth())
                 .setDuration(getResources().getInteger(
