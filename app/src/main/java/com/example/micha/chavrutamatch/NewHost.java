@@ -72,8 +72,8 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
     Context context = this;
 
     //host strings to db
-    private String mHostFirstName;
-    private String mHostLastName;
+    private String mHostFirstName = "";
+    private String mHostLastName = "fake";
     private String mSessionMessage;
     private String mSessionDate;
     private String mStartTime;
@@ -147,7 +147,7 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         } else if (v == bTimeSet) { //when confirm time button click, set values
             confirmTime(v);
             setProfileView();
-        } else if (v == ibHostIt) { //when confirm time button click, set values
+        } else if (v == ibHostIt) { //when confirm host button click, set values
             setProfileView();
             //animate button
             animateHostIt(v);
@@ -262,9 +262,8 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
 
         String newHost = "new host";
         ServerConnect postToServer = new ServerConnect(this);
-        postToServer.execute(newHost, mSefer);
-//                , mSefer, mSefer, mSefer, mSefer, mSefer,
-//                mSefer, mSefer);
+        postToServer.execute(newHost, mHostFirstName,mHostLastName,mSessionMessage,mSessionDate,
+                mStartTime, mEndTime,  mSefer , mLocation);
     }
 
     //Animations
