@@ -262,8 +262,9 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
 
         String newHost = "new host";
         ServerConnect postToServer = new ServerConnect(this);
-        postToServer.execute(newHost, mSefer, mSefer, mSefer, mSefer, mSefer, mSefer,
-                mSefer, mSefer);
+        postToServer.execute(newHost, mSefer);
+//                , mSefer, mSefer, mSefer, mSefer, mSefer,
+//                mSefer, mSefer);
     }
 
     //Animations

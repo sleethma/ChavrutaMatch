@@ -65,14 +65,14 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
         //assures register button sent this background call
         if (chosenBkgdTaskCheck.equals("new host")) {
             //get params
-            String hostFirstName = params[1];
-            String hostLastName = params[2];
-            String sessionMessage = params[3];
-            String sessionDate = params[4];
-            String startTime = params[5];
-            String endTime = params[6];
-            String sefer = params[7];
-            String location = params[8];
+//            String hostFirstName = params[1];
+//            String hostLastName = params[2];
+//            String sessionMessage = params[3];
+//            String sessionDate = params[4];
+//            String startTime = params[5];
+//            String endTime = params[6];
+//            String sefer = params[7];
+            String location = params[1];
 
 
             //establish connection
@@ -87,20 +87,22 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
 
 
                 String data =
-                        URLEncoder.encode("host_first_name", "UTF-8") + "=" + URLEncoder.encode(
-                                hostFirstName, "UTF-8") + "&" +
-                                URLEncoder.encode("host_last_name", "UTF-8") + "=" + URLEncoder.encode(
-                                        hostLastName, "UTF-8") + "&" +
-                                URLEncoder.encode("session_message", "UTF-8") + "=" + URLEncoder.encode(
-                                        sessionMessage, "UTF-8") + "&" +
-                                URLEncoder.encode("session_date", "UTF-8") + "=" + URLEncoder.encode(
-                                        sessionDate, "UTF-8") + "&" +
-                                URLEncoder.encode("start_time", "UTF-8") + "=" + URLEncoder.encode(
-                                        startTime, "UTF-8") + "&" +
-                                URLEncoder.encode("end_time", "UTF-8") + "=" + URLEncoder.encode(
-                                        endTime, "UTF-8") + "&" +
-                                URLEncoder.encode("sefer", "UTF-8") + "=" + URLEncoder.encode(
-                                        sefer, "UTF-8") + "&" +
+//                        URLEncoder.encode("host_first_name", "UTF-8") + "=" + URLEncoder.encode(
+//                                hostFirstName, "UTF-8");
+//                                + "&" +
+//                                URLEncoder.encode("host_last_name", "UTF-8") + "=" + URLEncoder.encode(
+//                                        hostLastName, "UTF-8") + "&" +
+//                                URLEncoder.encode("session_message", "UTF-8") + "=" + URLEncoder.encode(
+//                                        sessionMessage, "UTF-8") + "&" +
+//                                URLEncoder.encode("session_date", "UTF-8") + "=" + URLEncoder.encode(
+//                                        sessionDate, "UTF-8") + "&" +
+//                                URLEncoder.encode("start_time", "UTF-8") + "=" + URLEncoder.encode(
+//                                        startTime, "UTF-8") + "&" +
+//                                URLEncoder.encode("end_time", "UTF-8") + "=" + URLEncoder.encode(
+//                                        endTime, "UTF-8") + "&" +
+//                                URLEncoder.encode("sefer", "UTF-8") + "=" + URLEncoder.encode(
+//                                        sefer, "UTF-8")
+// + "&" +
                                 URLEncoder.encode("location", "UTF-8") + "=" + URLEncoder.encode(
                                         location, "UTF-8");
 
