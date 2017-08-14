@@ -57,7 +57,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
 
         //stores path of db php registration script on host: server_IPv4/db_folder/file
         String reg_url = "http://brightlightproductions.online/chavruta_session_add.php";
-        String json_url = "http://brightlightproductions.online/getJSON.php";
+        String json_url = "http://brightlightproductions.online/get_chavrutaJSON.php";
 
 
         //checks which button was clicked
@@ -161,6 +161,8 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
             case 2:
                 if (jsonTextView != null) {
                     jsonTextView.setText(result);
+                    //Delete this Toast (Testing Only)
+                    Toast.makeText(mContextRegister, jsonString, Toast.LENGTH_LONG).show();
                     break;
                 }
 //            case 3:

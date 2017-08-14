@@ -13,6 +13,8 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.micha.chavrutamatch.Data.ServerConnect;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -68,6 +70,10 @@ public class AddSelect extends AppCompatActivity {
                         startActivity(newHostIntent);
                     }
                 });
+        //Delete below WORKS!!
+        String getJSON = "getJSON";
+        ServerConnect getJSONFromServer = new ServerConnect(this);
+        getJSONFromServer.execute(getJSON);
     }
 
     private void fadeAnimation(View v) {
