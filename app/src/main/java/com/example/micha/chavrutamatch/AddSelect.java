@@ -52,6 +52,10 @@ public class AddSelect extends AppCompatActivity {
                     }
                 });
 
+        String getJSONKey = "getJSON";
+        ServerConnect getJSONFromServer = new ServerConnect(this);
+        getJSONFromServer.execute(getJSONKey);
+
     }
 
     public void onAddHostButtonClick(View view) {
@@ -70,10 +74,6 @@ public class AddSelect extends AppCompatActivity {
                         startActivity(newHostIntent);
                     }
                 });
-        //Delete below WORKS!!
-        String getJSON = "getJSON";
-        ServerConnect getJSONFromServer = new ServerConnect(this);
-        getJSONFromServer.execute(getJSON);
     }
 
     private void fadeAnimation(View v) {

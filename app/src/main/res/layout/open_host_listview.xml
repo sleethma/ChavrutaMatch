@@ -110,7 +110,7 @@
     </LinearLayout>
 
 
-    <android.support.v7.widget.RecyclerView
+    <ListView
         android:id="@+id/all_hosts_list_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

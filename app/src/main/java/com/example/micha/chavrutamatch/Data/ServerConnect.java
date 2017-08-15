@@ -6,6 +6,8 @@ import android.os.AsyncTask;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.micha.chavrutamatch.HostSelect;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -144,6 +146,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
             }
         }
         if (chosenBkgdTaskCheck.equals("parseJSON")) {
+
         }
         return null;
     }
@@ -154,22 +157,22 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
 
         switch (postExecuteResponse) {
             case 0:
+                Toast.makeText(mContextRegister, "no server action in" + getClass().getSimpleName(), Toast.LENGTH_LONG).show();
                 break;
             case 1:
                 Toast.makeText(mContextRegister, result, Toast.LENGTH_LONG).show();
                 break;
             case 2:
-                if (jsonTextView != null) {
-                    jsonTextView.setText(result);
                     //Delete this Toast (Testing Only)
-                    Toast.makeText(mContextRegister, jsonString, Toast.LENGTH_LONG).show();
-                    break;
+                if(jsonString != null){
+                    Toast.makeText(mContextRegister, "jsonString returned", Toast.LENGTH_LONG).show();
+                    }else{
+                    Intent intent = new Intent(this.mContextRegister, HostSelect.class);
+                intent.putExtra("parseJSONKey",jsonString);
+                mContextRegister.startActivity(intent);
+                break;
                 }
-//            case 3:
-//                Intent intent = new Intent(this.mContextRegister, ParsedJsonListView.class);
-//                intent.putExtra("parseJSONKey",jsonString);
-//                mContextRegister.startActivity(intent);
-//                break;
+
         }
         postExecuteResponse = 0;
     }

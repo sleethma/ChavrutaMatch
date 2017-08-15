@@ -6,106 +6,96 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.example.micha.chavrutamatch.Data.ChavrutaContract;
+import com.example.micha.chavrutamatch.Data.HostSessionData;
 import com.example.micha.chavrutamatch.OpenChavrutaAdapter;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+
+import static android.R.attr.resource;
 
 /**
  * Created by micha on 7/22/2017.
  */
 
-public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.OpenChavrutaViewHolder> {
+public class OpenChavrutaAdapter extends ArrayAdapter {
 
 //TODO use RoundedBitmapDrawable
     //RoundedBitmapDrawable drawable = RoundedBitmapDrawableFactory.create(context.getResources(), bitmap); drawable.setCircular(true);
-
+//TODO see if cursor needed only for sqlite local db. If so setup from waitlist app
 
     // Holds on to the cursor to display the waitlist
-    private Cursor mCursor;
     private Context mContext;
+    public List hostList = new ArrayList();
+
 
     /**
-     * Constructor using the context and the db cursor
+     * Constructor using the context and the resource
      *
      * @param context the calling context/activity
-     * @param cursor  the db cursor with waitlist data to display
      */
-    public OpenChavrutaAdapter(Context context, Cursor cursor) {
+    public OpenChavrutaAdapter(Context context, int resource) {
+        super(context, resource);
         this.mContext = context;
-        this.mCursor = cursor;
-    }
-
-    @Override
-    public OpenChavrutaViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        // Get the RecyclerView item layout
-        LayoutInflater inflater = LayoutInflater.from(mContext);
-        View view = inflater.inflate(R.layout.open_host_list_item, parent, false);
-        return new OpenChavrutaViewHolder(view);
     }
 
 
     @Override
-    public void onBindViewHolder(OpenChavrutaViewHolder holder, int position) {
-        // Move the mCursor to the position of the item to be displayed
-        if (!mCursor.moveToPosition(position)) {
-            return; // bail if returned null
-        }
-
-        // Update the view holder with the information needed to display
-        String name = mCursor.getString(mCursor.getColumnIndex(ChavrutaContract.ChavrutaHostEntry.HOST_FIRST_NAME));
-        //int partySize = mCursor.getInt(mCursor.getColumnIndex(WaitlistContract.WaitlistEntry.COLUMN_PARTY_SIZE));
-
-        // Display the guest name
-        holder.hostNameTextView.setText(name);
-        // Display the party count
-        //holder.partySizeTextView.setText(String.valueOf(partySize));
+    public int getCount() {
+        return hostList.size();
     }
-
 
     @Override
-    public int getItemCount() {
-        return mCursor.getCount();
+    public Object getItem(int position) {
+        return hostList.get(position);
     }
 
-    /**
-     * Swaps the Cursor currently held in the adapter with a new one
-     * and triggers a UI refresh
-     *
-     * @param newCursor the new cursor that will replace the existing one
-     */
-    public void swapCursor(Cursor newCursor) {
-        // Always close the previous mCursor first
-        if (mCursor != null) mCursor.close();
-        mCursor = newCursor;
-        if (newCursor != null) {
-            // Force the RecyclerView to refresh
-            this.notifyDataSetChanged();
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View listItemView = convertView;
+        HostDataHolder hostDataHolder;
+        if(listItemView == null) {
+            LayoutInflater inflater = (LayoutInflater) this.getContext().getSystemService(
+                    Context.LAYOUT_INFLATER_SERVICE);
+            listItemView = inflater.inflate(R.layout.open_host_list_item, parent, false);
+            //initialize and set views in UserDataHolder.class
+            hostDataHolder = new HostDataHolder();
+            hostDataHolder.hostFirstName = (TextView) listItemView.findViewById(R.id.host_user_name);
+            hostDataHolder.sessionDate = (TextView) listItemView.findViewById(R.id.session_date);
+            hostDataHolder.startTime = (TextView) listItemView.findViewById(R.id.start_time);
+            hostDataHolder.endTime= (TextView) listItemView.findViewById(R.id.end_time);
+            hostDataHolder.sefer = (TextView) listItemView.findViewById(R.id.session_sefer);
+            hostDataHolder.location = (TextView) listItemView.findViewById(R.id.location);
+
+            //TODO look up what setTag does
+            listItemView.setTag(hostDataHolder);
+        }else{
+            hostDataHolder = (HostDataHolder) listItemView.getTag();
         }
+        HostSessionData hostSessionData = (HostSessionData) this.getItem(position);
+        hostDataHolder.hostFirstName.setText(hostSessionData.getmHostFirstName());
+        hostDataHolder.sessionDate.setText(hostSessionData.getmSessionDate());
+        hostDataHolder.startTime.setText(hostSessionData.getmStartTime());
+        hostDataHolder.endTime.setText(hostSessionData.getmEndTime());
+        hostDataHolder.sefer.setText(hostSessionData.getmSefer());
+        hostDataHolder.location.setText(hostSessionData.getmLocation());
+
+        return listItemView;
     }
 
-    /**
-     * Inner class to hold the views needed to display a single item in the recycler-view
-     */
-    class OpenChavrutaViewHolder extends RecyclerView.ViewHolder {
+    public void add(HostSessionData object) {
+        super.add(object);
+        hostList.add(object);
+    }
 
-        // Will display the guest name
-        TextView hostNameTextView;
-        // Will display the party size number
-        //TextView partySizeTextView;
-
-        /**
-         * Constructor for our ViewHolder. Within this constructor, we get a reference to our
-         * TextViews
-         *
-         * @param itemView The View that you inflated in
-         *                 {@link OpenChavrutaViewHolder#onCreateViewHolder(ViewGroup, int)} (ViewGroup, int)}
-         */
-        public OpenChavrutaViewHolder(View itemView) {
-            super(itemView);
-            hostNameTextView = (TextView) itemView.findViewById(R.id.host_user_name);
-            //partySizeTextView = (TextView) itemView.findViewById(R.id.party_size_text_view);
-        }
-
+    static class HostDataHolder{
+        TextView hostFirstName, sessionDate, startTime, endTime, sefer, location;
     }
 }
+
