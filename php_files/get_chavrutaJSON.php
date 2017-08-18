@@ -8,8 +8,6 @@ $con = mysqli_connect($host,$username,$password,$database);
 
 if(!connection){
   echo "connection unsuccessful";
-}else{
-  echo "connection successful";
 }
 
 $sql = "select * from chavruta_hosts;";

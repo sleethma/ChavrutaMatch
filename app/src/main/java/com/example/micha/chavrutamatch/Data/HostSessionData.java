@@ -1,11 +1,13 @@
 package com.example.micha.chavrutamatch.Data;
 
+import android.support.annotation.Nullable;
+
 /**
  * Created by micha on 8/14/2017.
  */
 
 public class HostSessionData {
-
+    @Nullable
     String mHostFirstName,mHostLastName,mSessionMessage,mSessionDate,
             mStartTime, mEndTime,  mSefer , mLocation;
 

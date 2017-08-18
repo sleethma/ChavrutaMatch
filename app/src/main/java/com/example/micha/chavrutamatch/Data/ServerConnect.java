@@ -27,7 +27,7 @@ import java.net.URLEncoder;
 public class ServerConnect extends AsyncTask<String, Void, String> {
     Context mContextRegister;
 
-    private static String jsonString;
+    public static String jsonString;
 
     //creates textview constructor for thread access
     //TODO create object to hold db info for activity delivery
@@ -120,7 +120,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 e.printStackTrace();
             }
         }
-        if (chosenBkgdTaskCheck.equals("getJSON")) {
+        if (chosenBkgdTaskCheck.equals("getJSONKey")) {
             try {
                 URL jsonURL = new URL(json_url);
                 HttpURLConnection httpURLConnection = (HttpURLConnection) jsonURL.openConnection();
@@ -137,7 +137,8 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 inputStream.close();
                 httpURLConnection.disconnect();
                 postExecuteResponse = 2;
-                return stringBuilder.toString().trim();
+                jsonString = stringBuilder.toString().trim();
+                return jsonString;
 
             } catch (MalformedURLException e) {
                 e.printStackTrace();
@@ -145,10 +146,8 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 e.printStackTrace();
             }
         }
-        if (chosenBkgdTaskCheck.equals("parseJSON")) {
 
-        }
-        return null;
+         return null;
     }
 
     @Override
@@ -157,7 +156,8 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
 
         switch (postExecuteResponse) {
             case 0:
-                Toast.makeText(mContextRegister, "no server action in" + getClass().getSimpleName(), Toast.LENGTH_LONG).show();
+                Toast.makeText(mContextRegister, "no matched action in " + getClass().getSimpleName()
+                        + " class", Toast.LENGTH_LONG).show();
                 break;
             case 1:
                 Toast.makeText(mContextRegister, result, Toast.LENGTH_LONG).show();
@@ -166,9 +166,13 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                     //Delete this Toast (Testing Only)
                 if(jsonString != null){
                     Toast.makeText(mContextRegister, "jsonString returned", Toast.LENGTH_LONG).show();
-                    }else{
                     Intent intent = new Intent(this.mContextRegister, HostSelect.class);
-                intent.putExtra("parseJSONKey",jsonString);
+                    intent.putExtra("jsonKey",jsonString);
+                    mContextRegister.startActivity(intent);
+
+                }else{
+                    Intent intent = new Intent(this.mContextRegister, HostSelect.class);
+                intent.putExtra("jsonKey",jsonString);
                 mContextRegister.startActivity(intent);
                 break;
                 }

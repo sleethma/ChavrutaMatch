@@ -36,12 +36,12 @@ public class HostSelect extends AppCompatActivity {
 
     @BindView(R.id.fl_host_pic)
     FrameLayout flHostPic;
-    @BindView(R.id.b_host_chavruta)
-    ListView allHostsList;
+   // @BindView(R.id.b_host_chavruta) ImageButton hostChavruta;
     @BindView(R.id.all_hosts_list_view)
+    ListView allHostsList;
 
 
-    private String jsonString;
+    public String jsonString;
     JSONObject jsonObject;
     JSONArray jsonArray;
 
@@ -54,20 +54,24 @@ public class HostSelect extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.open_host_listview);
         ButterKnife.bind(this);
-        jsonString = getIntent().getExtras().getString("jsonToParseKey");
+
+        //accesses JSON from ServerConnect
+        //jsonString = ServerConnect.getJsonString();
+       jsonString = getIntent().getExtras().getString("jsonKey");
         //set adapter on listview
-        //TODO: check if the resource is necessary
+        //TODO: check if the param resource is necessary
         mAdapter = new OpenChavrutaAdapter(this, R.layout.open_host_list_item);
         allHostsList.setAdapter(mAdapter);
-
-        //parses JSON entry
+//parses JSON entry
         parseJSONEntry();
+
     }
 
     public void parseJSONEntry(){
         String hostFirstName,hostLastName,sessionMessage,sessionDate,
                 startTime, endTime,  sefer , location;
         try {
+
             jsonObject = new JSONObject(jsonString);
             jsonArray = jsonObject.getJSONArray("server_response");
 

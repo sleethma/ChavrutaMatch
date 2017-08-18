@@ -66,14 +66,13 @@ public class OpenChavrutaAdapter extends ArrayAdapter {
             listItemView = inflater.inflate(R.layout.open_host_list_item, parent, false);
             //initialize and set views in UserDataHolder.class
             hostDataHolder = new HostDataHolder();
-            hostDataHolder.hostFirstName = (TextView) listItemView.findViewById(R.id.host_user_name);
+            hostDataHolder.hostFirstName = (TextView) listItemView.findViewById(R.id.host_first_name);
             hostDataHolder.sessionDate = (TextView) listItemView.findViewById(R.id.session_date);
             hostDataHolder.startTime = (TextView) listItemView.findViewById(R.id.start_time);
             hostDataHolder.endTime= (TextView) listItemView.findViewById(R.id.end_time);
             hostDataHolder.sefer = (TextView) listItemView.findViewById(R.id.session_sefer);
             hostDataHolder.location = (TextView) listItemView.findViewById(R.id.location);
 
-            //TODO look up what setTag does
             listItemView.setTag(hostDataHolder);
         }else{
             hostDataHolder = (HostDataHolder) listItemView.getTag();
@@ -85,6 +84,7 @@ public class OpenChavrutaAdapter extends ArrayAdapter {
         hostDataHolder.endTime.setText(hostSessionData.getmEndTime());
         hostDataHolder.sefer.setText(hostSessionData.getmSefer());
         hostDataHolder.location.setText(hostSessionData.getmLocation());
+
 
         return listItemView;
     }

@@ -1,6 +1,7 @@
 package com.example.micha.chavrutamatch;
 
 import android.animation.ObjectAnimator;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -38,6 +39,7 @@ public class AddSelect extends AppCompatActivity {
     }
 //TODO fix bug on animate the imagebutton is gone on back pressed
     public void onAddGuestButtonClick(View view) {
+        final Context currentContext = getBaseContext();
         addGuestButton.animate()
                 .alpha(0f)
                 .translationX(-addGuestButton.getWidth())
@@ -47,14 +49,16 @@ public class AddSelect extends AppCompatActivity {
                     @Override
                     public void run() {
                         //end action ran after animation
-                        Intent hostSelectIntent = new Intent(AddSelect.this, HostSelect.class);
-                        startActivity(hostSelectIntent);
+
+
                     }
                 });
 
-        String getJSONKey = "getJSON";
-        ServerConnect getJSONFromServer = new ServerConnect(this);
+        String getJSONKey = "getJSONKey";
+        ServerConnect getJSONFromServer = new ServerConnect(currentContext);
         getJSONFromServer.execute(getJSONKey);
+//        Intent hostSelectIntent = new Intent(AddSelect.this, HostSelect.class);
+//        startActivity(hostSelectIntent);
 
     }
 
