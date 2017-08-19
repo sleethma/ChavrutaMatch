@@ -15,6 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
@@ -39,6 +40,9 @@ public class HostSelect extends AppCompatActivity {
    // @BindView(R.id.b_host_chavruta) ImageButton hostChavruta;
     @BindView(R.id.all_hosts_list_view)
     ListView allHostsList;
+    @BindView(R.id.iv_scroll_open_host)
+    ImageView scrollImg;
+
 
 
     public String jsonString;
@@ -64,6 +68,13 @@ public class HostSelect extends AppCompatActivity {
         allHostsList.setAdapter(mAdapter);
 //parses JSON entry
         parseJSONEntry();
+
+        scrollImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                makeCircularRevealAnim(v);
+            }
+        });
 
     }
 
@@ -101,5 +112,14 @@ public class HostSelect extends AppCompatActivity {
         }
 
 
+    }
+
+    private void makeCircularRevealAnim(View v) {
+        int finalRadius = (int) Math.hypot(v.getWidth() / 2, v.getHeight() / 2);
+
+        Animator anim = ViewAnimationUtils.createCircularReveal(
+                v, (int) v.getWidth() / 2, (int) v.getHeight() / 2, 0, finalRadius);
+        v.setBackgroundColor(Color.GREEN);
+        anim.start();
     }
 }

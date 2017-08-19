@@ -5,4 +5,6 @@
     <string name="host_class_message_string">Include helpful info like:  \nMaterials that would be
         helpful to bring\n  -About you and your background\n  -Why you enjoy hosting Torah\n
         -Or any welcoming message</string>
+    <string name="title_activity_login_screen">LoginScreen</string>
+    <string name="title_activity_login">Login</string>
 </resources>

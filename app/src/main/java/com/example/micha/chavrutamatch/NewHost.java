@@ -5,6 +5,7 @@ import android.animation.ObjectAnimator;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -69,7 +70,6 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
     ImageButton ibHostIt;
     @BindView(R.id.tv_host_user_name)
     TextView tvAddHost;
-    Context context = this;
 
     //host strings to db
     private String mHostFirstName = "";
@@ -107,7 +107,7 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         flHostPic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-             makeCircularRevealAnim(v);
+                makeCircularRevealAnim(v);
             }
         });
 
@@ -262,23 +262,25 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
 
         String newHost = "new host";
         ServerConnect postToServer = new ServerConnect(this);
-        postToServer.execute(newHost, mHostFirstName,mHostLastName,mSessionMessage,mSessionDate,
-                mStartTime, mEndTime,  mSefer , mLocation);
+        postToServer.execute(newHost, mHostFirstName, mHostLastName, mSessionMessage, mSessionDate,
+                mStartTime, mEndTime, mSefer, mLocation);
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 
     //Animations
-    private void animateHostIt(View view){
+    private void animateHostIt(View view) {
         ObjectAnimator.ofFloat(
                 view, "translationY", 130f)
-        .setDuration(1000)
-        .start();
+                .setDuration(1000)
+                .start();
     }
 
-    private void makeCircularRevealAnim(View v){
-        int finalRadius = (int) Math.hypot(v.getWidth()/2, v.getHeight()/2);
+    private void makeCircularRevealAnim(View v) {
+        int finalRadius = (int) Math.hypot(v.getWidth() / 2, v.getHeight() / 2);
 
         Animator anim = ViewAnimationUtils.createCircularReveal(
-                v, (int) v.getWidth()/2, (int) v.getHeight()/2, 0, finalRadius);
+                v, (int) v.getWidth() / 2, (int) v.getHeight() / 2, 0, finalRadius);
         v.setBackgroundColor(Color.GREEN);
         anim.start();
     }

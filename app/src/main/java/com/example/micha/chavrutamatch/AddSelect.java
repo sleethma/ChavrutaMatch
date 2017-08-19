@@ -49,18 +49,14 @@ public class AddSelect extends AppCompatActivity {
                     @Override
                     public void run() {
                         //end action ran after animation
-
-
                     }
                 });
 
         String getJSONKey = "getJSONKey";
         ServerConnect getJSONFromServer = new ServerConnect(currentContext);
         getJSONFromServer.execute(getJSONKey);
-//        Intent hostSelectIntent = new Intent(AddSelect.this, HostSelect.class);
-//        startActivity(hostSelectIntent);
-
     }
+
 
     public void onAddHostButtonClick(View view) {
         //     WORKS   view.animate().alpha(0);
