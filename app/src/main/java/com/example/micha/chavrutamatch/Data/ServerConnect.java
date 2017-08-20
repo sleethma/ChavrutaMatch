@@ -7,6 +7,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.micha.chavrutamatch.HostSelect;
+import com.example.micha.chavrutamatch.MainActivity;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -113,7 +114,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 InputStream inputStream = httpURLConnection.getInputStream();
                 inputStream.close();
                 postExecuteResponse = 1;
-                return "Registration Successful";
+                return "Chavruta Registered!";
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -147,8 +148,9 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
             }
         }
 
-         return null;
+        return null;
     }
+
 
     @Override
     protected void onPostExecute(String result) {
@@ -163,26 +165,25 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 Toast.makeText(mContextRegister, result, Toast.LENGTH_LONG).show();
                 break;
             case 2:
-                    //Delete this Toast (Testing Only)
-                if(jsonString != null){
-                    Toast.makeText(mContextRegister, "jsonString returned", Toast.LENGTH_LONG).show();
+                //Delete this Toast (Testing Only)
+                if (jsonString != null) {
                     Intent intent = new Intent(this.mContextRegister, HostSelect.class);
-                    intent.putExtra("jsonKey",jsonString);
+                    intent.putExtra("jsonKey", jsonString);
                     mContextRegister.startActivity(intent);
 
-                }else{
+                } else {
                     Intent intent = new Intent(this.mContextRegister, HostSelect.class);
-                intent.putExtra("jsonKey",jsonString);
+                    intent.putExtra("jsonKey", jsonString);
+                    mContextRegister.startActivity(intent);
+                    break;
+                }
+                break;
+            case 3:
+                //log in successful
+                Intent intent = new Intent(this.mContextRegister, MainActivity.class);
                 mContextRegister.startActivity(intent);
                 break;
-                }
-
         }
         postExecuteResponse = 0;
-    }
-
-    //getter for jsonSting
-    public static String getJsonString() {
-        return jsonString;
     }
 }

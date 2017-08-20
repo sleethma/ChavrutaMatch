@@ -6,8 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
     tools:context="com.example.micha.chavrutamatch.MainActivity">
-    <!--android:background="@drawable/bkgd_repeat"
-     android:tileMode="repeat"-->
+
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -20,7 +19,6 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
-
     </android.support.design.widget.AppBarLayout>
 
 
