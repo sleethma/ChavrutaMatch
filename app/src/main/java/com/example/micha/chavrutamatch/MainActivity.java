@@ -15,6 +15,8 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.example.micha.chavrutamatch.AcctLogin.LoginActivity;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -33,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 animateTransition(v);
-                Intent intent = new Intent(MainActivity.this, Login.class);
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);
             }
         });

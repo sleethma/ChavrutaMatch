@@ -11,4 +11,6 @@
     <string name="FACEBOOK_APP_ID">1419958561432645</string>
     <string name="login_phone_label">Login By Phone</string>
     <string name="login_email_label">Login By Email</string>
+    //login protocol scheme is the appID preceeded by "ak"
+    <string name="ak_login_protocol_scheme">ak1419958561432645</string>
 </resources>

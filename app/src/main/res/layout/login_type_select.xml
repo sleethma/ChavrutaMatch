@@ -11,12 +11,14 @@
         android:id="@+id/background"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:scaleType="centerCrop"
-        app:srcCompat="@drawable/bg_wave"
+        android:scaleType="centerInside"
+        app:srcCompat="@drawable/star_of_david_background"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintVertical_bias="1.0" />
 
 
     <!--android:drawableTop="@drawable"-->
@@ -25,7 +27,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/app_name"
-        android:textColor="@android:color/white"
+        android:textColor="@color/colorPrimaryDark"
         android:textSize="22sp"
         android:textAllCaps="true"
         android:textAlignment="center"
@@ -33,7 +35,10 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/phone_login_button" />
+        app:layout_constraintBottom_toTopOf="@+id/phone_login_button"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintVertical_bias="0.216"
+        android:layout_marginTop="24dp" />
 
     <Button
         android:id="@+id/phone_login_button"
