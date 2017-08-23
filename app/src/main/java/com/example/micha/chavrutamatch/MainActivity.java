@@ -1,6 +1,8 @@
 package com.example.micha.chavrutamatch;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -14,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.example.micha.chavrutamatch.AcctLogin.LoginActivity;
 
@@ -24,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     //TODO add up nav arrow to each activity
     @BindView(R.id.iv_no_match_add_match)
     ImageView noMatchView;
+    public static Boolean mLoggedIn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +52,21 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        //check if already logged in
+        mLoggedIn = getResources().getBoolean(R.bool.logged_in);
+        Toast.makeText(this,"login status= " + mLoggedIn,Toast.LENGTH_LONG).show();
+        if(mLoggedIn == false){
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(intent);
+        }
+        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        long highScore = sharedPref.getInt(getString(R.string.saved_high_score), defaultValue);
+
+        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putInt(getString(R.string.saved_high_score), newHighScore);
+        editor.commit();
     }
 
     @Override

@@ -26,11 +26,12 @@
         android:id="@+id/fab"
         android:elevation="4dp"
         app:pressedTranslationZ="12dp"
+        android:background="@color/matchColor"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/fab_1" />
+        android:src="@drawable/chavruta_logo_fab" />
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
@@ -38,7 +39,8 @@
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="0dp"
         android:stateListAnimator="@animator/button_raise"
-        android:background="@drawable/fab_ripple">
+        android:background="@drawable/fab_ripple"
+        >
 
 
         <TextView

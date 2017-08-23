@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.micha.chavrutamatch.MainActivity;
 import com.example.micha.chavrutamatch.R;
 import com.facebook.accountkit.AccessToken;
 import com.facebook.accountkit.AccountKit;
@@ -32,7 +33,7 @@ public class LoginActivity extends AppCompatActivity {
         AccessToken currentAccessToken = AccountKit.getCurrentAccessToken();
         if(currentAccessToken != null){
             //iff previously logged in, proceed to the account activity
-            launchAccountActivity();
+            launchMainActivity();
         }
     }
 
@@ -51,7 +52,7 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(this, toastMessage, Toast.LENGTH_LONG).show();
             }else if (loginResult.getAccessToken() != null){
                 //on successful login, proceed to the account activity
-                launchAccountActivity();
+                launchMainActivity();
             }
         }
     }
@@ -86,8 +87,8 @@ public class LoginActivity extends AppCompatActivity {
         onLogin(LoginType.EMAIL);
     }
 
-    private void launchAccountActivity(){
-        Intent intent = new Intent(this, AccountActivity.class);
+    private void launchMainActivity(){
+        Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();
     }

@@ -64,9 +64,10 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/tv_idLabel"
                 android:layout_width="225dp"
                 android:layout_height="0dp"
-                android:text="User Name"
+                android:text="Account ID"
                 android:gravity="center"
                 android:textColor="@android:color/white"
                 android:textSize="20sp"

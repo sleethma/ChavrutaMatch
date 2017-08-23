@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.micha.chavrutamatch.MainActivity;
@@ -20,6 +21,8 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 import java.util.Locale;
 
+import butterknife.BindView;
+
 
 /**
  * Created by micha on 8/20/2017.
@@ -27,8 +30,8 @@ import java.util.Locale;
 
 public class AccountActivity extends AppCompatActivity {
 
+    TextView id;
 
-    EditText userName;
     EditText password;
 
 
@@ -39,7 +42,7 @@ public class AccountActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         // Deleted because font won't load in AS FontHelper.setCustomTypeface(findViewById(R.id.view_root));
 
-         userName= (EditText) findViewById(R.id.userName);
+         id= (TextView) findViewById(R.id.tv_idLabel);
         password = (EditText) findViewById(R.id.password);
 
         //get current account and create new anonymous inner class
@@ -48,7 +51,7 @@ public class AccountActivity extends AppCompatActivity {
             public void onSuccess(final com.facebook.accountkit.Account account) {
                 // Get Account Kit ID
                 String accountKitId = account.getId();
-                userName.setText(accountKitId);
+                id.setText(accountKitId);
 
                 PhoneNumber phoneNumber = account.getPhoneNumber();
                 if (account.getPhoneNumber() != null) {
