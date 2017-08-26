@@ -89,7 +89,7 @@
         android:id="@+id/b_new_user"
         android:layout_width="148dp"
         android:layout_height="37dp"
-        android:background="drawable/fab_ripple"
+        android:background="@null"
         app:srcCompat="@drawable/b_new_user"
         android:layout_marginLeft="8dp"
         app:layout_constraintLeft_toLeftOf="@+id/email_login_button"

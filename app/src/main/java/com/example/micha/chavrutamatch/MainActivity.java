@@ -2,6 +2,7 @@ package com.example.micha.chavrutamatch;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -38,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
     //TODO add up nav arrow to each activity
     @BindView(R.id.iv_no_match_add_match)
     ImageView noMatchView;
+    public static final String USER_DATA_FILE = "user_data";
+
 
 
     @Override
@@ -58,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-       FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -66,6 +69,9 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        //activate user details class
+        final UserDetails userDetails = new UserDetails();
+
 
         //check if already logged in
         //get current account and create new anonymous inner class
@@ -74,46 +80,46 @@ public class MainActivity extends AppCompatActivity {
             public void onSuccess(final com.facebook.accountkit.Account account) {
                 // Get Account Kit ID
                 String accountKitId = account.getId();
-                UserDetails.setmUserId(accountKitId);
+                userDetails.setmUserId(accountKitId);
+                //stores user id, email, or phone in SP
+                SharedPreferences.Editor editor = getSharedPreferences(USER_DATA_FILE, MODE_PRIVATE).edit();
+                editor.putString(getString(R.string.user_account_id_key), accountKitId);
+
 
                 PhoneNumber phoneNumber = account.getPhoneNumber();
                 if (account.getPhoneNumber() != null) {
                     // if the phone number is available, display it
                     String formattedPhoneNumber = formatPhoneNumber(phoneNumber.toString());
-                    UserDetails.setmUserPhoneNumber(formattedPhoneNumber);
-                    //infoLabel.setText(R.string.password_label);
-                }
-                else {
-                    // if the email address is available, display it
-                    String emailString = account.getEmail();
-                    UserDetails.setmUserEmail(emailString);
-                }
+                    userDetails.setmUserPhoneNumber(formattedPhoneNumber);
 
+                    editor.putString(getString(R.string.user_phone_key), formattedPhoneNumber);
+
+                } else {
+                    // if the email address is available, store it
+                    String emailString = account.getEmail();
+                    userDetails.setmUserEmail(emailString);
+                    editor.putString(getString(R.string.user_email_key), emailString);
+                }
+                editor.apply();
             }
 
             @Override
-            public void onError(final AccountKitError error){
+            public void onError(final AccountKitError error) {
                 //display error
                 String toastMessage = error.getErrorType().getMessage();
                 Toast.makeText(MainActivity.this, toastMessage, Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent);
             }
         });
+        //delete this! Just for testing!
+        SharedPreferences prefs = getSharedPreferences(USER_DATA_FILE, MODE_PRIVATE);
+        String restoredText = prefs.getString(getString(R.string.user_phone_key), null);
+        if (restoredText != null) {
+            Toast.makeText(this, restoredText, Toast.LENGTH_LONG).show();
+        }
 
     }
-
-//        mLoggedIn = getResources().getBoolean(R.bool.logged_in);
-//        Toast.makeText(this,"login status= " + mLoggedIn,Toast.LENGTH_LONG).show();
-//        if(mLoggedIn == false){
-//            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-//            startActivity(intent);
-//        }
-//        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
-//        long highScore = sharedPref.getInt(getString(R.string.saved_high_score), defaultValue);
-//
-//        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
-//        SharedPreferences.Editor editor = sharedPref.edit();
-//        editor.putInt(getString(R.string.saved_high_score), newHighScore);
-//        editor.commit();
 
 
     @Override
@@ -139,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void animateTransition(View view){
+    private void animateTransition(View view) {
         Slide slide = new Slide();
         slide.setSlideEdge(Gravity.END);
 
@@ -152,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
     public void onLogout(View view) {
         // logout of Account Kit
         AccountKit.logOut();
-        launchLoginActivity();
+        this.recreate();
     }
 
     private void launchLoginActivity() {
@@ -167,8 +173,7 @@ public class MainActivity extends AppCompatActivity {
             PhoneNumberUtil pnu = PhoneNumberUtil.getInstance();
             Phonenumber.PhoneNumber pn = pnu.parse(phoneNumber, Locale.getDefault().getCountry());
             phoneNumber = pnu.format(pn, PhoneNumberUtil.PhoneNumberFormat.NATIONAL);
-        }
-        catch (NumberParseException e) {
+        } catch (NumberParseException e) {
             e.printStackTrace();
         }
         return phoneNumber;

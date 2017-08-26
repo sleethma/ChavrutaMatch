@@ -13,5 +13,9 @@
     <string name="login_email_label">Login By Email</string>
     //login protocol scheme is the appID preceeded by "ak"
     <string name="ak_login_protocol_scheme">ak815662338593470</string>
+    <string name="user_phone_key">user phone number key</string>
+    <string name="user_email_key">user email key</string>
+
+    <string name="user_account_id_key">user account id key</string>
 
 </resources>

@@ -1,5 +1,18 @@
 package com.example.micha.chavrutamatch.AcctLogin;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import android.widget.Toast;
+
+import com.example.micha.chavrutamatch.MainActivity;
+import com.example.micha.chavrutamatch.R;
+
+import static android.R.attr.defaultValue;
+import static android.content.Context.MODE_PRIVATE;
+
 /**
  * Created by micha on 8/23/2017.
  */
@@ -11,11 +24,17 @@ public class UserDetails {
     private static String mUserPhoneNumber;
     private static String mUserEmail;
 
-    UserDetails(String id, String password, String phoneNumber, String email){
+
+
+
+    public UserDetails(String id, String password, String phoneNumber, String email
+    ){
         mUserId = id;
         mUserPassword =password;
         mUserPhoneNumber = phoneNumber;
         mUserEmail = email;
+    }
+    public UserDetails(){
     }
 
     public static String getmUserId() {
@@ -38,8 +57,9 @@ public class UserDetails {
         return mUserPhoneNumber;
     }
 
-    public static void setmUserPhoneNumber(String mUserPhoneNumber) {
+    public void setmUserPhoneNumber(String mUserPhoneNumber) {
         UserDetails.mUserPhoneNumber = mUserPhoneNumber;
+
     }
 
     public static String getmUserEmail() {
@@ -49,4 +69,5 @@ public class UserDetails {
     public static void setmUserEmail(String mUserEmail) {
         UserDetails.mUserEmail = mUserEmail;
     }
+
 }
