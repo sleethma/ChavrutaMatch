@@ -1,9 +1,11 @@
 package com.example.micha.chavrutamatch.AcctLogin;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -17,6 +19,8 @@ import com.facebook.accountkit.ui.AccountKitActivity;
 import com.facebook.accountkit.ui.AccountKitConfiguration;
 import com.facebook.accountkit.ui.LoginType;
 
+import static com.example.micha.chavrutamatch.MainActivity.USER_DATA_FILE;
+
 /**
  * Created by micha on 8/19/2017.
  */
@@ -24,7 +28,7 @@ import com.facebook.accountkit.ui.LoginType;
 public class LoginActivity extends AppCompatActivity {
 
     public static int APP_REQUEST_CODE = 1;
-
+    private static final String LOG_TAG = LoginActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -32,38 +36,48 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.login_type_select);
         //check for an existing access token
         AccessToken currentAccessToken = AccountKit.getCurrentAccessToken();
-        if(currentAccessToken != null){
-            //iff previously logged in, proceed to the account activity
+        if (currentAccessToken != null) {
+            //iff previously logged in, proceed to the main activity
+
             launchMainActivity();
         }
     }
 
-    //override to control AccountActivity.class launch
+    //override to control MainActivity.class launch
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         //check to makesure launched from our acctivity
-        if(requestCode == APP_REQUEST_CODE){
+        if (requestCode == APP_REQUEST_CODE) {
             //extract loginResult from intent
             AccountKitLoginResult loginResult = data.getParcelableExtra(
                     AccountKitLoginResult.RESULT_KEY);
             //handle error login as well as login success
-            if(loginResult.getError() != null){
+            if (loginResult.getError() != null) {
                 String toastMessage = loginResult.getError().getErrorType().getMessage();
                 Toast.makeText(this, toastMessage, Toast.LENGTH_LONG).show();
-            }else if (loginResult.getAccessToken() != null){
-                //on successful login, proceed to the AddBio activity
-                launchAddBioActivity();
-                //launchMainActivity();
+            } else if (loginResult.getAccessToken() != null) {
+                //on successful login and new user, proceed to the AddBio activity
+                SharedPreferences prefs = getSharedPreferences(USER_DATA_FILE, MODE_PRIVATE);
+                Boolean newUser = prefs.getBoolean("new_user_key", true);
+                if (newUser) {
+                    SharedPreferences.Editor editor = getSharedPreferences(USER_DATA_FILE, MODE_PRIVATE).edit();
+                    editor.putBoolean("new_user_key", false);
+                    editor.apply();
+                    launchAddBioActivity();
+                } else {
+                    Toast.makeText(this, "new user = " + newUser, Toast.LENGTH_LONG).show();
+                    launchMainActivity();
+                }
             }
         }
     }
 
 
     //@param type comes from AccountKit and this function implements token request
-    private void onLogin(final LoginType loginType){
+    private void onLogin(final LoginType loginType) {
         //create intent for the Account Kit activity
-         final Intent intent = new Intent(this, AccountKitActivity.class);
+        final Intent intent = new Intent(this, AccountKitActivity.class);
 
         //configure login type and response type
         AccountKitConfiguration.AccountKitConfigurationBuilder configurationBuilder =
@@ -81,21 +95,39 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     //called when user enters phone#
-    public void onPhoneLogin(View view){
+    public void onPhoneLogin(View view) {
         onLogin(LoginType.PHONE);
     }
+
     //called when user enters email
-    public void onEmailLogin(View view){
+    public void onEmailLogin(View view) {
         onLogin(LoginType.EMAIL);
     }
 
-    private void launchMainActivity(){
+    private void launchMainActivity() {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();
     }
 
-    private void launchAddBioActivity(){
+    public void newUser(View view) {
+        SharedPreferences prefs = getSharedPreferences(USER_DATA_FILE, MODE_PRIVATE);
+        Boolean newUser = prefs.getBoolean("new_user_key", true);
+        String userPhoneNumber = prefs.getString(getString(R.string.user_phone_key), null);
+        String userEmail = prefs.getString(getString(R.string.user_email_key), null);
+        String userId = prefs.getString(getString(R.string.user_account_id_key), null);
+        Log.i(LOG_TAG, "new user= " + newUser + ", phone= " + userPhoneNumber + ", email= " + userEmail +
+                ", userId= " + userId);
+        Intent intent = new Intent(this, AddBio.class);
+
+        if (!newUser) {
+            intent.putExtra("userEmail", userEmail);
+            intent.putExtra("userPhoneNumber", userPhoneNumber);
+        }
+        startActivity(intent);
+    }
+
+    private void launchAddBioActivity() {
         Intent intent = new Intent(this, AddBio.class);
         startActivity(intent);
         finish();

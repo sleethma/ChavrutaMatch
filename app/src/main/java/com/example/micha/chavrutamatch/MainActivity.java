@@ -1,6 +1,5 @@
 package com.example.micha.chavrutamatch;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -56,8 +55,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 animateTransition(v);
-                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                startActivity(intent);
             }
         });
 
@@ -84,14 +81,13 @@ public class MainActivity extends AppCompatActivity {
                 //stores user id, email, or phone in SP
                 SharedPreferences.Editor editor = getSharedPreferences(USER_DATA_FILE, MODE_PRIVATE).edit();
                 editor.putString(getString(R.string.user_account_id_key), accountKitId);
-
+                editor.putBoolean("new_user_key", false);
 
                 PhoneNumber phoneNumber = account.getPhoneNumber();
                 if (account.getPhoneNumber() != null) {
                     // if the phone number is available, display it
                     String formattedPhoneNumber = formatPhoneNumber(phoneNumber.toString());
                     userDetails.setmUserPhoneNumber(formattedPhoneNumber);
-
                     editor.putString(getString(R.string.user_phone_key), formattedPhoneNumber);
 
                 } else {
@@ -106,19 +102,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onError(final AccountKitError error) {
                 //display error
-                String toastMessage = error.getErrorType().getMessage();
-                Toast.makeText(MainActivity.this, toastMessage, Toast.LENGTH_LONG).show();
+//                String toastMessage = error.getErrorType().getMessage();
+//                Toast.makeText(MainActivity.this, toastMessage, Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);
             }
         });
-        //delete this! Just for testing!
-        SharedPreferences prefs = getSharedPreferences(USER_DATA_FILE, MODE_PRIVATE);
-        String restoredText = prefs.getString(getString(R.string.user_phone_key), null);
-        if (restoredText != null) {
-            Toast.makeText(this, restoredText, Toast.LENGTH_LONG).show();
-        }
-
     }
 
 
@@ -158,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
     public void onLogout(View view) {
         // logout of Account Kit
         AccountKit.logOut();
-        this.recreate();
+        launchLoginActivity();
     }
 
     private void launchLoginActivity() {
