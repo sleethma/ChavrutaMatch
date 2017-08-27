@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.micha.chavrutamatch.AddBio;
 import com.example.micha.chavrutamatch.MainActivity;
 import com.example.micha.chavrutamatch.R;
 import com.facebook.accountkit.AccessToken;
@@ -51,8 +52,9 @@ public class LoginActivity extends AppCompatActivity {
                 String toastMessage = loginResult.getError().getErrorType().getMessage();
                 Toast.makeText(this, toastMessage, Toast.LENGTH_LONG).show();
             }else if (loginResult.getAccessToken() != null){
-                //on successful login, proceed to the account activity
-                launchMainActivity();
+                //on successful login, proceed to the AddBio activity
+                launchAddBioActivity();
+                //launchMainActivity();
             }
         }
     }
@@ -89,6 +91,12 @@ public class LoginActivity extends AppCompatActivity {
 
     private void launchMainActivity(){
         Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private void launchAddBioActivity(){
+        Intent intent = new Intent(this, AddBio.class);
         startActivity(intent);
         finish();
     }
