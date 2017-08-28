@@ -4,6 +4,7 @@
     package="com.example.micha.chavrutamatch">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <application
         android:allowBackup="true"
@@ -22,8 +23,6 @@
             android:value="@string/ACCOUNT_KIT_CLIENT_TOKEN" />
 
         <activity android:name=".AcctLogin.LoginActivity"/>
-        <activity android:name=".AcctLogin.AccountActivity"/>
-
 
         <activity android:name="com.facebook.accountkit.ui.AccountKitEmailRedirectActivity">
             <intent-filter>

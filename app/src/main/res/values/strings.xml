@@ -30,7 +30,7 @@
     <string name="user_bio">Introduce Yourself: List your interests in learning, teaching,
         and background</string>
     <string name="skip_bio">Skip for Now</string>
-
+    <string name="user_data_file">user_data</string>
 
 
 </resources>

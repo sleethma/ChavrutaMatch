@@ -38,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
     //TODO add up nav arrow to each activity
     @BindView(R.id.iv_no_match_add_match)
     ImageView noMatchView;
-    public static final String USER_DATA_FILE = "user_data";
 
 
 
@@ -79,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
                 String accountKitId = account.getId();
                 userDetails.setmUserId(accountKitId);
                 //stores user id, email, or phone in SP
-                SharedPreferences.Editor editor = getSharedPreferences(USER_DATA_FILE, MODE_PRIVATE).edit();
+                SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE).edit();
                 editor.putString(getString(R.string.user_account_id_key), accountKitId);
                 editor.putBoolean("new_user_key", false);
 

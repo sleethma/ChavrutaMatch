@@ -1,7 +1,10 @@
 package com.example.micha.chavrutamatch.AcctLogin;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -19,8 +22,6 @@ import com.facebook.accountkit.ui.AccountKitActivity;
 import com.facebook.accountkit.ui.AccountKitConfiguration;
 import com.facebook.accountkit.ui.LoginType;
 
-import static com.example.micha.chavrutamatch.MainActivity.USER_DATA_FILE;
-
 /**
  * Created by micha on 8/19/2017.
  */
@@ -29,6 +30,7 @@ public class LoginActivity extends AppCompatActivity {
 
     public static int APP_REQUEST_CODE = 1;
     private static final String LOG_TAG = LoginActivity.class.getSimpleName();
+    public static boolean mIsConnected;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,15 +60,14 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(this, toastMessage, Toast.LENGTH_LONG).show();
             } else if (loginResult.getAccessToken() != null) {
                 //on successful login and new user, proceed to the AddBio activity
-                SharedPreferences prefs = getSharedPreferences(USER_DATA_FILE, MODE_PRIVATE);
+                SharedPreferences prefs = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE);
                 Boolean newUser = prefs.getBoolean("new_user_key", true);
                 if (newUser) {
-                    SharedPreferences.Editor editor = getSharedPreferences(USER_DATA_FILE, MODE_PRIVATE).edit();
+                    SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE).edit();
                     editor.putBoolean("new_user_key", false);
                     editor.apply();
                     launchAddBioActivity();
                 } else {
-                    Toast.makeText(this, "new user = " + newUser, Toast.LENGTH_LONG).show();
                     launchMainActivity();
                 }
             }
@@ -76,22 +77,27 @@ public class LoginActivity extends AppCompatActivity {
 
     //@param type comes from AccountKit and this function implements token request
     private void onLogin(final LoginType loginType) {
-        //create intent for the Account Kit activity
-        final Intent intent = new Intent(this, AccountKitActivity.class);
+        internetCheck(this);
+        if (mIsConnected) {
+            //create intent for the Account Kit activity
+            final Intent intent = new Intent(this, AccountKitActivity.class);
 
-        //configure login type and response type
-        AccountKitConfiguration.AccountKitConfigurationBuilder configurationBuilder =
-                new AccountKitConfiguration.AccountKitConfigurationBuilder(
-                        loginType,
-                        //if NOT on own server, pass in TOKEN in place of CODE response type
-                        AccountKitActivity.ResponseType.TOKEN);
+            //configure login type and response type
+            AccountKitConfiguration.AccountKitConfigurationBuilder configurationBuilder =
+                    new AccountKitConfiguration.AccountKitConfigurationBuilder(
+                            loginType,
+                            //if NOT on own server, pass in TOKEN in place of CODE response type
+                            AccountKitActivity.ResponseType.TOKEN);
 
-        final AccountKitConfiguration configuration = configurationBuilder.build();
+            final AccountKitConfiguration configuration = configurationBuilder.build();
 
-        //launch the Account Kit activity
-        intent.putExtra(AccountKitActivity.ACCOUNT_KIT_ACTIVITY_CONFIGURATION, configuration);
-        //startActivityForResult allows tracking of the login via onActivityResult method (overrided above)
-        startActivityForResult(intent, APP_REQUEST_CODE);
+            //launch the Account Kit activity
+            intent.putExtra(AccountKitActivity.ACCOUNT_KIT_ACTIVITY_CONFIGURATION, configuration);
+            //startActivityForResult allows tracking of the login via onActivityResult method (overrided above)
+            startActivityForResult(intent, APP_REQUEST_CODE);
+        }else{
+            Toast.makeText(this, "check internet connection for login", Toast.LENGTH_LONG).show();
+        }
     }
 
     //called when user enters phone#
@@ -109,9 +115,9 @@ public class LoginActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
-
+    //TODO: delete this method and button in xml
     public void newUser(View view) {
-        SharedPreferences prefs = getSharedPreferences(USER_DATA_FILE, MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE);
         Boolean newUser = prefs.getBoolean("new_user_key", true);
         String userPhoneNumber = prefs.getString(getString(R.string.user_phone_key), null);
         String userEmail = prefs.getString(getString(R.string.user_email_key), null);
@@ -131,5 +137,15 @@ public class LoginActivity extends AppCompatActivity {
         Intent intent = new Intent(this, AddBio.class);
         startActivity(intent);
         finish();
+    }
+
+    private void internetCheck(Context context){
+        ConnectivityManager cm =
+                (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        mIsConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+        if(mIsConnected) Toast.makeText(this, "Internet Connected!", Toast.LENGTH_SHORT).show();
     }
 }
