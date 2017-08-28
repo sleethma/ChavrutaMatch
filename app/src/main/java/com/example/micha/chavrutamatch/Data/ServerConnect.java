@@ -61,6 +61,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
         //stores path of db php registration script on host: server_IPv4/db_folder/file
         String reg_url = "http://brightlightproductions.online/chavruta_session_add.php";
         String json_url = "http://brightlightproductions.online/get_chavrutaJSON.php";
+        String new_user_url = "http://brightlightproductions.online/chavruta_user_profiles_add.php";
 
 
         //checks which button was clicked
@@ -148,6 +149,59 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
             }
         }
 
+        if (chosenBkgdTaskCheck.equals("new user post")) {
+            //get params
+            String userId = params[1];
+            String userName = params[2];
+            String userAvatarNumber = params[3];
+            String userFirstName = params[4];
+            String userLastName = params[5];
+            String userPhoneNumber = params[6];
+            String userEmail = params[7];
+            String userBio = params[8];
+
+            //establish connection
+            try {
+                URL newUserUrl = new URL(new_user_url);
+                HttpURLConnection httpURLConnection = (HttpURLConnection) newUserUrl.openConnection();
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setDoOutput(true);
+                //make object of output stream
+                OutputStream os = httpURLConnection.getOutputStream();
+                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+
+                String data =
+                        URLEncoder.encode("user_id", "UTF-8") + "=" + URLEncoder.encode(
+                                userId, "UTF-8") + "&" +
+                                URLEncoder.encode("user_name", "UTF-8") + "=" + URLEncoder.encode(
+                                userName, "UTF-8") + "&" +
+                                URLEncoder.encode("user_avatar_number", "UTF-8") + "=" + URLEncoder.encode(
+                                userAvatarNumber, "UTF-8") + "&" +
+                                URLEncoder.encode("user_first_name", "UTF-8") + "=" + URLEncoder.encode(
+                                userFirstName, "UTF-8") + "&" +
+                                URLEncoder.encode("user_last_name", "UTF-8") + "=" + URLEncoder.encode(
+                                userLastName, "UTF-8") + "&" +
+                                URLEncoder.encode("user_phone_number", "UTF-8") + "=" + URLEncoder.encode(
+                                userPhoneNumber, "UTF-8") + "&" +
+                                URLEncoder.encode("user_email", "UTF-8") + "=" + URLEncoder.encode(
+                                userEmail, "UTF-8") + "&" +
+                                URLEncoder.encode("user_bio", "UTF-8") + "=" + URLEncoder.encode(
+                                userBio, "UTF-8");
+
+                bufferedWriter.write(data);
+                bufferedWriter.flush();
+                bufferedWriter.close();
+                os.close();
+                InputStream inputStream = httpURLConnection.getInputStream();
+                inputStream.close();
+                postExecuteResponse = 3;
+                return "New User Registered!";
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         return null;
     }
 
@@ -158,14 +212,17 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
 
         switch (postExecuteResponse) {
             case 0:
+                //incorrect key sent to ServerConnect.class
                 Toast.makeText(mContextRegister, "no matched action in " + getClass().getSimpleName()
                         + " class", Toast.LENGTH_LONG).show();
                 break;
             case 1:
+                //register new host successful
                 Toast.makeText(mContextRegister, result, Toast.LENGTH_LONG).show();
                 break;
             case 2:
-                //Delete this Toast (Testing Only)
+                //return jsonString to HostSelect.class
+                //TODO: IS ELSE NECESSARY?
                 if (jsonString != null) {
                     Intent intent = new Intent(this.mContextRegister, HostSelect.class);
                     intent.putExtra("jsonKey", jsonString);
@@ -179,9 +236,8 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 }
                 break;
             case 3:
-                //log in successful
-                Intent intent = new Intent(this.mContextRegister, MainActivity.class);
-                mContextRegister.startActivity(intent);
+                //new user data input successful
+                Toast.makeText(mContextRegister, result, Toast.LENGTH_LONG).show();
                 break;
         }
         postExecuteResponse = 0;

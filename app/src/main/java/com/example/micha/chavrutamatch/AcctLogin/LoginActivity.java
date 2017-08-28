@@ -129,6 +129,8 @@ public class LoginActivity extends AppCompatActivity {
         if (!newUser) {
             intent.putExtra("userEmail", userEmail);
             intent.putExtra("userPhoneNumber", userPhoneNumber);
+            intent.putExtra("userId", userId);
+            intent.putExtra("userAvatarNumber", "1");
         }
         startActivity(intent);
     }

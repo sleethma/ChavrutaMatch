@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.micha.chavrutamatch.Data.ServerConnect;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -17,8 +19,10 @@ import butterknife.ButterKnife;
  */
 
 public class AddBio extends AppCompatActivity {
+
     private static String LOG_TAG= AddBio.class.getSimpleName();
-    String mUserEmail, mUserPhoneNumber;
+    String  mUserId,mUserEmail, mUserPhoneNumber, mUserName, mUserFirstName, mUserLastName,
+            mUserBio, mUserAvatarNumberString;
     @BindView(R.id.et_user_phone_number)EditText UserPhoneView;
     @BindView(R.id.et_user_email) EditText UserEmailView;
     @BindView(R.id.user_name) EditText UserNameView;
@@ -37,6 +41,8 @@ public class AddBio extends AppCompatActivity {
             Intent intent = getIntent();
             mUserEmail = intent.getStringExtra("userEmail");
             mUserPhoneNumber = intent.getStringExtra("userPhoneNumber");
+            mUserId = intent.getStringExtra("userId");
+            mUserAvatarNumberString = intent.getStringExtra("userAvatarNumber");
             UserEmailView.setText(mUserEmail);
             UserPhoneView.setText(mUserPhoneNumber);
         }
@@ -47,33 +53,44 @@ public class AddBio extends AppCompatActivity {
     // come back and fill out bio later!
     public void skipBio(View view){
         //TODO: send notification to confirm user not setting up bio
-
         //Stores any biodata entered into SP
         storeUserBioData(view);
     }
 
     public void storeUserBioData(View view){
-    String userEmail = UserEmailView.getText().toString();
-        String userPhoneNumber = UserPhoneView.getText().toString();
-        String userName = UserNameView.getText().toString();
-        String userFirstName = UserFirstNameView.getText().toString();
-        String userLastName = UserLastNameView.getText().toString();
-        String userBio = UserBioView.getText().toString();
+    mUserEmail = UserEmailView.getText().toString();
+        mUserPhoneNumber = UserPhoneView.getText().toString();
+        mUserName = UserNameView.getText().toString();
+        mUserFirstName = UserFirstNameView.getText().toString();
+        mUserLastName = UserLastNameView.getText().toString();
+        mUserBio = UserBioView.getText().toString();
+        //TODO: GRAB USER AVATAR
+        //mUserAvatarNumberString = 1;
 
         SharedPreferences.Editor editor =
                 getSharedPreferences(getString(R.string.user_data_file),MODE_PRIVATE).edit();
-        editor.putString(getString(R.string.user_email), userEmail);
-        editor.putString(getString(R.string.user_phone_number), userPhoneNumber);
-        editor.putString(getString(R.string.hint_user_name), userName);
-        editor.putString(getString(R.string.user_first_name), userFirstName);
-        editor.putString(getString(R.string.user_last_name), userLastName);
-        editor.putString(getString(R.string.user_email), userEmail);
-        editor.putString(getString(R.string.user_bio), userBio);
+        editor.putString(getString(R.string.user_email), mUserEmail);
+        editor.putString(getString(R.string.user_phone_number), mUserPhoneNumber);
+        editor.putString(getString(R.string.hint_user_name), mUserName);
+        editor.putString(getString(R.string.user_first_name), mUserFirstName);
+        editor.putString(getString(R.string.user_last_name), mUserLastName);
+        editor.putString(getString(R.string.user_email), mUserEmail);
+        editor.putString(getString(R.string.user_avatar_number), mUserAvatarNumberString);
+        editor.putString(getString(R.string.user_bio), mUserBio);
+
         editor.apply();
+
+        postUserBio();
 
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
 
-
+    }
+    //posts saved user bio info to server
+    public void postUserBio(){
+        String newUserPost = "new user post";
+        ServerConnect postUserToServer = new ServerConnect(this);
+        postUserToServer.execute(newUserPost,mUserId, mUserName, mUserAvatarNumberString, mUserFirstName, mUserLastName,
+                mUserPhoneNumber, mUserEmail, mUserBio);
     }
 }
