@@ -39,6 +39,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_margin="15dp"
+        android:focusable="false"
         android:stateListAnimator="@animator/button_raise"
         android:background="@drawable/fab_ripple"
         android:src="@drawable/ib_add_match"

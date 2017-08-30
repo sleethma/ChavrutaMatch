@@ -32,7 +32,7 @@ public class OpenChavrutaAdapter extends ArrayAdapter {
 
     // Holds on to the cursor to display the waitlist
     private Context mContext;
-    public List hostList = new ArrayList();
+    public static List hostList = new ArrayList();
 
 
     /**
