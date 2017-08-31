@@ -64,19 +64,39 @@ public class OpenChavrutaAdapter extends ArrayAdapter<HostSessionData> {
 
         //get data item for position
         HostSessionData hostSessionDatas = getItem(position);
+        ViewHolder viewHolder;
         View listItemView = convertView;
 
 
         //attach listener to listItemViewButton
 
         if(listItemView == null) {
+            viewHolder = new ViewHolder();
             listItemView = LayoutInflater.from(getContext()).inflate(R.layout.open_host_list_item, parent, false);
+            //look up view for data population
+            viewHolder.hostFirstName = (TextView) listItemView.findViewById(R.id.host_first_name);
+            viewHolder.sessionDate = (TextView) listItemView.findViewById(R.id.session_date);
+            viewHolder.startTime = (TextView) listItemView.findViewById(R.id.start_time);
+            viewHolder.endTime= (TextView) listItemView.findViewById(R.id.end_time);
+            viewHolder.sefer = (TextView) listItemView.findViewById(R.id.session_sefer);
+            viewHolder.location = (TextView) listItemView.findViewById(R.id.location);
+            viewHolder.hostInfo = (ImageButton) listItemView.findViewById(R.id.ib_add_match);
+
+            //cache the viewHoslder object inside the fresh view
+            listItemView.setTag(viewHolder);
+        }else{
+            viewHolder = (ViewHolder) listItemView.getTag();
         }
-        ImageButton hostInfo = (ImageButton) listItemView.findViewById(R.id.ib_add_match);
+
+        viewHolder.hostFirstName.setText(hostSessionDatas.getmHostFirstName());
+        viewHolder.sessionDate.setText(hostSessionDatas.getmSessionDate());
+        viewHolder.startTime.setText(hostSessionDatas.getmStartTime());
+        viewHolder.endTime.setText(hostSessionDatas.getmEndTime());
+        viewHolder.sefer.setText(hostSessionDatas.getmSefer());
+        viewHolder.location.setText(hostSessionDatas.getmLocation());
 
         //cache row position inside the button using 'setTag'
-        hostInfo.setTag(position);
-        hostInfo.setOnClickListener(new View.OnClickListener() {
+        viewHolder.hostInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -88,23 +108,13 @@ public class OpenChavrutaAdapter extends ArrayAdapter<HostSessionData> {
 //                HostSessionData hostSessionItemData = getItem(position);
             }
         });
-        TextView hostFirstName, sessionDate, startTime, endTime, sefer, location;
-        //look up view for data population
-            hostFirstName = (TextView) listItemView.findViewById(R.id.host_first_name);
-            sessionDate = (TextView) listItemView.findViewById(R.id.session_date);
-            startTime = (TextView) listItemView.findViewById(R.id.start_time);
-            endTime= (TextView) listItemView.findViewById(R.id.end_time);
-            sefer = (TextView) listItemView.findViewById(R.id.session_sefer);
-            location = (TextView) listItemView.findViewById(R.id.location);
-
-        hostFirstName.setText(hostSessionDatas.getmHostFirstName());
-        sessionDate.setText(hostSessionDatas.getmSessionDate());
-        startTime.setText(hostSessionDatas.getmStartTime());
-        endTime.setText(hostSessionDatas.getmEndTime());
-       sefer.setText(hostSessionDatas.getmSefer());
-        location.setText(hostSessionDatas.getmLocation());
-
         return listItemView;
+    }
+
+    private static class ViewHolder{
+        TextView hostFirstName, sessionDate, startTime, endTime, sefer, location;
+        ImageButton hostInfo;
+
     }
 }
 
