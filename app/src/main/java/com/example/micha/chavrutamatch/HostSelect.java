@@ -30,6 +30,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -65,9 +67,12 @@ public class HostSelect extends AppCompatActivity {
 
         //accesses JSON from ServerConnect
         jsonString = getIntent().getExtras().getString("jsonKey");
-        //set adapter on listview
         //TODO: check if the param resource is necessary
-        mAdapter = new OpenChavrutaAdapter(this, R.layout.open_host_list_item);
+        //constructs the data source
+        ArrayList<HostSessionData> openChavrutaArrayList = new ArrayList<>();
+        //attaches data source to adapter
+        mAdapter = new OpenChavrutaAdapter(this, openChavrutaArrayList);
+
         allHostsList.setAdapter(mAdapter);
 //parses JSON entry
         parseJSONEntry();
@@ -79,11 +84,10 @@ public class HostSelect extends AppCompatActivity {
                 makeCircularRevealAnim(v);
             }
         });
-        allHostsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        allHostsList.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                allHostsList.getItemAtPosition(position);
                 switch (position) {
                     case 0:
                         Toast.makeText(HostSelect.this, position, Toast.LENGTH_SHORT).show();
@@ -133,8 +137,6 @@ public class HostSelect extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-
     }
 
     private void makeCircularRevealAnim(View v) {
