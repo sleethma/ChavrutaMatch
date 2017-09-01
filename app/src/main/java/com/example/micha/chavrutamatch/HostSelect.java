@@ -67,7 +67,7 @@ public class HostSelect extends AppCompatActivity {
 
         //accesses JSON from ServerConnect
         jsonString = getIntent().getExtras().getString("jsonKey");
-        //TODO: check if the param resource is necessary
+
         //constructs the data source
         ArrayList<HostSessionData> openChavrutaArrayList = new ArrayList<>();
         //attaches data source to adapter

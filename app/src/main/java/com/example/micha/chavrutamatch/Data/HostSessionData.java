@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
  * Created by micha on 8/14/2017.
  */
 
+//class stores hostsession data for mychavruta and HostSelect activity's population
 public class HostSessionData {
     @Nullable
     String mHostFirstName,mHostLastName,mSessionMessage,mSessionDate,

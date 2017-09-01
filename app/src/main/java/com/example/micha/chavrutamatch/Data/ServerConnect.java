@@ -77,6 +77,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
             String endTime = params[6];
             String sefer = params[7];
             String location = params[8];
+            String hostId = params[9];
 
 
             //establish connection
@@ -106,7 +107,9 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                                 URLEncoder.encode("sefer", "UTF-8") + "=" + URLEncoder.encode(
                                 sefer, "UTF-8") + "&" +
                                 URLEncoder.encode("location", "UTF-8") + "=" + URLEncoder.encode(
-                                location, "UTF-8");
+                                location, "UTF-8") + "&" +
+                                URLEncoder.encode("host_id", "UTF-8") + "=" + URLEncoder.encode(
+                                hostId, "UTF-8");
 
                 bufferedWriter.write(data);
                 bufferedWriter.flush();
@@ -207,10 +210,12 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
 
 
     @Override
-    protected void onPostExecute(String result) {
-        super.onPostExecute(result);
+    protected void onPostExecute(String result){
+        super.
+                onPostExecute(result);
 
         switch (postExecuteResponse) {
+
             case 0:
                 //incorrect key sent to ServerConnect.class
                 Toast.makeText(mContextRegister, "no matched action in " + getClass().getSimpleName()

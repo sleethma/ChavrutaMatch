@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 
 import org.w3c.dom.Text;
@@ -80,6 +81,7 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
     private String mEndTime;
     private String mSefer;
     private String mLocation;
+    private String mHostId;
 
     private String format;
     private View.OnClickListener listener;
@@ -259,11 +261,12 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         mEndTime = tvEndTime.getText().toString();
         mSefer = etHostTopic.getText().toString();
         mLocation = etHostAddress.getText().toString();
+        mHostId = UserDetails.getmUserId();
 
         String newHost = "new host";
         ServerConnect postToServer = new ServerConnect(this);
         postToServer.execute(newHost, mHostFirstName, mHostLastName, mSessionMessage, mSessionDate,
-                mStartTime, mEndTime, mSefer, mLocation);
+                mStartTime, mEndTime, mSefer, mLocation, mHostId);
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }

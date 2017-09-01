@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 
 import butterknife.BindView;
@@ -79,6 +80,10 @@ public class AddBio extends AppCompatActivity {
         editor.putString(getString(R.string.user_bio), mUserBio);
 
         editor.apply();
+
+        UserDetails.setAllUserDataFromAddBio(mUserId, mUserName, mUserAvatarNumberString,
+                mUserFirstName, mUserLastName, mUserPhoneNumber, mUserEmail);
+
 
         postUserBio();
 
