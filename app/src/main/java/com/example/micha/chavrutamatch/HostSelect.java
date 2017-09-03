@@ -1,6 +1,7 @@
 package com.example.micha.chavrutamatch;
 
 import android.animation.Animator;
+import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -23,6 +24,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.Data.HostSessionData;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 
@@ -56,6 +58,7 @@ public class HostSelect extends AppCompatActivity {
 
 
     OpenChavrutaAdapter mAdapter;
+    Context mContext;
 
 
     @Override
@@ -64,6 +67,9 @@ public class HostSelect extends AppCompatActivity {
         setContentView(R.layout.open_host_listview);
         ButterKnife.bind(this);
 
+        //get Context and send to UserDetails for SharedPreferences access
+        mContext = HostSelect.this;
+        UserDetails.setsApplicationContext(mContext);
 
         //accesses JSON from ServerConnect
         jsonString = getIntent().getExtras().getString("jsonKey");

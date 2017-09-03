@@ -25,6 +25,11 @@ public class HostSessionData {
         setmLocation(location);
     }
 
+    public String[] getAllHostDataForMyChavruta(){
+        return new String[] {mHostFirstName, mHostLastName, mSessionMessage, mSessionDate, mStartTime,
+        mEndTime, mSefer, mLocation};
+    }
+
     public String getmHostFirstName() {
         return mHostFirstName;
     }

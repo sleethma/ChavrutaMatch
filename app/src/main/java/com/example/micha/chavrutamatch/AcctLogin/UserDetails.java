@@ -4,9 +4,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
+import android.content.SharedPreferences;
 
 import com.example.micha.chavrutamatch.MainActivity;
 import com.example.micha.chavrutamatch.R;
@@ -18,7 +22,7 @@ import static android.content.Context.MODE_PRIVATE;
  * Created by micha on 8/23/2017.
  */
 
-public class UserDetails {
+public class UserDetails extends AppCompatActivity{
     public final static String LOG_TAG = LoginActivity.class.getSimpleName();
 
     private static String mUserId;
@@ -29,6 +33,9 @@ public class UserDetails {
     private static String mUserLastName;
     private static String mUserPhoneNumber;
     private static String mUserEmail;
+    private static  SharedPreferences mPreferences;
+    private static Context mContext;
+
 
     public UserDetails(String id, String password, String phoneNumber, String email
     ){
@@ -40,6 +47,7 @@ public class UserDetails {
     public UserDetails(){
     }
 
+
     //sets all user data from AddBio.class
     public static void setAllUserDataFromAddBio(String...param){
         mUserId = param[0];
@@ -49,8 +57,27 @@ public class UserDetails {
         mUserLastName=param[4];
         mUserPhoneNumber=param[5];
         mUserEmail=param[6];
-        Log.i(LOG_TAG, mUserId + " " + mUserName + " " + mUserAvatarNumberString + " " +
-        mUserFirstName + " " + mUserLastName + " " + mUserPhoneNumber + " " +  mUserEmail);
+    }
+
+    public static String[]  getUserDataForChavruta(){
+        SharedPreferences mPreferences = mContext.getSharedPreferences("user_data", MODE_PRIVATE);
+        mUserPhoneNumber = mPreferences.getString("user phone number key",null);
+        mUserName = mPreferences.getString("User Name", null);
+        mUserEmail = mPreferences.getString("User Email", null);
+        mUserAvatarNumberString = mPreferences.getString("User Avatar",null);
+        mUserFirstName = mPreferences.getString("User First Name",null);
+        mUserLastName = mPreferences.getString("User Last Name",null);
+
+       return new String[]  {mUserId, mUserName, mUserAvatarNumberString, mUserFirstName, mUserLastName};
+    }
+
+    //gets application context
+    public static void setsApplicationContext(Context context){
+        mContext = context;
+    }
+
+    public static void setmUserAvatarNumberString(String mUserAvatarNumberString) {
+        UserDetails.mUserAvatarNumberString = mUserAvatarNumberString;
     }
 
     public static String getmUserId() {
@@ -75,7 +102,6 @@ public class UserDetails {
 
     public void setmUserPhoneNumber(String mUserPhoneNumber) {
         UserDetails.mUserPhoneNumber = mUserPhoneNumber;
-
     }
 
     public static String getmUserEmail() {
@@ -98,9 +124,6 @@ public class UserDetails {
         return mUserAvatarNumberString;
     }
 
-    public static void setmUserAvatarNumberString(String mUserAvatarNumberString) {
-        UserDetails.mUserAvatarNumberString = mUserAvatarNumberString;
-    }
 
     public static String getmUserFirstName() {
         return mUserFirstName;
