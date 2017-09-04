@@ -67,6 +67,7 @@ public class HostSelect extends AppCompatActivity {
         setContentView(R.layout.open_host_listview);
         ButterKnife.bind(this);
 
+        //TODO: DELETE if works
         //get Context and send to UserDetails for SharedPreferences access
         mContext = HostSelect.this;
         UserDetails.setsApplicationContext(mContext);

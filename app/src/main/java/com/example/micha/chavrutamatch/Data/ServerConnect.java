@@ -125,6 +125,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 e.printStackTrace();
             }
         }
+
         if (chosenBkgdTaskCheck.equals("getJSONKey")) {
             try {
                 URL jsonURL = new URL(json_url);

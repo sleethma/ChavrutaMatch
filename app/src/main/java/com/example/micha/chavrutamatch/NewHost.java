@@ -73,8 +73,8 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
     TextView tvAddHost;
 
     //host strings to db
-    private String mHostFirstName = "";
-    private String mHostLastName = "fake";
+    private String mHostFirstName;
+    private String mHostLastName;
     private String mSessionMessage;
     private String mSessionDate;
     private String mStartTime;
@@ -105,6 +105,11 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         ibDate.setOnClickListener(this);
         ibHostIt.setOnClickListener(this);
         setCurrentDateVars();
+
+        //sets UserData in UserDetail passing in an Activity Context @HostSelect for UserData retrieval
+        UserDetails.setUserData();
+        mHostFirstName = UserDetails.getmUserFirstName();
+        mHostLastName = UserDetails.getmUserLastName();
 
         flHostPic.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -190,9 +195,13 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
             //}
             //if min = 0 add 00 to min
             if (min == 0) {
-                timeString = hour + " :" + "00 " + format;
-            } else {
-                timeString = hour + " :" + min + " " + format;
+                timeString = hour + ":" + "00 " + format;
+            } else if(min < 10) {
+                timeString = hour + ":0" + min + " " + format;
+            }
+            else
+            {
+                timeString = hour + ":" + min + " " + format;
             }
 
             //check which imagebutton view clicked to set selected date/time to correct view

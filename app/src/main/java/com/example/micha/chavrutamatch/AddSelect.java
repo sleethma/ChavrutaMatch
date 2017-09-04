@@ -14,6 +14,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 
 import butterknife.BindView;
@@ -30,11 +31,17 @@ public class AddSelect extends AppCompatActivity {
     @BindView(R.id.b_host_chavruta)
     ImageButton addHostButton;
 
+    Context mContext;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_select);
         ButterKnife.bind(this);
+
+        //get Context and send to UserDetails for SharedPreferences access
+        mContext = AddSelect.this;
+        UserDetails.setsApplicationContext(mContext);
 
     }
 //TODO fix bug on animate the imagebutton is gone on back pressed

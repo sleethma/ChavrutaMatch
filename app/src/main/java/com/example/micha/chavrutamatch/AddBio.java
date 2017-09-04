@@ -55,10 +55,10 @@ public class AddBio extends AppCompatActivity {
     public void skipBio(View view){
         //TODO: send notification to confirm user not setting up bio
         //Stores any biodata entered into SP
-        storeUserBioData(view);
+        storeUserBioDataInDb(view);
     }
 
-    public void storeUserBioData(View view){
+    public void storeUserBioDataInDb(View view){
     mUserEmail = UserEmailView.getText().toString();
         mUserPhoneNumber = UserPhoneView.getText().toString();
         mUserName = UserNameView.getText().toString();

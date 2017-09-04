@@ -71,6 +71,16 @@ public class UserDetails extends AppCompatActivity{
        return new String[]  {mUserId, mUserName, mUserAvatarNumberString, mUserFirstName, mUserLastName};
     }
 
+    public static void  setUserData(){
+        SharedPreferences mPreferences = mContext.getSharedPreferences("user_data", MODE_PRIVATE);
+        mUserPhoneNumber = mPreferences.getString("user phone number key",null);
+        mUserName = mPreferences.getString("User Name", null);
+        mUserEmail = mPreferences.getString("User Email", null);
+        mUserAvatarNumberString = mPreferences.getString("User Avatar",null);
+        mUserFirstName = mPreferences.getString("User First Name",null);
+        mUserLastName = mPreferences.getString("User Last Name",null);
+    }
+
     //gets application context
     public static void setsApplicationContext(Context context){
         mContext = context;

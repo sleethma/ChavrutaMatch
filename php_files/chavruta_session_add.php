@@ -1,18 +1,19 @@
 <?php
 require "chavruta_init.php";
-$hostFirstName = $_POST["host_first_name"];
-$hostLastName = $_POST["host_last_name"];
-$sessionMessage=$_POST["session_message"];
-$sessionDate=$_POST["session_date"];
-$startTime=$_POST["start_time"];
-$endTime=$_POST["end_time"];
-$sefer=$_POST["sefer"];
-$location=$_POST["location"];
+$userId = $_POST["user_id"];
+$userName = $_POST["user_name"];
+$userAvatarNumber=$_POST["user_avatar_number"];
+$userFirstName=$_POST["user_first_name"];
+$userLastName=$_POST["user_last_name"];
+$userPhoneNumber=$_POST["user_phone_number"];
+$userEmail=$_POST["user_email"];
+$userBio=$_POST["user_bio"];
 
 
 
 
- $sql= "insert into chavruta_hosts values('$hostFirstName' ,'$hostLastName','$sessionMessage','$sessionDate', '$startTime', '$endTime','$sefer', '$location');";
+ $sql= "insert into user_profiles values(NULL, $userId','$userName','$userAvatarNumber','$userFirstName',
+'$userLastName','$userPhoneNumber','$userEmail','$userBio');";
 
   if(mysqli_query($connection, $sql))
   {
