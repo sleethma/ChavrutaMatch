@@ -18,7 +18,7 @@ $response = array();
 while($row = mysqli_fetch_array($result))
 {
 	array_push($response, array(
-	"hostFirstName"=>$row[0], "hostLastName"=>$row[1],"sessionMessage"=>$row[2], "sessionDate"=>$row[3], "startTime"=>$row[4], "endTime"=>$row[5],"sefer"=>$row[6], "location"=>$row[7]
+	"hostFirstName"=>$row[1], "hostLastName"=>$row[2],"sessionMessage"=>$row[3], "sessionDate"=>$row[4], "startTime"=>$row[5], "endTime"=>$row[6],"sefer"=>$row[7], "location"=>$row[8], "host_id"=>$row[9], "chavruta_request_1"=>$row[10], "chavruta_request_2"=>$row[11], "chavruta_request_3"=>$row[12]
 	)
 		);
 }

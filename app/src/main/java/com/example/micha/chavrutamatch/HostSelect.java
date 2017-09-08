@@ -25,12 +25,12 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
-import com.example.micha.chavrutamatch.Data.HostSessionData;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import com.example.micha.chavrutamatch.Data.HostSessionData;
 
 import java.util.ArrayList;
 
@@ -67,11 +67,6 @@ public class HostSelect extends AppCompatActivity {
         setContentView(R.layout.open_host_listview);
         ButterKnife.bind(this);
 
-        //TODO: DELETE if works
-        //get Context and send to UserDetails for SharedPreferences access
-        mContext = HostSelect.this;
-        UserDetails.setsApplicationContext(mContext);
-
         //accesses JSON from ServerConnect
         jsonString = getIntent().getExtras().getString("jsonKey");
 
@@ -91,30 +86,15 @@ public class HostSelect extends AppCompatActivity {
                 makeCircularRevealAnim(v);
             }
         });
-        allHostsList.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                switch (position) {
-                    case 0:
-                        Toast.makeText(HostSelect.this, position, Toast.LENGTH_SHORT).show();
-
-                        break;
-                    case 1:
-                        Toast.makeText(HostSelect.this, position, Toast.LENGTH_SHORT).show();
-
-                        break;
-                    default:
-                        Toast.makeText(HostSelect.this, "position > 1", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-        });
     }
 
+    //@ var chavrutaId = autoInc from db
     public void parseJSONEntry() {
+        String chavrutaId;
+
         String hostFirstName, hostLastName, sessionMessage, sessionDate,
-                startTime, endTime, sefer, location;
+                startTime, endTime, sefer, location, hostId, chavrutaRequest1,chavrutaRequest2,
+                chavrutaRequest3;
         try {
 
             jsonObject = new JSONObject(jsonString);
@@ -125,6 +105,7 @@ public class HostSelect extends AppCompatActivity {
             int count = 0;
             while (count < jsonArray.length()) {
                 JSONObject jo = jsonArray.getJSONObject(count);
+                chavrutaId = jo.getString("chavruta_id");
                 hostFirstName = jo.getString("hostFirstName");
                 hostLastName = jo.getString("hostLastName");
                 sessionMessage = jo.getString("sessionMessage");
@@ -133,11 +114,15 @@ public class HostSelect extends AppCompatActivity {
                 endTime = jo.getString("endTime");
                 sefer = jo.getString("sefer");
                 location = jo.getString("location");
+                hostId = jo.getString("host_id");
+                chavrutaRequest1 = jo.getString("chavruta_request_1");
+                chavrutaRequest2 = jo.getString("chavruta_request_2");
+                chavrutaRequest3 = jo.getString("chavruta_request_3");
 
 
                 //make user data object of UserDataSetter class
-                HostSessionData hostClassData = new HostSessionData(hostFirstName, hostLastName, sessionMessage, sessionDate,
-                        startTime, endTime, sefer, location);
+                HostSessionData hostClassData = new HostSessionData(chavrutaId, hostFirstName, hostLastName, sessionMessage, sessionDate,
+                        startTime, endTime, sefer, location, hostId, chavrutaRequest1, chavrutaRequest2, chavrutaRequest3);
                 mAdapter.add(hostClassData);
                 count++;
             }

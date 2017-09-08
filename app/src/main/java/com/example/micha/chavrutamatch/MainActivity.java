@@ -1,5 +1,6 @@
 package com.example.micha.chavrutamatch;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -13,9 +14,24 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
+import com.example.micha.chavrutamatch.Data.HostSessionData;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import com.example.micha.chavrutamatch.Data.HostSessionData;
+
+import java.util.ArrayList;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 import com.example.micha.chavrutamatch.AcctLogin.LoginActivity;
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
+import com.example.micha.chavrutamatch.Data.HostSessionData;
+import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.facebook.accountkit.Account;
 import com.facebook.accountkit.AccountKit;
 import com.facebook.accountkit.AccountKitCallback;
@@ -24,6 +40,8 @@ import com.facebook.accountkit.PhoneNumber;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
+
+import java.util.ArrayList;
 import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -32,7 +50,11 @@ public class MainActivity extends AppCompatActivity {
     //TODO add up nav arrow to each activity
     @BindView(R.id.iv_no_match_add_match)
     ImageView noMatchView;
-
+    @BindView (R.id.lv_my_chavruta)
+    ListView myChavrutaListView;
+    OpenChavrutaAdapter mAdapter;
+    static ArrayList<HostSessionData> myChavrutasArrayList;
+    static Context mContext;
 
 
     @Override
@@ -40,10 +62,26 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ButterKnife.bind(this);
+        mContext = this;
+
+        myChavrutaListView.setVisibility(View.GONE);
+        noMatchView.setVisibility(View.VISIBLE
+        );
+
+            //add and remove views to display myChavrutas
+            if (myChavrutasArrayList != null && myChavrutasArrayList.size() > 0) {
+                //attaches data source to adapter
+                mAdapter = new OpenChavrutaAdapter(this, myChavrutasArrayList);
+                myChavrutaListView.setAdapter(mAdapter);
+                noMatchView.setVisibility(View.GONE);
+                myChavrutaListView.setVisibility(View.VISIBLE);
+            }
+
+
+        //Todo: delete this and reapply to another element more revelant
         noMatchView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -60,7 +98,6 @@ public class MainActivity extends AppCompatActivity {
         });
         //activate user details class
         final UserDetails userDetails = new UserDetails();
-
 
         //check if already logged in
         //get current account and create new anonymous inner class
@@ -100,8 +137,17 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        ServerConnect
     }
 
+    public static void addToMyChavrutasArrayList(HostSessionData chavruta){
+        //constructs the data source
+        if (myChavrutasArrayList== null){
+            myChavrutasArrayList = new ArrayList<>();
+        }
+        myChavrutasArrayList.add(chavruta);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -125,6 +171,10 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    //gives context to OpenChavrutaAdapter
+    public static Context getMAContextForAdapter(){
+        return mContext;
+    }
 
     private void animateTransition(View view) {
         Slide slide = new Slide();

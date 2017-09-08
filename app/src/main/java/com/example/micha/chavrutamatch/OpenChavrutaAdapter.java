@@ -1,27 +1,35 @@
 package com.example.micha.chavrutamatch;
 
 import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.TextView;
+
+import com.example.micha.chavrutamatch.Data.HostSessionData;
+
+import java.util.ArrayList;
+
 import android.content.Intent;
 import android.database.Cursor;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
-import android.widget.TextView;
+
+
 import android.widget.Toast;
 
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.Data.ChavrutaContract;
-import com.example.micha.chavrutamatch.Data.HostSessionData;
+import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.example.micha.chavrutamatch.OpenChavrutaAdapter;
 
 import java.security.Timestamp;
-import java.util.ArrayList;
+
 import java.util.List;
 
 import butterknife.BindView;
@@ -43,6 +51,7 @@ public class OpenChavrutaAdapter extends ArrayAdapter<HostSessionData> {
     // Holds on to the cursor to display the waitlist
     private Context mContext;
     private static final String LOG_TAG = OpenChavrutaAdapter.class.getSimpleName();
+    HostSessionData hostSessionItemData;
 
     /**
      * Constructor using the context and the resource
@@ -52,7 +61,6 @@ public class OpenChavrutaAdapter extends ArrayAdapter<HostSessionData> {
     public OpenChavrutaAdapter(Context context, ArrayList<HostSessionData> hostSessionArrayList) {
         super(context, 0, hostSessionArrayList);
         this.mContext = context;
-
     }
 
     @Override
@@ -78,7 +86,16 @@ public class OpenChavrutaAdapter extends ArrayAdapter<HostSessionData> {
 
         if (listItemView == null) {
             viewHolder = new ViewHolder();
-            listItemView = LayoutInflater.from(getContext()).inflate(R.layout.open_host_list_item, parent, false);
+
+
+            //sets correct listItemView based on Caller's Context
+            if (mContext == MainActivity.getMAContextForAdapter()) {
+                listItemView = LayoutInflater.from(getContext()).inflate(R.layout.my_chavruta_list_item, parent, false);
+            } else {
+                //adapter called from HostSelect.class
+                listItemView = LayoutInflater.from(getContext()).inflate(R.layout.open_host_list_item, parent, false);
+
+            }
             //look up view for data population
             viewHolder.hostFirstName = (TextView) listItemView.findViewById(R.id.host_first_name);
             viewHolder.sessionDate = (TextView) listItemView.findViewById(R.id.session_date);
@@ -87,6 +104,7 @@ public class OpenChavrutaAdapter extends ArrayAdapter<HostSessionData> {
             viewHolder.sefer = (TextView) listItemView.findViewById(R.id.session_sefer);
             viewHolder.location = (TextView) listItemView.findViewById(R.id.location);
             viewHolder.hostInfo = (ImageButton) listItemView.findViewById(R.id.ib_add_match);
+            viewHolder.chavrutaConfirmed = (Button) listItemView.findViewById(R.id.b_chavruta_confirmed);
 
             //cache the viewHoslder object inside the fresh view
             listItemView.setTag(viewHolder);
@@ -101,21 +119,32 @@ public class OpenChavrutaAdapter extends ArrayAdapter<HostSessionData> {
         viewHolder.sefer.setText(hostSessionDatas.getmSefer());
         viewHolder.location.setText(hostSessionDatas.getmLocation());
 
-        //cache row position inside the button using 'setTag'
+        //on buttonClick selecting host
         viewHolder.hostInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //gets item clicked
+
+
+                //Access the row position here to get the correct data item
                 int position = getPosition(hostSessionDatas);
-                HostSessionData hostSessionItemData = getItem(position);
-                String[] hostSessionData = hostSessionItemData.getAllHostDataForMyChavruta();
-                long requestDate =  System.currentTimeMillis();
+                hostSessionItemData = getItem(position);
+                MainActivity.addToMyChavrutasArrayList(hostSessionItemData);
+                String[] hostSessionData = hostSessionItemData.getAllStringHostDataForMyChavruta();
+                //TODO: incorporate request date into db on select
+                long requestDate = System.currentTimeMillis();
 
+                String userId = UserDetails.getmUserId();
+                String chavrutaId = hostSessionItemData.getmChavrutaId();
+                String chavrutaRequest = "chavruta request";
+                ServerConnect attemptChavrutaRequest = new ServerConnect(mContext);
+                attemptChavrutaRequest.execute(chavrutaRequest, userId, chavrutaId);
+
+                //TODO: delete below object
                 //creates MyChavruta object joining user and host data
-                MyChavrutas chavruta = new MyChavrutas(requestDate, hostSessionData);
+//                MyChavrutas chavruta = new MyChavrutas(requestDate, hostSessionData);
 
-//                Intent intent = new Intent(mContext, AddBio.class);
-//                mContext.startActivity(intent);
+                Intent intent = new Intent(mContext, MainActivity.class);
+                mContext.startActivity(intent);
 
 //                //Access the row position here to get the correct data item
 //                HostSessionData hostSessionItemData = getItem(position);
@@ -127,6 +156,7 @@ public class OpenChavrutaAdapter extends ArrayAdapter<HostSessionData> {
     private static class ViewHolder {
         TextView hostFirstName, sessionDate, startTime, endTime, sefer, location;
         ImageButton hostInfo;
+        Button chavrutaConfirmed;
 
     }
 }

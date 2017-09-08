@@ -62,9 +62,11 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
         String reg_url = "http://brightlightproductions.online/chavruta_session_add.php";
         String json_url = "http://brightlightproductions.online/get_chavrutaJSON.php";
         String new_user_url = "http://brightlightproductions.online/chavruta_user_profiles_add.php";
+        String initial_chavruta_request_update_url =
+                "http://brightlightproductions.online/initial_chavruta_request_update.php";
 
 
-        //checks which button was clicked
+        //checks which ServerConnect instance was sent
         String chosenBkgdTaskCheck = params[0];
         //assures register button sent this background call
         if (chosenBkgdTaskCheck.equals("new host")) {
@@ -78,6 +80,9 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
             String sefer = params[7];
             String location = params[8];
             String hostId = params[9];
+            String chavrutaRequest1 = params[10];
+            String chavrutaRequest2 = params[11];
+            String chavrutaRequest3 = params[12];
 
 
             //establish connection
@@ -109,7 +114,13 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                                 URLEncoder.encode("location", "UTF-8") + "=" + URLEncoder.encode(
                                 location, "UTF-8") + "&" +
                                 URLEncoder.encode("host_id", "UTF-8") + "=" + URLEncoder.encode(
-                                hostId, "UTF-8");
+                                hostId, "UTF-8") + "&" +
+                                URLEncoder.encode("chavruta_request_1", "UTF-8") + "=" + URLEncoder.encode(
+                                chavrutaRequest1, "UTF-8") + "&" +
+                                URLEncoder.encode("chavruta_request_2", "UTF-8") + "=" + URLEncoder.encode(
+                                chavrutaRequest2, "UTF-8") + "&" +
+                                URLEncoder.encode("chavruta_request_3", "UTF-8") + "=" + URLEncoder.encode(
+                                chavrutaRequest3, "UTF-8");
 
                 bufferedWriter.write(data);
                 bufferedWriter.flush();
@@ -206,12 +217,48 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 e.printStackTrace();
             }
         }
+        if (chosenBkgdTaskCheck.equals("chavruta request")) {
+            //get params
+            String userId = params[1];
+            String chavrutaId = params[2];
+
+            //establish connection
+            try {
+                URL chavrutaRequestUrl = new URL(initial_chavruta_request_update_url);
+                HttpURLConnection httpURLConnection = (HttpURLConnection) chavrutaRequestUrl.openConnection();
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setDoOutput(true);
+                //make object of output stream
+                OutputStream os = httpURLConnection.getOutputStream();
+                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+
+
+                String data =
+                        URLEncoder.encode("chavruta_request_1", "UTF-8") + "=" + URLEncoder.encode(
+                                userId, "UTF-8") + "&" +
+                                URLEncoder.encode("chavruta_id", "UTF-8") + "=" + URLEncoder.encode(
+                                chavrutaId, "UTF-8");
+
+                bufferedWriter.write(data);
+                bufferedWriter.flush();
+                bufferedWriter.close();
+                os.close();
+                InputStream inputStream = httpURLConnection.getInputStream();
+                inputStream.close();
+                postExecuteResponse = 4;
+                return "Request Sent to Db";
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         return null;
     }
 
 
     @Override
-    protected void onPostExecute(String result){
+    protected void onPostExecute(String result) {
         super.
                 onPostExecute(result);
 
@@ -243,6 +290,10 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 break;
             case 3:
                 //new user data input successful
+                Toast.makeText(mContextRegister, result, Toast.LENGTH_LONG).show();
+                break;
+            case 4:
+                //user request sent to host
                 Toast.makeText(mContextRegister, result, Toast.LENGTH_LONG).show();
                 break;
         }
