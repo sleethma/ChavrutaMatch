@@ -9,15 +9,15 @@ import android.support.annotation.Nullable;
 //class stores hostsession data for mychavruta and HostSelect activity's population
 public class HostSessionData {
     @Nullable
-    private String mChavrutaId, mHostFirstName,mHostLastName,mSessionMessage,mSessionDate,
-            mStartTime, mEndTime,  mSefer , mLocation, mHostId, mchavrutaRequest1,mchavrutaRequest2,
-    mchavrutaRequest3;
+    private String mChavrutaId, mHostFirstName, mHostLastName, mSessionMessage, mSessionDate,
+            mStartTime, mEndTime, mSefer, mLocation, mHostId, mchavrutaRequest1, mchavrutaRequest2,
+            mchavrutaRequest3;
 
 
     public HostSessionData(String chavrutaId, String hostFirstName, String hostLastName, String sessionMessage,
-                           String sessionDate, String startTime, String endTime, String sefer ,
+                           String sessionDate, String startTime, String endTime, String sefer,
                            String location, String hostId, String chavrutaRequest1, String chavrutaRequest2,
-                           String chavrutaRequest3){
+                           String chavrutaRequest3) {
 
         setmChavrutaId(chavrutaId);
         setmHostFirstName(hostFirstName);
@@ -39,23 +39,29 @@ public class HostSessionData {
                 mEndTime, mSefer, mLocation};
     }
 
-        public void setmChavrutaId(String chavrutaId){
-            mChavrutaId = chavrutaId;}
+    public void setmChavrutaId(String chavrutaId) {
+        mChavrutaId = chavrutaId;
+    }
 
 
     public String getmHostFirstName() {
         return mHostFirstName;
     }
 
-    public String getmChavrutaId(){
+    public String getmChavrutaId() {
         return mChavrutaId;
     }
 
-    public void setmHostId(String hostId){
-         mHostId = hostId;}
+    public void setmHostId(String hostId) {
+        mHostId = hostId;
+    }
+    public String getmHostId(){
+        return mHostId;
+    }
 
-    public void setMchavrutaRequest1(String chavrutaRequest1){
-        mchavrutaRequest1 = chavrutaRequest1;}
+    public void setMchavrutaRequest1(String chavrutaRequest1) {
+        mchavrutaRequest1 = chavrutaRequest1;
+    }
 
     public void setMchavrutaRequest2(@Nullable String mchavrutaRequest2) {
         this.mchavrutaRequest2 = mchavrutaRequest2;

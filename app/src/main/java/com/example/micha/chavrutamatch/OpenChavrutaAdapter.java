@@ -1,6 +1,7 @@
 package com.example.micha.chavrutamatch;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +36,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static android.R.attr.host;
 import static android.R.attr.resource;
 import static android.content.Context.MODE_PRIVATE;
 
@@ -111,7 +113,11 @@ public class OpenChavrutaAdapter extends ArrayAdapter<HostSessionData> {
         } else {
             viewHolder = (ViewHolder) listItemView.getTag();
         }
-
+        String userId = UserDetails.getmUserId();
+        String hostId = hostSessionDatas.getmHostId();
+        if(hostId.equals(userId)){
+            listItemView.setBackgroundColor(Color.parseColor("#BF0409"));
+        }
         viewHolder.hostFirstName.setText(hostSessionDatas.getmHostFirstName());
         viewHolder.sessionDate.setText(hostSessionDatas.getmSessionDate());
         viewHolder.startTime.setText(hostSessionDatas.getmStartTime());
@@ -123,7 +129,6 @@ public class OpenChavrutaAdapter extends ArrayAdapter<HostSessionData> {
         viewHolder.hostInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
 
                 //Access the row position here to get the correct data item
                 int position = getPosition(hostSessionDatas);
