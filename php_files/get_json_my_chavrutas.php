@@ -3,8 +3,7 @@ $host="localhost";
 $database="n5n0l7n9_ChavrutaHostEntry";
 $username="n5n0l7n9_sleethm";
 $password="SleethMasterUser00";
-$user_id_requesting_chavruta= "1934693520112171";
-//$_POST["user_id"];
+$user_id_requesting_chavruta= $_GET["user_id"];
 
 $con = mysqli_connect($host,$username,$password,$database);
 

@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
     private static String jsonString;
     JSONObject jsonObject;
     JSONArray jsonArray;
+    String accountId;
 
 
     @Override
@@ -147,6 +148,10 @@ public class MainActivity extends AppCompatActivity {
 
         } else {
             //if db not yet accessed, gets all chavrutas that user has requested
+            //@var sp: sets userId to UserDetails for server calls
+            SharedPreferences sp = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE);
+            accountId = sp.getString(getString(R.string.user_account_id_key),null);
+            UserDetails.setmUserId(accountId);
             String getMyChavrutasKey = "my chavrutas";
             ServerConnect getMyChavrutas = new ServerConnect(this);
             getMyChavrutas.execute(getMyChavrutasKey);

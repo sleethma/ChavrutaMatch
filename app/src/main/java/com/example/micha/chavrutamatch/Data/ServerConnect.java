@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.HostSelect;
 import com.example.micha.chavrutamatch.MainActivity;
 
@@ -65,7 +66,8 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
         String new_user_url = "http://brightlightproductions.online/chavruta_user_profiles_add.php";
         String initial_chavruta_request_update_url =
                 "http://brightlightproductions.online/initial_chavruta_request_update.php";
-        String my_chavrutas_url = "http://brightlightproductions.online/get_JSON_by_user_id_requested.php";
+        //@ my_chavrutas_url is changed in line to send individual user id
+        String my_chavrutas_url = "http://brightlightproductions.online/get_json_my_chavrutas.php";
 
         //checks which ServerConnect instance was sent
         String chosenBkgdTaskCheck = params[0];
@@ -143,6 +145,8 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 if(chosenBkgdTaskCheck.equals("my chavrutas")){
                     //designates caller from MA
                     myChavruta = true;
+                    String userID = UserDetails.getmUserId();
+                    my_chavrutas_url = "http://brightlightproductions.online/get_json_my_chavrutas.php?user_id="+ userID;
                     URL jsonMyChavrutasURL = new URL(my_chavrutas_url);
                     httpURLConnection = (HttpURLConnection) jsonMyChavrutasURL.openConnection();
                 }else {
