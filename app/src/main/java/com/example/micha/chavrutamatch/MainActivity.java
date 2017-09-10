@@ -17,10 +17,13 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+
 import com.example.micha.chavrutamatch.Data.HostSessionData;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import com.example.micha.chavrutamatch.Data.HostSessionData;
 
 import java.util.ArrayList;
@@ -43,6 +46,7 @@ import com.google.i18n.phonenumbers.Phonenumber;
 
 import java.util.ArrayList;
 import java.util.Locale;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -50,11 +54,14 @@ public class MainActivity extends AppCompatActivity {
     //TODO add up nav arrow to each activity
     @BindView(R.id.iv_no_match_add_match)
     ImageView noMatchView;
-    @BindView (R.id.lv_my_chavruta)
+    @BindView(R.id.lv_my_chavruta)
     ListView myChavrutaListView;
     OpenChavrutaAdapter mAdapter;
     static ArrayList<HostSessionData> myChavrutasArrayList;
     static Context mContext;
+    private static String jsonString;
+    JSONObject jsonObject;
+    JSONArray jsonArray;
 
 
     @Override
@@ -62,32 +69,90 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
         ButterKnife.bind(this);
-        mContext = this;
 
-        myChavrutaListView.setVisibility(View.GONE);
-        noMatchView.setVisibility(View.VISIBLE
-        );
+        //receives intent from ServerConnect to display myChavruta list, else gets myChavruta info from db
+        if (getIntent().getExtras() != null) {
+            jsonString = getIntent().getExtras().getString("myChavrutaKey");
+            myChavrutasArrayList = new ArrayList<>();
 
             //add and remove views to display myChavrutas
-            if (myChavrutasArrayList != null && myChavrutasArrayList.size() > 0) {
-                //attaches data source to adapter
+            if (myChavrutasArrayList != null && !jsonString.isEmpty()) {
+                //attaches data source to adapter and displays list
                 mAdapter = new OpenChavrutaAdapter(this, myChavrutasArrayList);
                 myChavrutaListView.setAdapter(mAdapter);
                 noMatchView.setVisibility(View.GONE);
                 myChavrutaListView.setVisibility(View.VISIBLE);
+                //parses and adds data in JSON string from MyChavruta Server call
+                parseJSONEntry();
+
+            } else {
+                //sets empty array list view
+                myChavrutaListView.setVisibility(View.GONE);
+                noMatchView.setVisibility(View.VISIBLE);
+                //Todo: delete this and reapply to another element more revelant
+                noMatchView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        animateTransition(v);
+                    }
+                });
+
             }
 
+            //activate user details class for account kit
+            final UserDetails userDetails = new UserDetails();
 
-        //Todo: delete this and reapply to another element more revelant
-        noMatchView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                animateTransition(v);
-            }
-        });
+            //check if already logged in
+            //get current account and create new anonymous inner class
+            AccountKit.getCurrentAccount(new AccountKitCallback<Account>() {
+                @Override
+                public void onSuccess(final com.facebook.accountkit.Account account) {
+                    // Get Account Kit ID
+                    String accountKitId = account.getId();
+                    userDetails.setmUserId(accountKitId);
+                    //stores user id, email, or phone in SP
+                    SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE).edit();
+                    editor.putString(getString(R.string.user_account_id_key), accountKitId);
+                    editor.putBoolean("new_user_key", false);
+
+                    PhoneNumber phoneNumber = account.getPhoneNumber();
+                    if (account.getPhoneNumber() != null) {
+                        // if the phone number is available, display it
+                        String formattedPhoneNumber = formatPhoneNumber(phoneNumber.toString());
+                        userDetails.setmUserPhoneNumber(formattedPhoneNumber);
+                        editor.putString(getString(R.string.user_phone_key), formattedPhoneNumber);
+
+                    } else {
+                        // if the email address is available, store it
+                        String emailString = account.getEmail();
+                        userDetails.setmUserEmail(emailString);
+                        editor.putString(getString(R.string.user_email_key), emailString);
+                    }
+                    editor.apply();
+                }
+
+                @Override
+                public void onError(final AccountKitError error) {
+                    //display error
+//                String toastMessage = error.getErrorType().getMessage();
+//                Toast.makeText(MainActivity.this, toastMessage, Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                }
+            });
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
+            mContext = this;
+
+        } else {
+            //if db not yet accessed, gets all chavrutas that user has requested
+            String getMyChavrutasKey = "my chavrutas";
+            ServerConnect getMyChavrutas = new ServerConnect(this);
+            getMyChavrutas.execute(getMyChavrutasKey);
+        }
+
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,54 +161,56 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        //activate user details class
-        final UserDetails userDetails = new UserDetails();
-
-        //check if already logged in
-        //get current account and create new anonymous inner class
-        AccountKit.getCurrentAccount(new AccountKitCallback<Account>() {
-            @Override
-            public void onSuccess(final com.facebook.accountkit.Account account) {
-                // Get Account Kit ID
-                String accountKitId = account.getId();
-                userDetails.setmUserId(accountKitId);
-                //stores user id, email, or phone in SP
-                SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE).edit();
-                editor.putString(getString(R.string.user_account_id_key), accountKitId);
-                editor.putBoolean("new_user_key", false);
-
-                PhoneNumber phoneNumber = account.getPhoneNumber();
-                if (account.getPhoneNumber() != null) {
-                    // if the phone number is available, display it
-                    String formattedPhoneNumber = formatPhoneNumber(phoneNumber.toString());
-                    userDetails.setmUserPhoneNumber(formattedPhoneNumber);
-                    editor.putString(getString(R.string.user_phone_key), formattedPhoneNumber);
-
-                } else {
-                    // if the email address is available, store it
-                    String emailString = account.getEmail();
-                    userDetails.setmUserEmail(emailString);
-                    editor.putString(getString(R.string.user_email_key), emailString);
-                }
-                editor.apply();
-            }
-
-            @Override
-            public void onError(final AccountKitError error) {
-                //display error
-//                String toastMessage = error.getErrorType().getMessage();
-//                Toast.makeText(MainActivity.this, toastMessage, Toast.LENGTH_LONG).show();
-                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        ServerConnect
     }
 
-    public static void addToMyChavrutasArrayList(HostSessionData chavruta){
+    //parses JSON string data to form myChavrutas ListView
+    //@ var chavrutaId = autoInc from db
+    public void parseJSONEntry() {
+        String chavrutaId;
+
+        String hostFirstName, hostLastName, sessionMessage, sessionDate,
+                startTime, endTime, sefer, location, hostId, chavrutaRequest1, chavrutaRequest2,
+                chavrutaRequest3;
+        try {
+
+            jsonObject = new JSONObject(jsonString);
+            jsonArray = jsonObject.getJSONArray("server_response");
+
+            //loop through array and extract objects, adding them individually as setter objects,
+            //and adding objects to list adapter.
+            int count = 0;
+            while (count < jsonArray.length()) {
+                JSONObject jo = jsonArray.getJSONObject(count);
+                chavrutaId = jo.getString("chavruta_id");
+                hostFirstName = jo.getString("hostFirstName");
+                hostLastName = jo.getString("hostLastName");
+                sessionMessage = jo.getString("sessionMessage");
+                sessionDate = jo.getString("sessionDate");
+                startTime = jo.getString("startTime");
+                endTime = jo.getString("endTime");
+                sefer = jo.getString("sefer");
+                location = jo.getString("location");
+                hostId = jo.getString("host_id");
+                chavrutaRequest1 = jo.getString("chavruta_request_1");
+                chavrutaRequest2 = jo.getString("chavruta_request_2");
+                chavrutaRequest3 = jo.getString("chavruta_request_3");
+
+
+                //make user data object of UserDataSetter class
+                HostSessionData myChavrutaData = new HostSessionData(chavrutaId, hostFirstName, hostLastName, sessionMessage, sessionDate,
+                        startTime, endTime, sefer, location, hostId, chavrutaRequest1, chavrutaRequest2, chavrutaRequest3);
+                mAdapter.add(myChavrutaData);
+                count++;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //Todo: delete if functional myChavruta ListView
+    public static void addToMyChavrutasArrayList(HostSessionData chavruta) {
         //constructs the data source
-        if (myChavrutasArrayList== null){
+        if (myChavrutasArrayList == null) {
             myChavrutasArrayList = new ArrayList<>();
         }
         myChavrutasArrayList.add(chavruta);
@@ -172,7 +239,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //gives context to OpenChavrutaAdapter
-    public static Context getMAContextForAdapter(){
+    public static Context getMAContextForAdapter() {
         return mContext;
     }
 

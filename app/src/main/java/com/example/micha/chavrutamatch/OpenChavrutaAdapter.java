@@ -128,8 +128,7 @@ public class OpenChavrutaAdapter extends ArrayAdapter<HostSessionData> {
                 //Access the row position here to get the correct data item
                 int position = getPosition(hostSessionDatas);
                 hostSessionItemData = getItem(position);
-                MainActivity.addToMyChavrutasArrayList(hostSessionItemData);
-                String[] hostSessionData = hostSessionItemData.getAllStringHostDataForMyChavruta();
+
                 //TODO: incorporate request date into db on select
                 long requestDate = System.currentTimeMillis();
 

@@ -2,23 +2,26 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    android:layout_width="fill_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
+    android:layout_margin="0dp"
     tools:context="com.example.micha.chavrutamatch.MainActivity">
 
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:theme="@style/AppTheme.AppBarOverlay"
+        >
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+            android:background="@color/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            />
     </android.support.design.widget.AppBarLayout>
 
 
@@ -28,7 +31,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:background="@color/matchColor"
         android:elevation="4dp"
         android:src="@drawable/chavruta_logo_fab"
         app:pressedTranslationZ="12dp" />
@@ -36,10 +38,12 @@
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/fab_ripple"
+        android:background="@color/colorPrimary"
         android:stateListAnimator="@animator/button_raise"
+        android:layout_margin="0dp"
         tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp">
+        tools:layout_editor_absoluteY="0dp"
+        >
 
 
         <TextView
@@ -83,32 +87,32 @@
 
         <ListView
             android:id="@+id/lv_my_chavruta"
-            android:layout_width="320dp"
-            android:layout_height="237dp"
+            android:layout_width="match_parent"
+            android:layout_height="350dp"
+            android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="37dp"
+            android:layout_marginTop="8dp"
             android:visibility="gone"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/iv_logo_chavruta" />
-
-        <ImageView
-            android:id="@+id/iv_no_match_add_match"
-            android:layout_width="320dp"
-            android:layout_height="237dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="37dp"
-            android:background="@drawable/rounded_corner"
-            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/iv_logo_chavruta"
+            app:layout_constraintVertical_bias="0.142" />
+
+        <ImageView
+            android:id="@+id/iv_no_match_add_match"
+            android:layout_width="0dp"
+            android:layout_height="400dp"
+            android:background="@drawable/rounded_corner"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/iv_logo_chavruta"
+            app:layout_constraintVertical_bias="0.22000003"
             app:srcCompat="@drawable/no_matches_screen_title" />
 
         <ImageButton
@@ -118,14 +122,17 @@
             android:layout_marginBottom="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
-            android:layout_marginTop="16dp"
             android:background="@null"
             android:onClick="onLogout"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/iv_no_match_add_match"
-            app:srcCompat="@drawable/b_logout" />
+            app:srcCompat="@drawable/b_logout"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.963"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp" />
 
 
     </android.support.constraint.ConstraintLayout>

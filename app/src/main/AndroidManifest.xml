@@ -4,7 +4,8 @@
     package="com.example.micha.chavrutamatch">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <uses-feature android:name="android.hardware.screen.portrait" />
 
     <application
@@ -12,40 +13,43 @@
         android:icon="@mipmap/ic_chavruta_match"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_chavruta_match"
+        android:screenOrientation="sensorPortrait"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:screenOrientation="userPortrait"
-        >
+        android:theme="@style/AppTheme">
 
         //metatags for FB API
-        <meta-data android:name="com.facebook.accountkit.ApplicationName"
+        <meta-data
+            android:name="com.facebook.accountkit.ApplicationName"
             android:value="@string/app_name" />
-        <meta-data android:name="com.facebook.sdk.ApplicationId"
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/FACEBOOK_APP_ID" />
-        <meta-data android:name="com.facebook.accountkit.ClientToken"
+        <meta-data
+            android:name="com.facebook.accountkit.ClientToken"
             android:value="@string/ACCOUNT_KIT_CLIENT_TOKEN" />
 
-        <activity android:name=".AcctLogin.LoginActivity"/>
+        <activity android:name=".AcctLogin.LoginActivity" />
 
         <activity android:name="com.facebook.accountkit.ui.AccountKitEmailRedirectActivity">
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
-                <data android:scheme="@string/ak_login_protocol_scheme"/>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="@string/ak_login_protocol_scheme" />
             </intent-filter>
         </activity>
 
         <activity
             android:name="com.facebook.accountkit.ui.AccountKitActivity"
             android:theme="@style/AppLoginTheme"
-            tools:replace="android:theme">
-        </activity>
+            tools:replace="android:theme"></activity>
 
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:screenOrientation="portrait"
+            android:screenOrientation="sensorPortrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -53,14 +57,23 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".AddSelect" />
-        <activity android:name=".HostSelect" />
-        <activity android:name=".AddBio"
+        <activity
+            android:name=".AddSelect"
+            android:screenOrientation="sensorPortrait" />
+        <activity
+            android:name=".HostSelect"
+            android:screenOrientation="sensorPortrait" />
+        <activity
+            android:name=".AddBio"
+            android:screenOrientation="sensorPortrait"
+
             />
 
         <activity
             android:name=".NewHost"
-            android:windowSoftInputMode="stateHidden" />
+            android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="sensorPortrait"
+            />
         <activity
             android:name=".Login"
             android:label="@string/title_activity_login"

@@ -27,6 +27,7 @@ import java.net.URLEncoder;
 
 public class ServerConnect extends AsyncTask<String, Void, String> {
     Context mContextRegister;
+    Boolean myChavruta;
 
     public static String jsonString;
 
@@ -64,10 +65,11 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
         String new_user_url = "http://brightlightproductions.online/chavruta_user_profiles_add.php";
         String initial_chavruta_request_update_url =
                 "http://brightlightproductions.online/initial_chavruta_request_update.php";
-
+        String my_chavrutas_url = "http://brightlightproductions.online/get_JSON_by_user_id_requested.php";
 
         //checks which ServerConnect instance was sent
         String chosenBkgdTaskCheck = params[0];
+
         //assures register button sent this background call
         if (chosenBkgdTaskCheck.equals("new host")) {
             //get params
@@ -84,7 +86,6 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
             String chavrutaRequest2 = params[11];
             String chavrutaRequest3 = params[12];
 
-
             //establish connection
             try {
                 URL regUrl = new URL(reg_url);
@@ -94,7 +95,6 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 //make object of output stream
                 OutputStream os = httpURLConnection.getOutputStream();
                 BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-
 
                 String data =
                         URLEncoder.encode("host_first_name", "UTF-8") + "=" + URLEncoder.encode(
@@ -137,10 +137,21 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
             }
         }
 
-        if (chosenBkgdTaskCheck.equals("getJSONKey")) {
+        if (chosenBkgdTaskCheck.equals("getJSONKey") || chosenBkgdTaskCheck.equals("my chavrutas")) {
             try {
-                URL jsonURL = new URL(json_url);
-                HttpURLConnection httpURLConnection = (HttpURLConnection) jsonURL.openConnection();
+                HttpURLConnection httpURLConnection;
+                if(chosenBkgdTaskCheck.equals("my chavrutas")){
+                    //designates caller from MA
+                    myChavruta = true;
+                    URL jsonMyChavrutasURL = new URL(my_chavrutas_url);
+                    httpURLConnection = (HttpURLConnection) jsonMyChavrutasURL.openConnection();
+                }else {
+                    URL jsonURL = new URL(json_url);
+                    httpURLConnection = (HttpURLConnection) jsonURL.openConnection();
+                    myChavruta = false;
+
+                }
+
                 httpURLConnection.setRequestMethod("GET");
                 //create inputstream
                 InputStream inputStream = httpURLConnection.getInputStream();
@@ -155,6 +166,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 httpURLConnection.disconnect();
                 postExecuteResponse = 2;
                 jsonString = stringBuilder.toString().trim();
+
                 return jsonString;
 
             } catch (MalformedURLException e) {
@@ -217,6 +229,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 e.printStackTrace();
             }
         }
+
         if (chosenBkgdTaskCheck.equals("chavruta request")) {
             //get params
             String userId = params[1];
@@ -253,17 +266,16 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 e.printStackTrace();
             }
         }
+
         return null;
     }
 
 
     @Override
     protected void onPostExecute(String result) {
-        super.
-                onPostExecute(result);
+        super.onPostExecute(result);
 
         switch (postExecuteResponse) {
-
             case 0:
                 //incorrect key sent to ServerConnect.class
                 Toast.makeText(mContextRegister, "no matched action in " + getClass().getSimpleName()
@@ -274,11 +286,11 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 Toast.makeText(mContextRegister, result, Toast.LENGTH_LONG).show();
                 break;
             case 2:
-                //return jsonString to HostSelect.class
+                //return jsonString to HostSelect.class if it is caller, else return it to MA
                 //TODO: IS ELSE NECESSARY?
-                if (jsonString != null) {
-                    Intent intent = new Intent(this.mContextRegister, HostSelect.class);
-                    intent.putExtra("jsonKey", jsonString);
+                if (myChavruta) {
+                    Intent intent = new Intent(this.mContextRegister, MainActivity.class);
+                    intent.putExtra("myChavrutaKey", jsonString);
                     mContextRegister.startActivity(intent);
 
                 } else {
