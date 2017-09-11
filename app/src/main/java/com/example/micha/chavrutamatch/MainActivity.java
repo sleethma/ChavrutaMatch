@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
         //receives intent from ServerConnect to display myChavruta list, else gets myChavruta info from db
         if (getIntent().getExtras() != null) {
             jsonString = getIntent().getExtras().getString("myChavrutaKey");
+
             myChavrutasArrayList = new ArrayList<>();
 
             //add and remove views to display myChavrutas
