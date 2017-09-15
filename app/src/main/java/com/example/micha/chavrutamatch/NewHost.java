@@ -271,11 +271,12 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         mSefer = etHostTopic.getText().toString();
         mLocation = etHostAddress.getText().toString();
         mHostId = UserDetails.getmUserId();
+        String confirmed ="not confirmed";
         String chavrutaRequest1 = "1", chavrutaRequest2 = "2", chavrutaRequest3 = "3";
         String newHost = "new host";
         ServerConnect postToServer = new ServerConnect(this);
         postToServer.execute(newHost, mHostFirstName, mHostLastName, mSessionMessage, mSessionDate,
-                mStartTime, mEndTime, mSefer, mLocation, mHostId,chavrutaRequest1,chavrutaRequest2,chavrutaRequest3);
+                mStartTime, mEndTime, mSefer, mLocation, mHostId,chavrutaRequest1,chavrutaRequest2,chavrutaRequest3, confirmed);
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }

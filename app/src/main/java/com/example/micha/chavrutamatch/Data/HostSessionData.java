@@ -2,6 +2,8 @@ package com.example.micha.chavrutamatch.Data;
 
 import android.support.annotation.Nullable;
 
+import java.util.List;
+
 /**
  * Created by micha on 8/14/2017.
  */
@@ -9,9 +11,31 @@ import android.support.annotation.Nullable;
 //class stores hostsession data for mychavruta and HostSelect activity's population
 public class HostSessionData {
     @Nullable
-    private String mChavrutaId, mHostFirstName, mHostLastName, mSessionMessage, mSessionDate,
-            mStartTime, mEndTime, mSefer, mLocation, mHostId, mchavrutaRequest1, mchavrutaRequest2,
-            mchavrutaRequest3;
+    private String mChavrutaId;
+    @Nullable
+    private String mHostFirstName;
+    @Nullable
+    private String mHostLastName;
+    @Nullable
+    private String mSessionMessage;
+    @Nullable
+    private String mSessionDate;
+    @Nullable
+    private String mStartTime;
+    @Nullable
+    private String mEndTime;
+    @Nullable
+    private String mSefer;
+    @Nullable
+    private String mLocation;
+    @Nullable
+    private String mHostId;
+    @Nullable
+    private String mchavrutaRequest1;
+    @Nullable
+    private String mchavrutaRequest2;
+    @Nullable
+    private String mchavrutaRequest3;
 
 
     public HostSessionData(String chavrutaId, String hostFirstName, String hostLastName, String sessionMessage,
@@ -69,6 +93,18 @@ public class HostSessionData {
 
     public void setMchavrutaRequest3(@Nullable String mchavrutaRequest3) {
         this.mchavrutaRequest3 = mchavrutaRequest3;
+    }
+
+    public String getMchavrutaRequest1() {
+        return mchavrutaRequest1;
+    }
+
+    public String getMchavrutaRequest2() {
+        return mchavrutaRequest2;
+    }
+
+    public String getMchavrutaRequest3() {
+        return mchavrutaRequest3;
     }
 
 
