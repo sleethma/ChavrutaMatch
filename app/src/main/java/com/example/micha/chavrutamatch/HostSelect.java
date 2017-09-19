@@ -94,7 +94,7 @@ public class HostSelect extends AppCompatActivity {
 
         String hostFirstName, hostLastName, sessionMessage, sessionDate,
                 startTime, endTime, sefer, location, hostId, chavrutaRequest1,chavrutaRequest2,
-                chavrutaRequest3;
+                chavrutaRequest3, confirmed;
         try {
 
             jsonObject = new JSONObject(jsonString);
@@ -118,11 +118,13 @@ public class HostSelect extends AppCompatActivity {
                 chavrutaRequest1 = jo.getString("chavruta_request_1");
                 chavrutaRequest2 = jo.getString("chavruta_request_2");
                 chavrutaRequest3 = jo.getString("chavruta_request_3");
+                confirmed = jo.getString("confirmed");
+
 
 
                 //make user data object of UserDataSetter class
                 HostSessionData hostClassData = new HostSessionData(chavrutaId, hostFirstName, hostLastName, sessionMessage, sessionDate,
-                        startTime, endTime, sefer, location, hostId, chavrutaRequest1, chavrutaRequest2, chavrutaRequest3);
+                        startTime, endTime, sefer, location, hostId, chavrutaRequest1, chavrutaRequest2, chavrutaRequest3, confirmed);
                 mAdapter.add(hostClassData);
                 count++;
             }

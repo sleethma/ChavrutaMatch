@@ -37,11 +37,15 @@ public class HostSessionData {
     @Nullable
     private String mchavrutaRequest3;
 
+    private String mConfirmed;
+
+    public Boolean requestOneConfirmed = false;
+
 
     public HostSessionData(String chavrutaId, String hostFirstName, String hostLastName, String sessionMessage,
                            String sessionDate, String startTime, String endTime, String sefer,
                            String location, String hostId, String chavrutaRequest1, String chavrutaRequest2,
-                           String chavrutaRequest3) {
+                           String chavrutaRequest3, String confirmed) {
 
         setmChavrutaId(chavrutaId);
         setmHostFirstName(hostFirstName);
@@ -56,11 +60,24 @@ public class HostSessionData {
         setMchavrutaRequest1(chavrutaRequest1);
         setMchavrutaRequest2(chavrutaRequest2);
         setMchavrutaRequest3(chavrutaRequest3);
+        setmConfirmed(confirmed);
+
     }
 
     public String[] getAllStringHostDataForMyChavruta() {
         return new String[]{mHostFirstName, mHostLastName, mSessionMessage, mSessionDate, mStartTime,
                 mEndTime, mSefer, mLocation};
+    }
+
+    public void setRequestOneConfirmed(Boolean value){
+        requestOneConfirmed = value;
+    }
+    public String getmConfirmed() {
+        return mConfirmed;
+    }
+
+    public void setmConfirmed(String confirmed) {
+        mConfirmed = confirmed;
     }
 
     public void setmChavrutaId(String chavrutaId) {
@@ -87,11 +104,11 @@ public class HostSessionData {
         mchavrutaRequest1 = chavrutaRequest1;
     }
 
-    public void setMchavrutaRequest2(@Nullable String mchavrutaRequest2) {
+    public void setMchavrutaRequest2( String mchavrutaRequest2) {
         this.mchavrutaRequest2 = mchavrutaRequest2;
     }
 
-    public void setMchavrutaRequest3(@Nullable String mchavrutaRequest3) {
+    public void setMchavrutaRequest3( String mchavrutaRequest3) {
         this.mchavrutaRequest3 = mchavrutaRequest3;
     }
 

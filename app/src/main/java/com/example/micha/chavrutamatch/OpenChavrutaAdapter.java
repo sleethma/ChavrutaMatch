@@ -46,13 +46,11 @@ import static com.example.micha.chavrutamatch.R.id.view;
  * Created by micha on 7/22/2017.
  */
 
-public class OpenChavrutaAdapter extends ArrayAdapter<HostSessionData> {
+ class OpenChavrutaAdapter extends ArrayAdapter<HostSessionData> {
 
 //TODO use RoundedBitmapDrawable
     //RoundedBitmapDrawable drawable = RoundedBitmapDrawableFactory.create(context.getResources(), bitmap); drawable.setCircular(true);
-//TODO see if cursor needed only for sqlite local db. If so setup from waitlist app
 
-    // Holds on to the cursor to display the waitlist
     private Context mContext;
     private static final String LOG_TAG = OpenChavrutaAdapter.class.getSimpleName();
     HostSessionData hostSessionItemData;
@@ -66,6 +64,8 @@ public class OpenChavrutaAdapter extends ArrayAdapter<HostSessionData> {
         super(context, 0, hostSessionArrayList);
         this.mContext = context;
     }
+
+
 
     @Override
     public HostSessionData getItem(int position) {
@@ -81,15 +81,13 @@ public class OpenChavrutaAdapter extends ArrayAdapter<HostSessionData> {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         //get data item for position
-        final HostSessionData hostSessionDatas = getItem(position);
         final ViewHolder viewHolder;
         View listItemView = convertView;
-        Boolean hostListItemView = false;
+        Boolean hostListItemView = true;
         String userId = UserDetails.getmUserId();
-        final String hostId = hostSessionDatas.getmHostId();
-        final String mUserRequestId1;
-        final String mUserRequestId2;
-        final String mUserRequestId3;
+        final HostSessionData hostLookup = getItem(position);
+        final String hostId = hostLookup.getmHostId();
+
 
 
         Context mainActivityContext = MainActivity.getMAContextForAdapter();
@@ -103,8 +101,6 @@ public class OpenChavrutaAdapter extends ArrayAdapter<HostSessionData> {
                 hostListItemView = true;
                 listItemView = LayoutInflater.from(getContext()).inflate(R.layout.hosting_chavrutas_list_item, parent, false);
                 listItemView.setBackgroundColor(Color.parseColor("#BF0409"));
-
-
             } else if (mContext == mainActivityContext) {
                 listItemView = LayoutInflater.from(getContext()).inflate(R.layout.my_chavruta_list_item, parent, false);
                 hostListItemView = false;
@@ -123,64 +119,108 @@ public class OpenChavrutaAdapter extends ArrayAdapter<HostSessionData> {
             viewHolder.sefer = (TextView) listItemView.findViewById(R.id.session_sefer);
             viewHolder.location = (TextView) listItemView.findViewById(R.id.location);
             viewHolder.hostInfo = (ImageButton) listItemView.findViewById(R.id.ib_add_match);
-            viewHolder.chavrutaConfirmed = (Button) listItemView.findViewById(R.id.b_chavruta_confirmed);
             viewHolder.pendingRequest_1 = (LinearLayout) listItemView.findViewById(R.id.ll_requester_viewgroup_1);
             viewHolder.pendingRequest_2 = (LinearLayout) listItemView.findViewById(R.id.ll_requester_viewgroup_2);
             viewHolder.pendingRequest_3 = (LinearLayout) listItemView.findViewById(R.id.ll_requester_viewgroup_3);
             viewHolder.confirmRequest_1 = (Button) listItemView.findViewById(R.id.b_confirm_request_1);
             viewHolder.confirmRequest_2 = (Button) listItemView.findViewById(R.id.b_confirm_request_2);
             viewHolder.confirmRequest_3 = (Button) listItemView.findViewById(R.id.b_confirm_request_3);
+            viewHolder.chavrutaConfirmed = (Button) listItemView.findViewById(R.id.b_chavruta_confirmed);
+
+//            //sets confirm button green to show confirmed in hosting view list item
+//            if(hostSessionDatas.requestOneConfirmed) {
+//                viewHolder.confirmRequest_1.setBackgroundColor(Color.parseColor("#10ef2e"));
+//            }
+
+
 
             //cache the viewHoslder object inside the fresh view
             listItemView.setTag(viewHolder);
 
         } else {
             //view is already been populated
+            hostListItemView = false;
+            if (hostId.equals(userId) && mContext == mainActivityContext) {
+                hostListItemView = true;
+            }
             viewHolder = (ViewHolder) listItemView.getTag();
+            String nameOfSefer = hostLookup.getmSefer();
+
+            if(hostListItemView) {
+                int visible = viewHolder.pendingRequest_1.getVisibility();
+                Log.i(LOG_TAG, "visibility: " + visible);
+                Log.i(LOG_TAG, "sefer: " + nameOfSefer);
+            }
+
+
         }
+        final HostSessionData hostSessionDatas = getItem(position);
+
         //check if chavruta has been requested by any user and show views with requests
+        //marks requester as green if confirmed in host view
+
+
         if (hostListItemView) {
 
-            if (hostSessionDatas.getMchavrutaRequest1().length() > 5) {
-                viewHolder.pendingRequest_1.setVisibility(View.VISIBLE);
+            String idOfConfirmedUser = hostLookup.getmConfirmed();
+            String request1NullCheck = hostLookup.getMchavrutaRequest1();
+            String request2NullCheck = hostLookup.getMchavrutaRequest2();
+            String request3NullCheck = hostLookup.getMchavrutaRequest3();
 
-            }
-            if (hostSessionDatas.getMchavrutaRequest2().length() > 5) {
+            if (request1NullCheck != null && hostLookup.getMchavrutaRequest1().length() > 5) {
+                String chavrutaRequestIdOne = hostLookup.getMchavrutaRequest1();
+                //todo: AAAAARRRRRGGGG!
+//                if(viewHolder.pendingRequest_1 != null) {
+                viewHolder.pendingRequest_1.setVisibility(View.VISIBLE);
+//                }
+                if( idOfConfirmedUser.equals(chavrutaRequestIdOne)){
+                    viewHolder.confirmRequest_1.setBackgroundColor(Color.parseColor("#10ef2e"));
+                }
+            }else{viewHolder.pendingRequest_1.setVisibility(View.GONE);}
+            if (request2NullCheck != null && hostLookup.getMchavrutaRequest2().length() > 5) {
+                String chavrutaRequestIdTwo = hostLookup.getMchavrutaRequest2();
                 viewHolder.pendingRequest_2.setVisibility(View.VISIBLE);
-            }
-            if (hostSessionDatas.getMchavrutaRequest3().length() > 5) {
+                if(idOfConfirmedUser.equals(chavrutaRequestIdTwo)){
+                    viewHolder.confirmRequest_2.setBackgroundColor(Color.parseColor("#10ef2e"));
+                }
+            }else{viewHolder.pendingRequest_1.setVisibility(View.GONE);}
+            if (request3NullCheck != null && hostLookup.getMchavrutaRequest3().length() > 5) {
+                String chavrutaRequestIdThree = hostLookup.getMchavrutaRequest3();
                 viewHolder.pendingRequest_3.setVisibility(View.VISIBLE);
-            }
+                if(idOfConfirmedUser.equals(chavrutaRequestIdThree)){
+                    viewHolder.confirmRequest_3.setBackgroundColor(Color.parseColor("#10ef2e"));
+                }
+            }else{viewHolder.pendingRequest_1.setVisibility(View.GONE);}
+            notifyDataSetChanged();
         }
 
-        viewHolder.hostFirstName.setText(hostSessionDatas.getmHostFirstName());
-        viewHolder.sessionDate.setText(hostSessionDatas.getmSessionDate());
-        viewHolder.startTime.setText(hostSessionDatas.getmStartTime());
-        viewHolder.endTime.setText(hostSessionDatas.getmEndTime());
-        viewHolder.sefer.setText(hostSessionDatas.getmSefer());
-        viewHolder.location.setText(hostSessionDatas.getmLocation());
+        viewHolder.hostFirstName.setText(hostLookup.getmHostFirstName());
+        viewHolder.sessionDate.setText(hostLookup.getmSessionDate());
+        viewHolder.startTime.setText(hostLookup.getmStartTime());
+        viewHolder.endTime.setText(hostLookup.getmEndTime());
+        viewHolder.sefer.setText(hostLookup.getmSefer());
+        viewHolder.location.setText(hostLookup.getmLocation());
 //        if(viewHolder.confirmRequest_1 != null && confirmed) {
 //            viewHolder.confirmRequest_1.setBackgroundColor(Color.parseColor("#13f717"));
 //        }
-
-
-        //set listener for confirm requests
-        if (hostListItemView) {
-        }
-
-
-        //todo send host selected user's id to confirmed field in db
         //on confirming chavrutas 1, 2, and three
         if(viewHolder.confirmRequest_1 != null) {
             viewHolder.confirmRequest_1.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     //Access the row position here to get the correct data item
-                    int position = getPosition(hostSessionDatas);
+                    int position = getPosition(hostLookup);
                     hostSessionItemData = getItem(position);
+                    //sets confirmed
+                    if(!hostLookup.requestOneConfirmed) {
+                        hostLookup.setRequestOneConfirmed(true);
+                    }else{
+                        hostLookup.setRequestOneConfirmed(false);
+                    }
                     String chavrutaId = hostSessionItemData.getmChavrutaId();
-                    sendConfirmationtoDb(chavrutaId, hostSessionDatas.getMchavrutaRequest1());
-                    viewHolder.confirmRequest_1.setBackgroundColor(Color.parseColor("#10ef2e"));
+                    sendConfirmationtoDb(chavrutaId, hostLookup.getMchavrutaRequest1());
+                    //viewHolder.confirmRequest_1.setBackgroundColor(Color.parseColor("#10ef2e"));
+
                 }
             });
         }
@@ -188,10 +228,9 @@ public class OpenChavrutaAdapter extends ArrayAdapter<HostSessionData> {
             viewHolder.confirmRequest_2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String chavrutaId = hostSessionDatas.getmChavrutaId();
-                    sendConfirmationtoDb(chavrutaId, hostSessionDatas.getMchavrutaRequest2());
-                    viewHolder.confirmRequest_2.setBackgroundColor(Color.parseColor("#10ef2e"));
-
+                    String chavrutaId = hostLookup.getmChavrutaId();
+                    sendConfirmationtoDb(chavrutaId, hostLookup.getMchavrutaRequest2());
+                    //viewHolder.confirmRequest_2.setBackgroundColor(Color.parseColor("#10ef2e"));
                 }
             });
         }
@@ -199,12 +238,14 @@ public class OpenChavrutaAdapter extends ArrayAdapter<HostSessionData> {
             viewHolder.confirmRequest_3.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String chavrutaId = hostSessionDatas.getmChavrutaId();
-                    sendConfirmationtoDb(chavrutaId,hostSessionDatas.getMchavrutaRequest3());
-                    viewHolder.confirmRequest_3.setBackgroundColor(Color.parseColor("#10ef2e"));
+                    String chavrutaId = hostLookup.getmChavrutaId();
+                    sendConfirmationtoDb(chavrutaId,hostLookup.getMchavrutaRequest3());
+                    //viewHolder.confirmRequest_3.setBackgroundColor(Color.parseColor("#10ef2e"));
                 }
             });
         }
+
+
         //on buttonClick selecting host
         viewHolder.hostInfo.setOnClickListener(new View.OnClickListener()
 
@@ -213,7 +254,7 @@ public class OpenChavrutaAdapter extends ArrayAdapter<HostSessionData> {
             public void onClick(View v) {
 
                 //Access the row position here to get the correct data item
-                int position = getPosition(hostSessionDatas);
+                int position = getPosition(hostLookup);
                 hostSessionItemData = getItem(position);
 
                 //TODO: incorporate request date into db on select
@@ -234,9 +275,7 @@ public class OpenChavrutaAdapter extends ArrayAdapter<HostSessionData> {
         return listItemView;
     }
 
-    private void setClicked(int requestPositionClicked, View listItemView){
-        listItemView.setBackgroundColor(Color.parseColor("#10ef2e"));
-    }
+
     private static class ViewHolder {
         TextView hostFirstName, sessionDate, startTime, endTime, sefer, location;
         ImageButton hostInfo;
