@@ -54,6 +54,10 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
     //number of views adapter will hold
     private int mNumberOfViews;
     private Context mContext;
+    String userId =UserDetails.getmUserId();
+
+    //holds viewType for relevant listItem
+    Boolean hostListItemView;
     ArrayList<HostSessionData> mChavrutaSessionsAL;
     private static final String LOG_TAG = OpenChavrutaAdapter.class.getSimpleName();
 
@@ -69,9 +73,26 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
     }
 
     @Override
+    public int getItemViewType(int position) {
+        //selects hostId or userId for inflation
+         HostSessionData chavrutaData = mChavrutaSessionsAL.get(position);
+        String hostId = chavrutaData.getmHostId();
+        if(hostId.equals(userId)){
+            return 1;
+        }else{return 0;}
+    }
+
+    @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
-        int layoutIdForListItem = R.layout.open_host_list_item;
+        int layoutIdForListItem;
+        if (viewType == 0) {
+            layoutIdForListItem = R.layout.open_host_list_item;
+            hostListItemView = false;
+        }else{
+            layoutIdForListItem = R.layout.hosting_chavrutas_list_item;
+            hostListItemView = true;
+        }
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         View view = layoutInflater.inflate(layoutIdForListItem, parent, false);
         ViewHolder viewHolder = new ViewHolder(view);
@@ -121,9 +142,12 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
 
         void bind(OpenChavrutaAdapter.ViewHolder holder, int listIndex) {
             HostSessionData currentItem = mChavrutaSessionsAL.get(listIndex);
-            Boolean hostListItemView = true;
-
-
+            String hostId = currentItem.getmHostId();
+            if (hostId.equals(userId)) {
+                hostListItemView = true;
+            } else {
+                hostListItemView = false;
+            }
 
             if (hostListItemView) {
 
@@ -162,14 +186,16 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                 } else {
                     holder.pendingRequest_1.setVisibility(View.GONE);
                 }
-
-                holder.hostFirstName.setText(currentItem.getmHostFirstName());
-                holder.sessionDate.setText(currentItem.getmSessionDate());
-                holder.startTime.setText(currentItem.getmStartTime());
-                holder.endTime.setText(currentItem.getmEndTime());
-                holder.sefer.setText(currentItem.getmSefer());
-                holder.location.setText(currentItem.getmLocation());
             }
+
+            holder.hostFirstName.setText(currentItem.getmHostFirstName());
+            holder.sessionDate.setText(currentItem.getmSessionDate());
+            holder.startTime.setText(currentItem.getmStartTime());
+            holder.endTime.setText(currentItem.getmEndTime());
+            holder.sefer.setText(currentItem.getmSefer());
+            holder.location.setText(currentItem.getmLocation());
+        }
+    }
 
 //hostitem
 //            //on confirming chavrutas 1, 2, and three
