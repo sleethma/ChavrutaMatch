@@ -47,7 +47,7 @@ public class HostSelect extends AppCompatActivity {
     FrameLayout flHostPic;
     // @BindView(R.id.b_host_chavruta) ImageButton hostChavruta;
     @BindView(R.id.all_hosts_list_view)
-    ListView allHostsList;
+    RecyclerView allHostsList;
     @BindView(R.id.iv_scroll_open_host)
     ImageView scrollImg;
 

@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.transition.Slide;
 import android.transition.TransitionManager;
@@ -17,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.micha.chavrutamatch.Data.HostSessionData;
 
@@ -55,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.iv_no_match_add_match)
     ImageView noMatchView;
     @BindView(R.id.lv_my_chavruta)
-    ListView myChavrutaListView;
+    RecyclerView myChavrutaListView;
     OpenChavrutaAdapter mAdapter;
     static ArrayList<HostSessionData> myChavrutasArrayList;
     static Context mContext;
@@ -80,13 +83,20 @@ public class MainActivity extends AppCompatActivity {
 
             //add and remove views to display myChavrutas
             if (myChavrutasArrayList != null && !jsonString.isEmpty()) {
+                //parses and adds data in JSON string from MyChavruta Server call
+                parseJSONEntry();
+                int size = myChavrutasArrayList.size();
+                Toast.makeText(this, "List Size= " + size, Toast.LENGTH_SHORT).show();
                 //attaches data source to adapter and displays list
+                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+                myChavrutaListView.setLayoutManager(linearLayoutManager);
+                //todo: uncomment below to optimize UI if works with multiple listitem layout types
+//                myChavrutaListView.setHasFixedSize(true);
                 mAdapter = new OpenChavrutaAdapter(this, myChavrutasArrayList);
                 myChavrutaListView.setAdapter(mAdapter);
                 noMatchView.setVisibility(View.GONE);
                 myChavrutaListView.setVisibility(View.VISIBLE);
-                //parses and adds data in JSON string from MyChavruta Server call
-                parseJSONEntry();
+
 
             } else {
                 //sets empty array list view
@@ -206,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
                 //make user data object of UserDataSetter class
                 HostSessionData myChavrutaData = new HostSessionData(chavrutaId, hostFirstName, hostLastName, sessionMessage, sessionDate,
                         startTime, endTime, sefer, location, hostId, chavrutaRequest1, chavrutaRequest2, chavrutaRequest3, confirmed);
-                mAdapter.add(myChavrutaData);
+                myChavrutasArrayList.add(myChavrutaData);
                 count++;
             }
         } catch (JSONException e) {
