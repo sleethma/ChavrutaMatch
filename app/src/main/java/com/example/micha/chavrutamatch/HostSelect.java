@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewAnimationUtils;
@@ -50,6 +51,7 @@ public class HostSelect extends AppCompatActivity {
     RecyclerView allHostsList;
     @BindView(R.id.iv_scroll_open_host)
     ImageView scrollImg;
+    ArrayList<HostSessionData> openChavrutaArrayList;
 
 
     public String jsonString;
@@ -67,18 +69,22 @@ public class HostSelect extends AppCompatActivity {
         setContentView(R.layout.open_host_listview);
         ButterKnife.bind(this);
 
+        //constructs the data source
+        openChavrutaArrayList = new ArrayList<>();
+
         //accesses JSON from ServerConnect
         jsonString = getIntent().getExtras().getString("jsonKey");
 
-        //constructs the data source
-        ArrayList<HostSessionData> openChavrutaArrayList = new ArrayList<>();
+        //parses JSON entry
+        parseJSONEntry();
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        allHostsList.setLayoutManager(layoutManager);
+
+
         //attaches data source to adapter
         mAdapter = new OpenChavrutaAdapter(this, openChavrutaArrayList);
 
         allHostsList.setAdapter(mAdapter);
-//parses JSON entry
-        parseJSONEntry();
-
 
         scrollImg.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -120,12 +126,11 @@ public class HostSelect extends AppCompatActivity {
                 chavrutaRequest3 = jo.getString("chavruta_request_3");
                 confirmed = jo.getString("confirmed");
 
-
-
                 //make user data object of UserDataSetter class
                 HostSessionData hostClassData = new HostSessionData(chavrutaId, hostFirstName, hostLastName, sessionMessage, sessionDate,
                         startTime, endTime, sefer, location, hostId, chavrutaRequest1, chavrutaRequest2, chavrutaRequest3, confirmed);
-                mAdapter.add(hostClassData);
+                openChavrutaArrayList
+                        .add(hostClassData);
                 count++;
             }
         } catch (JSONException e) {

@@ -36,7 +36,7 @@ public class HostSessionData {
     private String mchavrutaRequest2;
     @Nullable
     private String mchavrutaRequest3;
-
+@Nullable
     private String mConfirmed;
 
     public Boolean requestOneConfirmed = false;

@@ -85,8 +85,6 @@ public class MainActivity extends AppCompatActivity {
             if (myChavrutasArrayList != null && !jsonString.isEmpty()) {
                 //parses and adds data in JSON string from MyChavruta Server call
                 parseJSONEntry();
-                int size = myChavrutasArrayList.size();
-                Toast.makeText(this, "List Size= " + size, Toast.LENGTH_SHORT).show();
                 //attaches data source to adapter and displays list
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
                 myChavrutaListView.setLayoutManager(linearLayoutManager);

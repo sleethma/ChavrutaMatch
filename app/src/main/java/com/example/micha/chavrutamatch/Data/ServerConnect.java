@@ -140,7 +140,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 e.printStackTrace();
             }
         }
-
+        //
         if (chosenBkgdTaskCheck.equals("getJSONKey") || chosenBkgdTaskCheck.equals("my chavrutas")) {
             try {
                 HttpURLConnection httpURLConnection;
@@ -171,6 +171,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 inputStream.close();
                 httpURLConnection.disconnect();
                 postExecuteResponse = 2;
+
                 jsonString = stringBuilder.toString().trim();
 
                 return jsonString;
@@ -181,7 +182,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 e.printStackTrace();
             }
         }
-
+        //stores new user in user profile db
         if (chosenBkgdTaskCheck.equals("new user post")) {
             //get params
             String userId = params[1];
@@ -235,7 +236,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 e.printStackTrace();
             }
         }
-        //send chavruta request to host
+        //stores in db class request by user in hosts chavruta
         if (chosenBkgdTaskCheck.equals("chavruta request")) {
             //get params
             String userId = params[1];
@@ -272,7 +273,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 e.printStackTrace();
             }
         }
-
+        //stores selected requesters chavruta by host in db
         if (chosenBkgdTaskCheck.equals("confirmChavrutaRequest")) {
             String chavrutaId = params[1];
             String requesterId = params[2];

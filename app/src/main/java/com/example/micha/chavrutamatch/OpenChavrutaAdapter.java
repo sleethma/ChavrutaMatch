@@ -102,6 +102,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
     @Override
     public void onBindViewHolder(OpenChavrutaAdapter.ViewHolder holder, int position) {
         holder.bind(holder, position);
+
     }
 
 
@@ -142,52 +143,42 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
 
         void bind(OpenChavrutaAdapter.ViewHolder holder, int listIndex) {
             HostSessionData currentItem = mChavrutaSessionsAL.get(listIndex);
-            String hostId = currentItem.getmHostId();
-            if (hostId.equals(userId)) {
+            if (holder.getItemViewType() == 1) {
                 hostListItemView = true;
             } else {
                 hostListItemView = false;
             }
-
             if (hostListItemView) {
-
                 String idOfConfirmedUser = currentItem.getmConfirmed();
-                String request1NullCheck = currentItem.getMchavrutaRequest1();
-                String request2NullCheck = currentItem.getMchavrutaRequest2();
-                String request3NullCheck = currentItem.getMchavrutaRequest3();
+                String request1 = currentItem.getMchavrutaRequest1();
+                String request2 = currentItem.getMchavrutaRequest2();
+                String request3 = currentItem.getMchavrutaRequest3();
 
-                if (request1NullCheck != null && currentItem.getMchavrutaRequest1().length() > 5) {
-                    String chavrutaRequestIdOne = currentItem.getMchavrutaRequest1();
-                    //todo: AAAAARRRRRGGGG!
-//                if(viewHolder.pendingRequest_1 != null) {
+                if (request1 != null && currentItem.getMchavrutaRequest1().length() > 5) {
                     holder.pendingRequest_1.setVisibility(View.VISIBLE);
-//                }
-                    if (idOfConfirmedUser.equals(chavrutaRequestIdOne)) {
+                    if (idOfConfirmedUser.equals(request1)) {
                         holder.confirmRequest_1.setBackgroundColor(Color.parseColor("#10ef2e"));
                     }
                 } else {
                     holder.pendingRequest_1.setVisibility(View.GONE);
                 }
-                if (request2NullCheck != null && currentItem.getMchavrutaRequest2().length() > 5) {
-                    String chavrutaRequestIdTwo = currentItem.getMchavrutaRequest2();
+                if (request2 != null && request2.length() > 5) {
                     holder.pendingRequest_2.setVisibility(View.VISIBLE);
-                    if (idOfConfirmedUser.equals(chavrutaRequestIdTwo)) {
+                    if (idOfConfirmedUser.equals(request2)) {
                         holder.confirmRequest_2.setBackgroundColor(Color.parseColor("#10ef2e"));
                     }
                 } else {
                     holder.pendingRequest_1.setVisibility(View.GONE);
                 }
-                if (request3NullCheck != null && currentItem.getMchavrutaRequest3().length() > 5) {
-                    String chavrutaRequestIdThree = currentItem.getMchavrutaRequest3();
+                if (request3 != null && request3.length() > 5) {
                     holder.pendingRequest_3.setVisibility(View.VISIBLE);
-                    if (idOfConfirmedUser.equals(chavrutaRequestIdThree)) {
+                    if (idOfConfirmedUser.equals(request3)) {
                         holder.confirmRequest_3.setBackgroundColor(Color.parseColor("#10ef2e"));
                     }
                 } else {
-                    holder.pendingRequest_1.setVisibility(View.GONE);
+                    holder.pendingRequest_3.setVisibility(View.GONE);
                 }
             }
-
             holder.hostFirstName.setText(currentItem.getmHostFirstName());
             holder.sessionDate.setText(currentItem.getmSessionDate());
             holder.startTime.setText(currentItem.getmStartTime());
@@ -195,8 +186,20 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
             holder.sefer.setText(currentItem.getmSefer());
             holder.location.setText(currentItem.getmLocation());
         }
+        //1934693520112171
+
     }
 
+    public void add(HostSessionData dataAddedFromJson) {
+        mChavrutaSessionsAL.add(dataAddedFromJson);
+    }
+
+
+    public void sendConfirmationtoDb(String chavrutaId, String requesterId) {
+        ServerConnect confirmChavrutaRequest = new ServerConnect(mContext);
+        confirmChavrutaRequest.execute("confirmChavrutaRequest", chavrutaId, requesterId);
+    }
+}
 //hostitem
 //            //on confirming chavrutas 1, 2, and three
 //            if (holder.confirmRequest_1 != null) {
@@ -239,20 +242,10 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
 //                    }
 //                });
 //            }
-        }
-    }
 
 
-    public void add(HostSessionData dataAddedFromJson) {
-        mChavrutaSessionsAL.add(dataAddedFromJson);
-    }
 
 
-    public void sendConfirmationtoDb(String chavrutaId, String requesterId) {
-        ServerConnect confirmChavrutaRequest = new ServerConnect(mContext);
-        confirmChavrutaRequest.execute("confirmChavrutaRequest", chavrutaId, requesterId);
-    }
-}
 
 
 //    @Override
