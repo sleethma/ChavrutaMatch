@@ -56,13 +56,15 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
     //number of views adapter will hold
     private int mNumberOfViews;
     private Context mContext;
-    String userId =UserDetails.getmUserId();
+    String userId = UserDetails.getmUserId();
 
     Context mainActivityContext;
     Context hostSelectContext;
 
     //holds viewType for relevant listItem
     Boolean hostListItemView;
+    Boolean awaitingConfirmView;
+    Boolean hostSelectView;
     ArrayList<HostSessionData> mChavrutaSessionsAL;
     private static final String LOG_TAG = OpenChavrutaAdapter.class.getSimpleName();
 
@@ -82,11 +84,13 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
     @Override
     public int getItemViewType(int position) {
         //selects hostId or userId for inflation
-         HostSessionData chavrutaData = mChavrutaSessionsAL.get(position);
+        HostSessionData chavrutaData = mChavrutaSessionsAL.get(position);
         String hostId = chavrutaData.getmHostId();
-        if(hostId.equals(userId)){
+        if (hostId.equals(userId)) {
             return 1;
-        }else{return 0;}
+        } else {
+            return 0;
+        }
     }
 
     @Override
@@ -94,18 +98,24 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
         Context context = parent.getContext();
         int layoutIdForListItem;
 
-        if(context == hostSelectContext){
+        if (context == hostSelectContext) {
             layoutIdForListItem = R.layout.open_host_list_item;
             hostListItemView = false;
-        }else {
+            awaitingConfirmView = false;
+            hostSelectView = true;
+
+        } else {
             //returns requested views based upon calling activity
             if (viewType == 0) {
-                layoutIdForListItem = R.layout.open_host_list_item;
+                layoutIdForListItem = R.layout.my_chavruta_list_item;
                 hostListItemView = false;
+                awaitingConfirmView = true;
+                hostSelectView = false;
             } else {
                 layoutIdForListItem = R.layout.hosting_chavrutas_list_item;
                 hostListItemView = true;
-
+                awaitingConfirmView = false;
+                hostSelectView = false;
             }
         }
         LayoutInflater layoutInflater = LayoutInflater.from(context);
@@ -129,7 +139,6 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
 
     class ViewHolder extends RecyclerView.ViewHolder {
         TextView hostFirstName, sessionDate, startTime, endTime, sefer, location;
-        ImageButton hostInfo;
         LinearLayout pendingRequest_1;
         LinearLayout pendingRequest_2;
         LinearLayout pendingRequest_3;
@@ -137,6 +146,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
         Button confirmRequest_2;
         Button confirmRequest_3;
         Button chavrutaConfirmed;
+        ImageButton addHost;
 
         public ViewHolder(View listItemView) {
             super(listItemView);
@@ -146,7 +156,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
             endTime = (TextView) listItemView.findViewById(R.id.end_time);
             sefer = (TextView) listItemView.findViewById(R.id.session_sefer);
             location = (TextView) listItemView.findViewById(R.id.location);
-            hostInfo = (ImageButton) listItemView.findViewById(R.id.ib_add_match);
+            addHost = (ImageButton) listItemView.findViewById(R.id.ib_add_match);
             pendingRequest_1 = (LinearLayout) listItemView.findViewById(R.id.ll_requester_viewgroup_1);
             pendingRequest_2 = (LinearLayout) listItemView.findViewById(R.id.ll_requester_viewgroup_2);
             pendingRequest_3 = (LinearLayout) listItemView.findViewById(R.id.ll_requester_viewgroup_3);
@@ -158,12 +168,41 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
 
         void bind(OpenChavrutaAdapter.ViewHolder holder, int listIndex) {
             final int position = listIndex;
-            HostSessionData currentItem = mChavrutaSessionsAL.get(position);
+            final HostSessionData currentItem = mChavrutaSessionsAL.get(position);
             if (holder.getItemViewType() == 1 && mContext == mainActivityContext) {
                 hostListItemView = true;
-            } else {
+                awaitingConfirmView = false;
+            } else if (holder.getItemViewType() == 0 && mContext == mainActivityContext) {
+                awaitingConfirmView = true;
                 hostListItemView = false;
+            } else {
+                //view is from HostSelect Context
+                hostListItemView = false;
+                awaitingConfirmView = false;
             }
+
+            //set initial confirmed state for awaiting confirmation list item
+            if (awaitingConfirmView) {
+                String learnerConfirmed = currentItem.getmConfirmed();
+                if (learnerConfirmed.equals(userId)) {
+                    holder.chavrutaConfirmed.setBackgroundColor(Color.parseColor("#10ef2e"));
+                }
+            }
+
+            if(hostSelectView){
+                holder.addHost.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String chavrutaId = currentItem.getmChavrutaId();
+                        ServerConnect addHost = new ServerConnect(mContext);
+                        addHost.execute("chavruta request", userId, chavrutaId);
+
+                        Intent intent = new Intent(mContext, MainActivity.class);
+                        mContext.startActivity(intent);
+                    }
+                });
+            }
+
             if (hostListItemView) {
                 String idOfConfirmedUser = currentItem.getmConfirmed();
                 String request1 = currentItem.getMchavrutaRequest1();
@@ -174,14 +213,14 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                 Boolean isRequest3 = false;
 
 
-                //sets the color of confirmed button to green to indicate confirmed
+                //sets the initial color of confirmed button to green to indicate confirmed
                 if (request1 != null && currentItem.getMchavrutaRequest1().length() > 5) {
-                    isRequest1=true;
+                    isRequest1 = true;
                     holder.pendingRequest_1.setVisibility(View.VISIBLE);
                     if (idOfConfirmedUser.equals(request1)) {
                         holder.confirmRequest_1.setBackgroundColor(Color.parseColor("#10ef2e"));
                         currentItem.setRequestOneConfirmed(true);
-                    }else{
+                    } else {
                         currentItem.setRequestOneConfirmed(false);
                     }
                 } else {
@@ -193,7 +232,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                     if (idOfConfirmedUser.equals(request2)) {
                         holder.confirmRequest_2.setBackgroundColor(Color.parseColor("#10ef2e"));
                         currentItem.setRequestTwoConfirmed(true);
-                    }else{
+                    } else {
                         currentItem.setRequestTwoConfirmed(false);
                     }
                 } else {
@@ -205,7 +244,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                     if (idOfConfirmedUser.equals(request3)) {
                         holder.confirmRequest_3.setBackgroundColor(Color.parseColor("#10ef2e"));
                         currentItem.setRequestThreeConfirmed(true);
-                    }else{
+                    } else {
                         currentItem.setRequestThreeConfirmed(false);
                     }
                 } else {
@@ -213,94 +252,45 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                 }
 
                 //confirms or unconfirms requested view with color change indicator and db update
-        if(isRequest1) {
-            holder.confirmRequest_1.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    HostSessionData currentItem = mChavrutaSessionsAL.get(position);
-
-                    //sets confirmed state for request 1
-                    if(!currentItem.requestOneConfirmed) {
-                        currentItem.setRequestOneConfirmed(true);
-                        currentItem.setmConfirmed(currentItem.getMchavrutaRequest1());
-                        v.setBackgroundColor(Color.parseColor("#10ef2e"));
-
-                        //set other request confirmations to false
-                        currentItem.setRequestTwoConfirmed(false);
-                        currentItem.setRequestThreeConfirmed(false);
-                        confirmRequest_2.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
-                        confirmRequest_3.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
-                    }else{
-                        currentItem.setRequestOneConfirmed(false);
-                        currentItem.setmConfirmed("0");
-                        v.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
-                    }
-                    String chavrutaId = currentItem.getmChavrutaId();
-                    sendConfirmationtoDb(chavrutaId, currentItem.getmConfirmed());
+                if (isRequest1) {
+                    holder.confirmRequest_1.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            HostSessionData currentItem = mChavrutaSessionsAL.get(position);
+                            // sets and sends to db hosts specific request confirmation
+                            setViewHolderConfirmations(currentItem, 1);
+                        }
+                    });
                 }
-            });
-        }
 
                 //sets confirmed state for request 2
-                if(isRequest2) {
+                if (isRequest2) {
                     holder.confirmRequest_2.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             HostSessionData currentItem = mChavrutaSessionsAL.get(position);
 
-                            //sets confirmed or not
-                            if(!currentItem.requestTwoConfirmed) {
-                                currentItem.setRequestTwoConfirmed(true);
-                                currentItem.setmConfirmed(currentItem.getMchavrutaRequest2());
-                                v.setBackgroundColor(Color.parseColor("#10ef2e"));
-
-                                //set other request confirmations to false
-                                currentItem.setRequestOneConfirmed(false);
-                                currentItem.setRequestThreeConfirmed(false);
-                                confirmRequest_1.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
-                                confirmRequest_3.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
-                            }else{
-                                currentItem.setRequestTwoConfirmed(false);
-                                currentItem.setmConfirmed("0");
-                                v.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
-                            }
-                            String chavrutaId = currentItem.getmChavrutaId();
-                            sendConfirmationtoDb(chavrutaId, currentItem.getmConfirmed());
+                            // sets and sends to db hosts specific request confirmation
+                            setViewHolderConfirmations(currentItem, 2);
                         }
                     });
                 }
 
-
                 //sets confirmed state for request 3
-                if(isRequest2) {
+                if (isRequest3) {
                     holder.confirmRequest_3.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             HostSessionData currentItem = mChavrutaSessionsAL.get(position);
 
-                            //sets confirmed or not
-                            if(!currentItem.requestThreeConfirmed) {
-                                currentItem.setRequestThreeConfirmed(true);
-                                currentItem.setmConfirmed(currentItem.getMchavrutaRequest3());
-                                v.setBackgroundColor(Color.parseColor("#10ef2e"));
-
-                                //set other request confirmations to false
-                                currentItem.setRequestOneConfirmed(false);
-                                currentItem.setRequestTwoConfirmed(false);
-                                confirmRequest_1.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
-                                confirmRequest_2.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
-                            }else{
-                                currentItem.setRequestThreeConfirmed(false);
-                                currentItem.setmConfirmed("0");
-                                v.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
-                            }
-                            String chavrutaId = currentItem.getmChavrutaId();
-                            sendConfirmationtoDb(chavrutaId, currentItem.getmConfirmed());
+                            // sets and sends to db hosts specific request confirmation
+                            setViewHolderConfirmations(currentItem, 3);
                         }
                     });
                 }
 
             }
+
             holder.hostFirstName.setText(currentItem.getmHostFirstName());
             holder.sessionDate.setText(currentItem.getmSessionDate());
             holder.startTime.setText(currentItem.getmStartTime());
@@ -308,14 +298,80 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
             holder.sefer.setText(currentItem.getmSefer());
             holder.location.setText(currentItem.getmLocation());
         }
-        //1934693520112171
 
+        private void setViewHolderConfirmations(HostSessionData currentItem, int requestClicked) {
+
+            switch (requestClicked) {
+                case 1:
+
+                    //sets confirmed state for request 1
+                    if (!currentItem.requestOneConfirmed) {
+                        currentItem.setRequestOneConfirmed(true);
+                        currentItem.setmConfirmed(currentItem.getMchavrutaRequest1());
+                        confirmRequest_1.setBackgroundColor(Color.parseColor("#10ef2e"));
+
+                        //set other request confirmations to false
+                        currentItem.setRequestTwoConfirmed(false);
+                        currentItem.setRequestThreeConfirmed(false);
+                        confirmRequest_2.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
+                        confirmRequest_3.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
+                    } else {
+                        currentItem.setRequestOneConfirmed(false);
+                        currentItem.setmConfirmed("0");
+                        confirmRequest_1.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
+                    }
+
+                    break;
+
+                case 2:
+                    //sets confirmed or not
+                    if (!currentItem.requestTwoConfirmed) {
+                        currentItem.setRequestTwoConfirmed(true);
+                        currentItem.setmConfirmed(currentItem.getMchavrutaRequest2());
+                        confirmRequest_2.setBackgroundColor(Color.parseColor("#10ef2e"));
+
+                        //set other request confirmations to false
+                        currentItem.setRequestOneConfirmed(false);
+                        currentItem.setRequestThreeConfirmed(false);
+                        confirmRequest_1.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
+                        confirmRequest_3.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
+                    } else {
+                        currentItem.setRequestTwoConfirmed(false);
+                        currentItem.setmConfirmed("0");
+                        confirmRequest_2.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
+                    }
+                    break;
+
+                case 3:
+                    //sets confirmed or not
+                    if (!currentItem.requestThreeConfirmed) {
+                        currentItem.setRequestThreeConfirmed(true);
+                        currentItem.setmConfirmed(currentItem.getMchavrutaRequest3());
+                        confirmRequest_3.setBackgroundColor(Color.parseColor("#10ef2e"));
+
+                        //set other request confirmations to false
+                        currentItem.setRequestOneConfirmed(false);
+                        currentItem.setRequestTwoConfirmed(false);
+                        confirmRequest_1.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
+                        confirmRequest_2.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
+                    } else {
+                        currentItem.setRequestThreeConfirmed(false);
+                        currentItem.setmConfirmed("0");
+                        confirmRequest_3.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
+                    }
+                    break;
+
+                default:
+                    return;
+            }
+            String chavrutaId = currentItem.getmChavrutaId();
+            sendConfirmationtoDb(chavrutaId, currentItem.getmConfirmed());
+        }
     }
 
     public void add(HostSessionData dataAddedFromJson) {
         mChavrutaSessionsAL.add(dataAddedFromJson);
     }
-
 
     public void sendConfirmationtoDb(String chavrutaId, String requesterId) {
         ServerConnect confirmChavrutaRequest = new ServerConnect(mContext);
@@ -323,59 +379,6 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
     }
 }
 
-
-
-//
-//        if(viewHolder.confirmRequest_2 != null) {
-//            viewHolder.confirmRequest_2.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    String chavrutaId = currentItem.getmChavrutaId();
-//                    sendConfirmationtoDb(chavrutaId, currentItem.getMchavrutaRequest2());
-//                    //viewHolder.confirmRequest_2.setBackgroundColor(Color.parseColor("#10ef2e"));
-//                }
-//            });
-//        }
-//        if(viewHolder.confirmRequest_3 != null) {
-//            viewHolder.confirmRequest_3.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    String chavrutaId = currentItem.getmChavrutaId();
-//                    sendConfirmationtoDb(chavrutaId,currentItem.getMchavrutaRequest3());
-//                    //viewHolder.confirmRequest_3.setBackgroundColor(Color.parseColor("#10ef2e"));
-//                }
-//            });
-//        }
-
-
-//        //on buttonClick selecting host
-//        viewHolder.hostInfo.setOnClickListener(new View.OnClickListener()
-//
-//        {
-//            @Override
-//            public void onClick(View v) {
-//
-//                //Access the row position here to get the correct data item
-//                int position = getPosition(currentItem);
-//                hostSessionItemData = getItem(position);
-//
-//                //TODO: incorporate request date into db on select
-//                long requestDate = System.currentTimeMillis();
-//
-//                String userId = UserDetails.getmUserId();
-//                String chavrutaId = hostSessionItemData.getmChavrutaId();
-//                String chavrutaRequest = "chavruta request";
-//                ServerConnect attemptChavrutaRequest = new ServerConnect(mContext);
-//                attemptChavrutaRequest.execute(chavrutaRequest, userId, chavrutaId);
-//
-//                Intent intent = new Intent(mContext, MainActivity.class);
-//                mContext.startActivity(intent);
-//
-//            }
-//        });
-//
-//        return listItemView;
-//    }
 
 
 
