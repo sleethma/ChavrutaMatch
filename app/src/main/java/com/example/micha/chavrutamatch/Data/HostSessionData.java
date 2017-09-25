@@ -40,6 +40,9 @@ public class HostSessionData {
     private String mConfirmed;
 
     public Boolean requestOneConfirmed = false;
+    public Boolean requestTwoConfirmed = false;
+    public Boolean requestThreeConfirmed = false;
+
 
 
     public HostSessionData(String chavrutaId, String hostFirstName, String hostLastName, String sessionMessage,
@@ -71,6 +74,12 @@ public class HostSessionData {
 
     public void setRequestOneConfirmed(Boolean value){
         requestOneConfirmed = value;
+    }
+    public void setRequestTwoConfirmed(Boolean value){
+        requestTwoConfirmed = value;
+    }
+    public void setRequestThreeConfirmed(Boolean value){
+        requestThreeConfirmed = value;
     }
     public String getmConfirmed() {
         return mConfirmed;
