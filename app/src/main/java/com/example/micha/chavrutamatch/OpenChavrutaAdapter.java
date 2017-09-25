@@ -219,7 +219,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                 public void onClick(View v) {
                     HostSessionData currentItem = mChavrutaSessionsAL.get(position);
 
-                    //sets confirmed or not
+                    //sets confirmed state for request 1
                     if(!currentItem.requestOneConfirmed) {
                         currentItem.setRequestOneConfirmed(true);
                         currentItem.setmConfirmed(currentItem.getMchavrutaRequest1());
@@ -240,6 +240,65 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                 }
             });
         }
+
+                //sets confirmed state for request 2
+                if(isRequest2) {
+                    holder.confirmRequest_2.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            HostSessionData currentItem = mChavrutaSessionsAL.get(position);
+
+                            //sets confirmed or not
+                            if(!currentItem.requestTwoConfirmed) {
+                                currentItem.setRequestTwoConfirmed(true);
+                                currentItem.setmConfirmed(currentItem.getMchavrutaRequest2());
+                                v.setBackgroundColor(Color.parseColor("#10ef2e"));
+
+                                //set other request confirmations to false
+                                currentItem.setRequestOneConfirmed(false);
+                                currentItem.setRequestThreeConfirmed(false);
+                                confirmRequest_1.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
+                                confirmRequest_3.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
+                            }else{
+                                currentItem.setRequestTwoConfirmed(false);
+                                currentItem.setmConfirmed("0");
+                                v.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
+                            }
+                            String chavrutaId = currentItem.getmChavrutaId();
+                            sendConfirmationtoDb(chavrutaId, currentItem.getmConfirmed());
+                        }
+                    });
+                }
+
+
+                //sets confirmed state for request 3
+                if(isRequest2) {
+                    holder.confirmRequest_3.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            HostSessionData currentItem = mChavrutaSessionsAL.get(position);
+
+                            //sets confirmed or not
+                            if(!currentItem.requestThreeConfirmed) {
+                                currentItem.setRequestThreeConfirmed(true);
+                                currentItem.setmConfirmed(currentItem.getMchavrutaRequest3());
+                                v.setBackgroundColor(Color.parseColor("#10ef2e"));
+
+                                //set other request confirmations to false
+                                currentItem.setRequestOneConfirmed(false);
+                                currentItem.setRequestTwoConfirmed(false);
+                                confirmRequest_1.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
+                                confirmRequest_2.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
+                            }else{
+                                currentItem.setRequestThreeConfirmed(false);
+                                currentItem.setmConfirmed("0");
+                                v.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
+                            }
+                            String chavrutaId = currentItem.getmChavrutaId();
+                            sendConfirmationtoDb(chavrutaId, currentItem.getmConfirmed());
+                        }
+                    });
+                }
 
             }
             holder.hostFirstName.setText(currentItem.getmHostFirstName());
