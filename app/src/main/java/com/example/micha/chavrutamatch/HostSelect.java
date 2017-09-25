@@ -52,15 +52,16 @@ public class HostSelect extends AppCompatActivity {
     @BindView(R.id.iv_scroll_open_host)
     ImageView scrollImg;
     ArrayList<HostSessionData> openChavrutaArrayList;
+    static Context mContext;
 
 
     public String jsonString;
     JSONObject jsonObject;
     JSONArray jsonArray;
+    String userId;
 
 
     OpenChavrutaAdapter mAdapter;
-    Context mContext;
 
 
     @Override
@@ -68,6 +69,8 @@ public class HostSelect extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.open_host_listview);
         ButterKnife.bind(this);
+        userId = UserDetails.getmUserId();
+        mContext = this;
 
         //constructs the data source
         openChavrutaArrayList = new ArrayList<>();
@@ -125,12 +128,13 @@ public class HostSelect extends AppCompatActivity {
                 chavrutaRequest2 = jo.getString("chavruta_request_2");
                 chavrutaRequest3 = jo.getString("chavruta_request_3");
                 confirmed = jo.getString("confirmed");
-
-                //make user data object of UserDataSetter class
-                HostSessionData hostClassData = new HostSessionData(chavrutaId, hostFirstName, hostLastName, sessionMessage, sessionDate,
-                        startTime, endTime, sefer, location, hostId, chavrutaRequest1, chavrutaRequest2, chavrutaRequest3, confirmed);
-                openChavrutaArrayList
-                        .add(hostClassData);
+                if(hostId.equals(userId)) {
+                    //make user data object of UserDataSetter class
+                    HostSessionData hostClassData = new HostSessionData(chavrutaId, hostFirstName, hostLastName, sessionMessage, sessionDate,
+                            startTime, endTime, sefer, location, hostId, chavrutaRequest1, chavrutaRequest2, chavrutaRequest3, confirmed);
+                    openChavrutaArrayList
+                            .add(hostClassData);
+                }
                 count++;
             }
         } catch (JSONException e) {

@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         ButterKnife.bind(this);
-
+        mContext = this;
         //receives intent from ServerConnect to display myChavruta list, else gets myChavruta info from db
         if (getIntent().getExtras() != null) {
             jsonString = getIntent().getExtras().getString("myChavrutaKey");
@@ -153,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
             });
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
-            mContext = this;
+
 
         } else {
             //if db not yet accessed, gets all chavrutas that user has requested

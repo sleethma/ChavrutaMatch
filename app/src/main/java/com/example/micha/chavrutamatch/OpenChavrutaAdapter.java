@@ -56,6 +56,9 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
     private Context mContext;
     String userId =UserDetails.getmUserId();
 
+    Context mainActivityContext;
+    Context hostSelectContext;
+
     //holds viewType for relevant listItem
     Boolean hostListItemView;
     ArrayList<HostSessionData> mChavrutaSessionsAL;
@@ -70,6 +73,8 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
         this.mContext = context;
         mNumberOfViews = chavrutaSessionsArrayList.size();
         mChavrutaSessionsAL = chavrutaSessionsArrayList;
+        mainActivityContext = MainActivity.mContext;
+        hostSelectContext = HostSelect.mContext;
     }
 
     @Override
@@ -86,12 +91,19 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
         int layoutIdForListItem;
-        if (viewType == 0) {
+
+        if(context == hostSelectContext){
             layoutIdForListItem = R.layout.open_host_list_item;
             hostListItemView = false;
-        }else{
-            layoutIdForListItem = R.layout.hosting_chavrutas_list_item;
-            hostListItemView = true;
+        }else {
+            //returns requested views based upon calling activity
+            if (viewType == 0) {
+                layoutIdForListItem = R.layout.open_host_list_item;
+                hostListItemView = false;
+            } else {
+                layoutIdForListItem = R.layout.hosting_chavrutas_list_item;
+                hostListItemView = true;
+            }
         }
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         View view = layoutInflater.inflate(layoutIdForListItem, parent, false);
@@ -143,7 +155,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
 
         void bind(OpenChavrutaAdapter.ViewHolder holder, int listIndex) {
             HostSessionData currentItem = mChavrutaSessionsAL.get(listIndex);
-            if (holder.getItemViewType() == 1) {
+            if (holder.getItemViewType() == 1 && mContext == mainActivityContext) {
                 hostListItemView = true;
             } else {
                 hostListItemView = false;
