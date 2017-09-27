@@ -57,7 +57,6 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
     private int mNumberOfViews;
     private Context mContext;
     String userId = UserDetails.getmUserId();
-
     Context mainActivityContext;
     Context hostSelectContext;
 
@@ -111,6 +110,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                 hostListItemView = false;
                 awaitingConfirmView = true;
                 hostSelectView = false;
+
             } else {
                 layoutIdForListItem = R.layout.hosting_chavrutas_list_item;
                 hostListItemView = true;
@@ -121,6 +121,13 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         View view = layoutInflater.inflate(layoutIdForListItem, parent, false);
         ViewHolder viewHolder = new ViewHolder(view);
+
+        //set initial confirmed state for awaiting confirmation list item if populated before binding
+        String learnerConfirmed = mChavrutaSessionsAL.get(0).getmConfirmed();
+        if (awaitingConfirmView && learnerConfirmed.length() > 5) {
+            viewHolder.chavrutaConfirmed.setBackgroundColor(Color.parseColor("#10ef2e"));
+            viewHolder.chavrutaConfirmed.setText("Chavruta Matched");
+        }
         return viewHolder;
     }
 
@@ -180,12 +187,12 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                 hostListItemView = false;
                 awaitingConfirmView = false;
             }
-
             //set initial confirmed state for awaiting confirmation list item
             if (awaitingConfirmView) {
                 String learnerConfirmed = currentItem.getmConfirmed();
                 if (learnerConfirmed.equals(userId)) {
                     holder.chavrutaConfirmed.setBackgroundColor(Color.parseColor("#10ef2e"));
+                    holder.chavrutaConfirmed.setText("Chavruta Matched");
                 }
             }
 
@@ -208,13 +215,19 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                 String request1 = currentItem.getMchavrutaRequest1();
                 String request2 = currentItem.getMchavrutaRequest2();
                 String request3 = currentItem.getMchavrutaRequest3();
+                Log.i(LOG_TAG, request1 + "/n" + request2 + "/n" + request3);
                 Boolean isRequest1 = false;
                 Boolean isRequest2 = false;
                 Boolean isRequest3 = false;
+                //made to refresh visibility of views at end of binding
+                int holderRequestOneVisibility;
+                int holderRequestTwoVisibility;
+                int holderRequestThreeVisibility;
+
 
 
                 //sets the initial color of confirmed button to green to indicate confirmed
-                if (request1 != null && currentItem.getMchavrutaRequest1().length() > 5) {
+                if (currentItem.getMchavrutaRequest1().length() > 5) {
                     isRequest1 = true;
                     holder.pendingRequest_1.setVisibility(View.VISIBLE);
                     if (idOfConfirmedUser.equals(request1)) {
@@ -226,7 +239,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                 } else {
                     holder.pendingRequest_1.setVisibility(View.GONE);
                 }
-                if (request2 != null && request2.length() > 5) {
+                if (request2.length() > 5) {
                     holder.pendingRequest_2.setVisibility(View.VISIBLE);
                     isRequest2 = true;
                     if (idOfConfirmedUser.equals(request2)) {
@@ -236,9 +249,9 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                         currentItem.setRequestTwoConfirmed(false);
                     }
                 } else {
-                    holder.pendingRequest_1.setVisibility(View.GONE);
+                    holder.pendingRequest_2.setVisibility(View.GONE);
                 }
-                if (request3 != null && request3.length() > 5) {
+                if (request3.length() > 5) {
                     holder.pendingRequest_3.setVisibility(View.VISIBLE);
                     isRequest3 = true;
                     if (idOfConfirmedUser.equals(request3)) {
@@ -250,7 +263,6 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                 } else {
                     holder.pendingRequest_3.setVisibility(View.GONE);
                 }
-
                 //confirms or unconfirms requested view with color change indicator and db update
                 if (isRequest1) {
                     holder.confirmRequest_1.setOnClickListener(new View.OnClickListener() {
@@ -276,6 +288,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                     });
                 }
 
+
                 //sets confirmed state for request 3
                 if (isRequest3) {
                     holder.confirmRequest_3.setOnClickListener(new View.OnClickListener() {
@@ -288,7 +301,6 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                         }
                     });
                 }
-
             }
 
             holder.hostFirstName.setText(currentItem.getmHostFirstName());

@@ -127,13 +127,13 @@ public class HostSelect extends AppCompatActivity {
                 chavrutaRequest2 = jo.getString("chavruta_request_2");
                 chavrutaRequest3 = jo.getString("chavruta_request_3");
                 confirmed = jo.getString("confirmed");
-                if(hostId.equals(userId)) {
+
                     //make user data object of UserDataSetter class
                     HostSessionData hostClassData = new HostSessionData(chavrutaId, hostFirstName, hostLastName, sessionMessage, sessionDate,
                             startTime, endTime, sefer, location, hostId, chavrutaRequest1, chavrutaRequest2, chavrutaRequest3, confirmed);
                     openChavrutaArrayList
                             .add(hostClassData);
-                }
+
                 count++;
             }
         } catch (JSONException e) {

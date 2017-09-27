@@ -148,7 +148,10 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                     //designates caller from MA
                     myChavruta = true;
                     String userID = UserDetails.getmUserId();
-                    my_chavrutas_url = "http://brightlightproductions.online/get_json_my_chavrutas.php?user_id=" + userID;
+
+
+                    my_chavrutas_url = "http://brightlightproductions.online/get_json_my_chavrutas.php?user_id=" +
+                            userID;
                     URL jsonMyChavrutasURL = new URL(my_chavrutas_url);
                     httpURLConnection = (HttpURLConnection) jsonMyChavrutasURL.openConnection();
                 } else {
