@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.menu.MenuAdapter;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -107,7 +108,6 @@ public class MainActivity extends AppCompatActivity {
                         animateTransition(v);
                     }
                 });
-
             }
 
             //activate user details class for account kit
@@ -141,7 +141,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                     editor.apply();
                 }
-
                 @Override
                 public void onError(final AccountKitError error) {
                     //display error
@@ -153,8 +152,6 @@ public class MainActivity extends AppCompatActivity {
             });
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
-
-
         } else {
             //if db not yet accessed, gets all chavrutas that user has requested
             //@var sp: sets userId to UserDetails for server calls
@@ -183,8 +180,11 @@ public class MainActivity extends AppCompatActivity {
         String chavrutaId;
 
         String hostFirstName, hostLastName, sessionMessage, sessionDate,
-                startTime, endTime, sefer, location, hostId, chavrutaRequest1, chavrutaRequest2,
-                chavrutaRequest3, confirmed;
+                startTime, endTime, sefer, location, hostId,
+                chavrutaRequest1,chavrutaRequest1Avatar, chavrutaRequest1Name,
+                chavrutaRequest2, chavrutaRequest2Avatar,chavrutaRequest2Name,
+                chavrutaRequest3,chavrutaRequest3Avatar, chavrutaRequest3Name,
+                confirmed;
         try {
 
             jsonObject = new JSONObject(jsonString);
@@ -206,14 +206,24 @@ public class MainActivity extends AppCompatActivity {
                 location = jo.getString("location");
                 hostId = jo.getString("host_id");
                 chavrutaRequest1 = jo.getString("chavruta_request_1");
+                chavrutaRequest1Avatar = jo.getString("chavruta_request_1_avatar");
+                chavrutaRequest1Name = jo.getString("chavruta_request_1_name");
                 chavrutaRequest2 = jo.getString("chavruta_request_2");
+                chavrutaRequest2Avatar = jo.getString("chavruta_request_2_avatar");
+                chavrutaRequest2Name = jo.getString("chavruta_request_2_name");
                 chavrutaRequest3 = jo.getString("chavruta_request_3");
+                chavrutaRequest3Avatar = jo.getString("chavruta_request_3_avatar");
+                chavrutaRequest3Name = jo.getString("chavruta_request_1_name");
                 confirmed = jo.getString("confirmed");
 
 
                 //make user data object of UserDataSetter class
-                HostSessionData myChavrutaData = new HostSessionData(chavrutaId, hostFirstName, hostLastName, sessionMessage, sessionDate,
-                        startTime, endTime, sefer, location, hostId, chavrutaRequest1, chavrutaRequest2, chavrutaRequest3, confirmed);
+                HostSessionData myChavrutaData = new HostSessionData(chavrutaId, hostFirstName,
+                        hostLastName, sessionMessage, sessionDate, startTime, endTime, sefer, location,
+                        hostId, chavrutaRequest1, chavrutaRequest2, chavrutaRequest3,
+                        chavrutaRequest1Avatar, chavrutaRequest1Name,chavrutaRequest2Avatar,chavrutaRequest2Name,
+                        chavrutaRequest3Avatar, chavrutaRequest3Name,
+                        confirmed);
                 myChavrutasArrayList.add(myChavrutaData);
                 count++;
             }
@@ -237,17 +247,23 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.refresh_list) {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            mAdapter.notifyDataSetChanged();
+            return true;
+        }
+        //logout
+        if (id == R.id.logout) {
+            // logout of Account Kit
+            AccountKit.logOut();
+            launchLoginActivity();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    //gives context to OpenChavrutaAdapter
-    public static Context getMAContextForAdapter() {
-        return mContext;
-    }
 
     private void animateTransition(View view) {
         Slide slide = new Slide();
@@ -282,5 +298,6 @@ public class MainActivity extends AppCompatActivity {
         }
         return phoneNumber;
     }
+
 }
 

@@ -101,8 +101,10 @@ public class HostSelect extends AppCompatActivity {
         String chavrutaId;
 
         String hostFirstName, hostLastName, sessionMessage, sessionDate,
-                startTime, endTime, sefer, location, hostId, chavrutaRequest1,chavrutaRequest2,
-                chavrutaRequest3, confirmed;
+                startTime, endTime, sefer, location, hostId,
+                chavrutaRequest1,chavrutaRequest1Avatar, chavrutaRequest1Name,
+                chavrutaRequest2, chavrutaRequest2Avatar,chavrutaRequest2Name,
+                chavrutaRequest3,chavrutaRequest3Avatar, chavrutaRequest3Name,confirmed;
         try {
 
             jsonObject = new JSONObject(jsonString);
@@ -124,13 +126,21 @@ public class HostSelect extends AppCompatActivity {
                 location = jo.getString("location");
                 hostId = jo.getString("host_id");
                 chavrutaRequest1 = jo.getString("chavruta_request_1");
+                chavrutaRequest1Avatar = jo.getString("chavruta_request_1_avatar");
+                chavrutaRequest1Name = jo.getString("chavruta_request_1_name");
                 chavrutaRequest2 = jo.getString("chavruta_request_2");
+                chavrutaRequest2Avatar = jo.getString("chavruta_request_2_avatar");
+                chavrutaRequest2Name = jo.getString("chavruta_request_2_name");
                 chavrutaRequest3 = jo.getString("chavruta_request_3");
+                chavrutaRequest3Avatar = jo.getString("chavruta_request_3_avatar");
+                chavrutaRequest3Name = jo.getString("chavruta_request_1_name");
                 confirmed = jo.getString("confirmed");
 
                     //make user data object of UserDataSetter class
                     HostSessionData hostClassData = new HostSessionData(chavrutaId, hostFirstName, hostLastName, sessionMessage, sessionDate,
-                            startTime, endTime, sefer, location, hostId, chavrutaRequest1, chavrutaRequest2, chavrutaRequest3, confirmed);
+                            startTime, endTime, sefer, location, hostId, chavrutaRequest1, chavrutaRequest2, chavrutaRequest3,
+                            chavrutaRequest1Avatar, chavrutaRequest1Name,chavrutaRequest2Avatar,chavrutaRequest2Name,
+                            chavrutaRequest3Avatar, chavrutaRequest3Name,confirmed);
                     openChavrutaArrayList
                             .add(hostClassData);
 

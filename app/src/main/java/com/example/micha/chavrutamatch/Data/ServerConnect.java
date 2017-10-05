@@ -240,10 +240,19 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
             }
         }
         //stores in db class request by user in hosts chavruta
+        //requesterSlotOpen is the first open availiable slot open in db out of 3
+        //chavrutaId is the auto_inc column of db
+        //requesterAvatar is the integer key to the bitmap user selected avatar chosen
         if (chosenBkgdTaskCheck.equals("chavruta request")) {
             //get params
             String userId = params[1];
             String chavrutaId = params[2];
+            String requestSlotOpen = params[3];
+            String requesterAvatarColumn = params[4];
+            String requesterAvatar = params[5];
+            String requesterNameColumn = params[6];
+            String requesterName = params[7];
+
 
             //establish connection
             try {
@@ -255,10 +264,19 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 OutputStream os = httpURLConnection.getOutputStream();
                 BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
 
-
                 String data =
-                        URLEncoder.encode("chavruta_request_1", "UTF-8") + "=" + URLEncoder.encode(
+                        URLEncoder.encode("user_id", "UTF-8") + "=" + URLEncoder.encode(
                                 userId, "UTF-8") + "&" +
+                                URLEncoder.encode("open_request_slot", "UTF-8") + "=" + URLEncoder.encode(
+                                requestSlotOpen, "UTF-8") + "&" +
+                                URLEncoder.encode("requester_avatar_column", "UTF-8") + "=" + URLEncoder.encode(
+                                requesterAvatarColumn, "UTF-8") + "&" +
+                                URLEncoder.encode("requester_name_column", "UTF-8") + "=" + URLEncoder.encode(
+                                requesterNameColumn, "UTF-8") + "&" +
+                                URLEncoder.encode("requester_avatar", "UTF-8") + "=" + URLEncoder.encode(
+                                requesterAvatar, "UTF-8") + "&" +
+                                URLEncoder.encode("requester_name", "UTF-8") + "=" + URLEncoder.encode(
+                                requesterName, "UTF-8") + "&" +
                                 URLEncoder.encode("chavruta_id", "UTF-8") + "=" + URLEncoder.encode(
                                 chavrutaId, "UTF-8");
 
@@ -315,7 +333,6 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
             }
         }
         return null;
-
     }
 
 
@@ -335,7 +352,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 break;
             case 2:
                 //return jsonString to HostSelect.class if it is caller, else return it to MA
-                //TODO: IS ELSE NECESSARY?
+                //TODO: CHECK IF THE ELSE NECESSARY?
                 if (myChavruta) {
                     Intent intent = new Intent(this.mContextRegister, MainActivity.class);
                     intent.putExtra("myChavrutaKey", jsonString);
@@ -345,7 +362,6 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                     Intent intent = new Intent(this.mContextRegister, HostSelect.class);
                     intent.putExtra("jsonKey", jsonString);
                     mContextRegister.startActivity(intent);
-                    break;
                 }
                 break;
             case 3:

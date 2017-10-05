@@ -31,6 +31,7 @@
         and background</string>
     <string name="skip_bio">Skip for Now</string>
     <string name="user_data_file">user_data</string>
+    <string name="reset">reset</string>
 
 
 </resources>

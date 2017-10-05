@@ -36,6 +36,10 @@ public class HostSessionData {
     private String mchavrutaRequest2;
     @Nullable
     private String mchavrutaRequest3;
+
+    @Nullable
+    private String mChavrutaRequest1Avatar, mChavrutaRequest1Name,mChavrutaRequest2Avatar,mChavrutaRequest2Name,
+    mChavrutaRequest3Avatar, mChavrutaRequest3Name;
 @Nullable
     private String mConfirmed;
 
@@ -44,11 +48,12 @@ public class HostSessionData {
     public Boolean requestThreeConfirmed = false;
 
 
-
     public HostSessionData(String chavrutaId, String hostFirstName, String hostLastName, String sessionMessage,
                            String sessionDate, String startTime, String endTime, String sefer,
                            String location, String hostId, String chavrutaRequest1, String chavrutaRequest2,
-                           String chavrutaRequest3, String confirmed) {
+                           String chavrutaRequest3, String chavrutaRequest1Avatar, String chavrutaRequest1Name,
+                           String chavrutaRequest2Avatar, String chavrutaRequest2Name,
+                           String chavrutaRequest3Avatar, String chavrutaRequest3Name, String confirmed) {
 
         setmChavrutaId(chavrutaId);
         setmHostFirstName(hostFirstName);
@@ -64,8 +69,62 @@ public class HostSessionData {
         setMchavrutaRequest2(chavrutaRequest2);
         setMchavrutaRequest3(chavrutaRequest3);
         setmConfirmed(confirmed);
-
+        setmChavrutaRequest1Avatar(chavrutaRequest1Avatar);
+        setmChavrutaRequest2Avatar(chavrutaRequest2Avatar);
+        setmChavrutaRequest3Avatar(chavrutaRequest3Avatar);
+        setmChavrutaRequest1Name(chavrutaRequest1Name);
+        setmChavrutaRequest2Name(chavrutaRequest2Name);
+        setmChavrutaRequest3Name(chavrutaRequest3Name);
     }
+
+    public String getmChavrutaRequest1Avatar() {
+        return mChavrutaRequest1Avatar;
+    }
+
+    public void setmChavrutaRequest1Avatar(String mChavrutaRequest1Avatar) {
+        this.mChavrutaRequest1Avatar = mChavrutaRequest1Avatar;
+    }
+
+    public String getmChavrutaRequest1Name() {
+        return mChavrutaRequest1Name;
+    }
+
+    public void setmChavrutaRequest1Name(String mChavrutaRequest1Name) {
+        this.mChavrutaRequest1Name = mChavrutaRequest1Name;
+    }
+
+    public String getmChavrutaRequest2Avatar() {
+        return mChavrutaRequest2Avatar;
+    }
+
+    public void setmChavrutaRequest2Avatar(String mChavrutaRequest2Avatar) {
+        this.mChavrutaRequest2Avatar = mChavrutaRequest2Avatar;
+    }
+
+    public String getmChavrutaRequest2Name() {
+        return mChavrutaRequest2Name;
+    }
+
+    public void setmChavrutaRequest2Name(String mChavrutaRequest2Name) {
+        this.mChavrutaRequest2Name = mChavrutaRequest2Name;
+    }
+
+    public String getmChavrutaRequest3Avatar() {
+        return mChavrutaRequest3Avatar;
+    }
+
+    public void setmChavrutaRequest3Avatar(String mChavrutaRequest3Avatar) {
+        this.mChavrutaRequest3Avatar = mChavrutaRequest3Avatar;
+    }
+
+    public String getmChavrutaRequest3Name() {
+        return mChavrutaRequest3Name;
+    }
+
+    public void setmChavrutaRequest3Name(String mChavrutaRequest3Name) {
+        this.mChavrutaRequest3Name = mChavrutaRequest3Name;
+    }
+
 
     public String[] getAllStringHostDataForMyChavruta() {
         return new String[]{mHostFirstName, mHostLastName, mSessionMessage, mSessionDate, mStartTime,
@@ -124,6 +183,11 @@ public class HostSessionData {
     public String getMchavrutaRequest1() {
         return mchavrutaRequest1;
     }
+
+    public void getMchavrutaRequest_1_Data(){
+
+    }
+
 
     public String getMchavrutaRequest2() {
         return mchavrutaRequest2;

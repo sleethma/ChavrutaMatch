@@ -171,7 +171,6 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
     //if confirm button clicked set global date/time
     public void confirmTime(View view) {
         String timeString;
-        boolean minZero = true;
         if (mTimeDateViewClicked == ibHostEndTime || mTimeDateViewClicked == ibStartTime) {
             if (Build.VERSION.SDK_INT < 24) {
                 hour = tpStartTime.getCurrentHour();

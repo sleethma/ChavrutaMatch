@@ -9,11 +9,13 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.micha.chavrutamatch.Data.HostSessionData;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import android.content.Intent;
@@ -30,6 +32,9 @@ import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.Data.ChavrutaContract;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.example.micha.chavrutamatch.OpenChavrutaAdapter;
+import com.example.micha.chavrutamatch.Utils.ChavrutaUtils;
+
+import org.w3c.dom.Text;
 
 import java.security.Timestamp;
 
@@ -42,6 +47,8 @@ import static android.R.attr.host;
 import static android.R.attr.resource;
 import static android.content.Context.MODE_PRIVATE;
 import static com.example.micha.chavrutamatch.R.drawable.not_confirmed_rounded_corners;
+import static com.example.micha.chavrutamatch.R.id.user_first_name;
+import static com.example.micha.chavrutamatch.R.id.user_last_name;
 import static com.example.micha.chavrutamatch.R.id.view;
 
 /**
@@ -78,6 +85,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
         mChavrutaSessionsAL = chavrutaSessionsArrayList;
         mainActivityContext = MainActivity.mContext;
         hostSelectContext = HostSelect.mContext;
+//        orderArrayByDate(mChavrutaSessionsAL);
     }
 
     @Override
@@ -145,10 +153,14 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
 
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        TextView hostFirstName, sessionDate, startTime, endTime, sefer, location;
+        TextView hostFirstName, sessionDate, startTime, endTime, sefer, location,
+                confirmRequestName_1, confirmRequestName_2, confirmRequestName_3;
         LinearLayout pendingRequest_1;
         LinearLayout pendingRequest_2;
         LinearLayout pendingRequest_3;
+        ImageView confirmRequestAvatar_1;
+        ImageView confirmRequestAvatar_2;
+        ImageView confirmRequestAvatar_3;
         Button confirmRequest_1;
         Button confirmRequest_2;
         Button confirmRequest_3;
@@ -167,6 +179,13 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
             pendingRequest_1 = (LinearLayout) listItemView.findViewById(R.id.ll_requester_viewgroup_1);
             pendingRequest_2 = (LinearLayout) listItemView.findViewById(R.id.ll_requester_viewgroup_2);
             pendingRequest_3 = (LinearLayout) listItemView.findViewById(R.id.ll_requester_viewgroup_3);
+            confirmRequestName_1 = (TextView) listItemView.findViewById(R.id.tv_confirm_request_1);
+            confirmRequestName_2 = (TextView) listItemView.findViewById(R.id.tv_confirm_request_2);
+            confirmRequestName_3 = (TextView) listItemView.findViewById(R.id.tv_confirm_request_3);
+            confirmRequestAvatar_1=(ImageView) listItemView.findViewById(R.id.iv_user_request_1_avatar);
+            confirmRequestAvatar_2=(ImageView) listItemView.findViewById(R.id.iv_user_request_2_avatar);
+            confirmRequestAvatar_3=(ImageView) listItemView.findViewById(R.id.iv_user_request_3_avatar);
+
             confirmRequest_1 = (Button) listItemView.findViewById(R.id.b_confirm_request_1);
             confirmRequest_2 = (Button) listItemView.findViewById(R.id.b_confirm_request_2);
             confirmRequest_3 = (Button) listItemView.findViewById(R.id.b_confirm_request_3);
@@ -175,17 +194,62 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
 
         void bind(OpenChavrutaAdapter.ViewHolder holder, int listIndex) {
             final int position = listIndex;
+            //@requestSlotOpen number of next class slot availiable for requester
+            //@requesterAvatar & @requesterName are vars that hold chavrutaInformation for display in hostview
+            final String requestSlotOpen;
+            final String requesterAvatar;
+            final String requesterName;
+            final String requesterAvatarColumn;
+            final String requesterNameColumn;
             final HostSessionData currentItem = mChavrutaSessionsAL.get(position);
+            //view is hosting a class
             if (holder.getItemViewType() == 1 && mContext == mainActivityContext) {
                 hostListItemView = true;
                 awaitingConfirmView = false;
+                requestSlotOpen = "0";
+                requesterAvatar = null;
+                requesterName = null;
+                requesterAvatarColumn= null;
+                requesterNameColumn = null;
+                //view is awaiting hosts confirmation
             } else if (holder.getItemViewType() == 0 && mContext == mainActivityContext) {
                 awaitingConfirmView = true;
                 hostListItemView = false;
+                requestSlotOpen = "0";
+                requesterAvatar = null;
+                requesterName = null;
+                requesterAvatarColumn= null;
+                requesterNameColumn = null;
             } else {
                 //view is from HostSelect Context
                 hostListItemView = false;
                 awaitingConfirmView = false;
+
+             requesterName = ChavrutaUtils.createUserFirstLastName(
+                     currentItem.getmHostFirstName(), currentItem.getmHostLastName());
+                requesterAvatar = UserDetails.getmUserAvatarNumberString();
+                //check which request slot is availiable and pass name of db column to server for insert
+                if (currentItem.getMchavrutaRequest1().length() < 5) {
+                    requestSlotOpen = "chavruta_request_1";
+                    requesterAvatarColumn = "chavruta_request_1_avatar";
+                    requesterNameColumn = "chavruta_request_1_name";
+                    holder.addHost.setImageResource(R.drawable.ib_add_match);
+                } else if (currentItem.getMchavrutaRequest2().length() < 5) {
+                    requestSlotOpen = "chavruta_request_2";
+                    requesterAvatarColumn = "chavruta_request_2_avatar";
+                    requesterNameColumn = "chavruta_request_2_name";
+                    holder.addHost.setImageResource(R.drawable.ib_add_match);
+                } else if (currentItem.getMchavrutaRequest3().length() < 5) {
+                    requestSlotOpen = "chavruta_request_3";
+                    requesterAvatarColumn = "chavruta_request_3_avatar";
+                    requesterNameColumn = "chavruta_request_3_name";
+                    holder.addHost.setImageResource(R.drawable.ib_add_match);
+                } else {
+                    requestSlotOpen = "0";
+                    holder.addHost.setImageResource(R.drawable.b_class_full);
+                    requesterAvatarColumn =null ;
+                    requesterNameColumn = null;
+                }
             }
             //set initial confirmed state for awaiting confirmation list item
             if (awaitingConfirmView) {
@@ -196,13 +260,18 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                 }
             }
 
-            if(hostSelectView){
+            if (hostSelectView) {
                 holder.addHost.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        if (requestSlotOpen.equals("0")) {
+                            Toast.makeText(mContext, "Class Full:Check Back!", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
                         String chavrutaId = currentItem.getmChavrutaId();
                         ServerConnect addHost = new ServerConnect(mContext);
-                        addHost.execute("chavruta request", userId, chavrutaId);
+                        addHost.execute("chavruta request", userId, chavrutaId, requestSlotOpen,
+                                requesterAvatarColumn,requesterAvatar, requesterNameColumn, requesterName);
 
                         Intent intent = new Intent(mContext, MainActivity.class);
                         mContext.startActivity(intent);
@@ -215,15 +284,17 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                 String request1 = currentItem.getMchavrutaRequest1();
                 String request2 = currentItem.getMchavrutaRequest2();
                 String request3 = currentItem.getMchavrutaRequest3();
+                String chavrutaRequestName1 = currentItem.getmChavrutaRequest1Name();
+                String chavrutaRequestName2 = currentItem.getmChavrutaRequest2Name();
+                String chavrutaRequestName3 = currentItem.getmChavrutaRequest3Name();
+                String chavrutaRequestAvatar1 = currentItem.getmChavrutaRequest1Avatar();
+                String chavrutaRequestAvatar2 = currentItem.getmChavrutaRequest2Avatar();
+                String chavrutaRequestAvatar3 = currentItem.getmChavrutaRequest3Avatar();
+
                 Log.i(LOG_TAG, request1 + "/n" + request2 + "/n" + request3);
                 Boolean isRequest1 = false;
                 Boolean isRequest2 = false;
                 Boolean isRequest3 = false;
-                //made to refresh visibility of views at end of binding
-                int holderRequestOneVisibility;
-                int holderRequestTwoVisibility;
-                int holderRequestThreeVisibility;
-
 
 
                 //sets the initial color of confirmed button to green to indicate confirmed
@@ -236,6 +307,10 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                     } else {
                         currentItem.setRequestOneConfirmed(false);
                     }
+                    holder.confirmRequestName_1.setText(
+                            chavrutaRequestName1);
+                    //todo: use var chavrutaRequestName1 to get id integer and set associated resource using enum class
+                    holder.confirmRequestAvatar_1.setImageResource(R.drawable.ic_unknown_user);
                 } else {
                     holder.pendingRequest_1.setVisibility(View.GONE);
                 }
@@ -248,6 +323,10 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                     } else {
                         currentItem.setRequestTwoConfirmed(false);
                     }
+                    holder.confirmRequestName_2.setText(
+                            chavrutaRequestName2);
+                    holder.confirmRequestAvatar_2.setImageResource(R.drawable.chavruta_logo);
+
                 } else {
                     holder.pendingRequest_2.setVisibility(View.GONE);
                 }
@@ -260,6 +339,10 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                     } else {
                         currentItem.setRequestThreeConfirmed(false);
                     }
+                    holder.confirmRequestName_3.setText(
+                            chavrutaRequestName3);
+                    holder.confirmRequestAvatar_3.setImageResource(R.drawable.icon_profile_empty);
+
                 } else {
                     holder.pendingRequest_3.setVisibility(View.GONE);
                 }
@@ -389,6 +472,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
         ServerConnect confirmChavrutaRequest = new ServerConnect(mContext);
         confirmChavrutaRequest.execute("confirmChavrutaRequest", chavrutaId, requesterId);
     }
+
 }
 
 
