@@ -31,7 +31,6 @@ public class LoginActivity extends AppCompatActivity {
     public static int APP_REQUEST_CODE = 1;
     private static final String LOG_TAG = LoginActivity.class.getSimpleName();
     public static boolean mIsConnected;
-    private static String  mUserPhoneNumber, mUserEmail, mUserId;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,12 +61,12 @@ public class LoginActivity extends AppCompatActivity {
             } else if (loginResult.getAccessToken() != null) {
                 //on successful login and new user, proceed to the AddBio activity
                 SharedPreferences prefs = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE);
-
                 //@newUser = users first ever login
                 Boolean newUser = prefs.getBoolean("new_user_key", true);
                 if (newUser) {
                     SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE).edit();
                     editor.putBoolean("new_user_key", false);
+                    editor.putString(getString(R.string.user_avatar_number_key), "1");
                     editor.apply();
                     launchAddBioActivity();
                 } else {
@@ -108,7 +107,7 @@ public class LoginActivity extends AppCompatActivity {
         onLogin(LoginType.PHONE);
     }
 
-    //called when user enters email
+    //called when user selects email
     public void onEmailLogin(View view) {
         onLogin(LoginType.EMAIL);
     }
@@ -120,28 +119,12 @@ public class LoginActivity extends AppCompatActivity {
     }
     //TODO: delete this method and button in xml
     public void newUser(View view) {
-        SharedPreferences prefs = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE);
-        Boolean newUser = prefs.getBoolean("new_user_key", true);
-        mUserPhoneNumber = prefs.getString(getString(R.string.user_phone_key), null);
-        mUserEmail = prefs.getString(getString(R.string.user_email_key), null);
-        mUserId = prefs.getString(getString(R.string.user_account_id_key), null);
-
         Intent intent = new Intent(this, AddBio.class);
-
-            intent.putExtra("userEmail", mUserEmail);
-            intent.putExtra("userPhoneNumber", mUserPhoneNumber);
-            intent.putExtra("userId", mUserId);
-            intent.putExtra("userAvatarNumber", "1");
-
         startActivity(intent);
     }
 
     private void launchAddBioActivity() {
         Intent intent = new Intent(this, AddBio.class);
-            intent.putExtra("userEmail", mUserEmail);
-            intent.putExtra("userPhoneNumber", mUserPhoneNumber);
-            intent.putExtra("userId", mUserId);
-            intent.putExtra("userAvatarNumber", "1");
         startActivity(intent);
         finish();
     }

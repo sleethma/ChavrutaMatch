@@ -28,7 +28,7 @@ public class UserDetails extends AppCompatActivity{
     private static String mUserId;
     private static String mUserPassword;
     private static String mUserName;
-    private static String mUserAvatarNumberString;
+    private static String mUserAvatarNumberString= "1";
     private static String mUserFirstName;
     private static String mUserLastName;
     private static String mUserPhoneNumber;
@@ -110,7 +110,7 @@ public class UserDetails extends AppCompatActivity{
         return mUserPhoneNumber;
     }
 
-    public void setmUserPhoneNumber(String mUserPhoneNumber) {
+    public static void setmUserPhoneNumber(String mUserPhoneNumber) {
         UserDetails.mUserPhoneNumber = mUserPhoneNumber;
     }
 

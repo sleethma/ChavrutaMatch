@@ -2,6 +2,7 @@ package com.example.micha.chavrutamatch;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -131,11 +132,11 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
         ViewHolder viewHolder = new ViewHolder(view);
 
         //set initial confirmed state for awaiting confirmation list item if populated before binding
-        String learnerConfirmed = mChavrutaSessionsAL.get(0).getmConfirmed();
-        if (awaitingConfirmView && learnerConfirmed.length() > 5) {
-            viewHolder.chavrutaConfirmed.setBackgroundColor(Color.parseColor("#10ef2e"));
-            viewHolder.chavrutaConfirmed.setText("Chavruta Matched");
-        }
+//        String learnerConfirmed = mChavrutaSessionsAL.get(0).getmConfirmed();
+//        if (awaitingConfirmView && learnerConfirmed.length() > 5) {
+//            viewHolder.chavrutaConfirmed.setBackgroundColor(Color.parseColor("#10ef2e"));
+//            viewHolder.chavrutaConfirmed.setText("Chavruta Matched");
+//        }
         return viewHolder;
     }
 
@@ -257,6 +258,11 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                 if (learnerConfirmed.equals(userId)) {
                     holder.chavrutaConfirmed.setBackgroundColor(Color.parseColor("#10ef2e"));
                     holder.chavrutaConfirmed.setText("Chavruta Matched");
+                }else{
+                        holder.chavrutaConfirmed.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
+                    holder.chavrutaConfirmed.setText("Not Confirmed");
+
+
                 }
             }
 

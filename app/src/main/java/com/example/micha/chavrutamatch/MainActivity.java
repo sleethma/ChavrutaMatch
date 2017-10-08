@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onSuccess(final com.facebook.accountkit.Account account) {
                     // Get Account Kit ID
                     String accountKitId = account.getId();
-                    userDetails.setmUserId(accountKitId);
+                    UserDetails.setmUserId(accountKitId);
                     //stores user id, email, or phone in SP
                     SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE).edit();
                     editor.putString(getString(R.string.user_account_id_key), accountKitId);
@@ -130,17 +130,18 @@ public class MainActivity extends AppCompatActivity {
                     if (account.getPhoneNumber() != null) {
                         // if the phone number is available, display it
                         String formattedPhoneNumber = formatPhoneNumber(phoneNumber.toString());
-                        userDetails.setmUserPhoneNumber(formattedPhoneNumber);
+                        UserDetails.setmUserPhoneNumber(formattedPhoneNumber);
                         editor.putString(getString(R.string.user_phone_key), formattedPhoneNumber);
 
                     } else {
                         // if the email address is available, store it
                         String emailString = account.getEmail();
-                        userDetails.setmUserEmail(emailString);
+                        UserDetails.setmUserEmail(emailString);
                         editor.putString(getString(R.string.user_email_key), emailString);
                     }
                     editor.apply();
                 }
+
                 @Override
                 public void onError(final AccountKitError error) {
                     //display error
@@ -156,11 +157,17 @@ public class MainActivity extends AppCompatActivity {
             //if db not yet accessed, gets all chavrutas that user has requested
             //@var sp: sets userId to UserDetails for server calls
             SharedPreferences sp = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE);
-            accountId = sp.getString(getString(R.string.user_account_id_key),null);
+            accountId = sp.getString(getString(R.string.user_account_id_key), null);
             UserDetails.setmUserId(accountId);
-            String getMyChavrutasKey = "my chavrutas";
-            ServerConnect getMyChavrutas = new ServerConnect(this);
-            getMyChavrutas.execute(getMyChavrutasKey);
+            //check user has a stored accountkit id on device and fetch their chavruta data from db
+            if (accountId != null) {
+                String getMyChavrutasKey = "my chavrutas";
+                ServerConnect getMyChavrutas = new ServerConnect(this);
+                getMyChavrutas.execute(getMyChavrutasKey);
+            } else {
+                AccountKit.logOut();
+                launchLoginActivity();
+            }
         }
 
 
@@ -181,9 +188,9 @@ public class MainActivity extends AppCompatActivity {
 
         String hostFirstName, hostLastName, sessionMessage, sessionDate,
                 startTime, endTime, sefer, location, hostId,
-                chavrutaRequest1,chavrutaRequest1Avatar, chavrutaRequest1Name,
-                chavrutaRequest2, chavrutaRequest2Avatar,chavrutaRequest2Name,
-                chavrutaRequest3,chavrutaRequest3Avatar, chavrutaRequest3Name,
+                chavrutaRequest1, chavrutaRequest1Avatar, chavrutaRequest1Name,
+                chavrutaRequest2, chavrutaRequest2Avatar, chavrutaRequest2Name,
+                chavrutaRequest3, chavrutaRequest3Avatar, chavrutaRequest3Name,
                 confirmed;
         try {
 
@@ -221,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
                 HostSessionData myChavrutaData = new HostSessionData(chavrutaId, hostFirstName,
                         hostLastName, sessionMessage, sessionDate, startTime, endTime, sefer, location,
                         hostId, chavrutaRequest1, chavrutaRequest2, chavrutaRequest3,
-                        chavrutaRequest1Avatar, chavrutaRequest1Name,chavrutaRequest2Avatar,chavrutaRequest2Name,
+                        chavrutaRequest1Avatar, chavrutaRequest1Name, chavrutaRequest2Avatar, chavrutaRequest2Name,
                         chavrutaRequest3Avatar, chavrutaRequest3Name,
                         confirmed);
                 myChavrutasArrayList.add(myChavrutaData);
@@ -251,6 +258,13 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
             mAdapter.notifyDataSetChanged();
+            return true;
+        }
+        //My Profile
+        if (id == R.id.my_profile) {
+            // Access addBio for profile edit
+            Intent intent = new Intent(this, AddBio.class);
+            startActivity(intent);
             return true;
         }
         //logout

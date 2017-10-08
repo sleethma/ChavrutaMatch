@@ -4,10 +4,14 @@
     tools:context="com.example.micha.chavrutamatch.MainActivity" >
     <item android:id="@+id/refresh_list"
         android:title="refresh list"
-        android:orderInCategory="100"
+        android:orderInCategory="1"
+        app:showAsAction="never" />
+    <item android:id="@+id/my_profile"
+        android:title="MyProfile"
+        android:orderInCategory="2"
         app:showAsAction="never" />
     <item android:id="@+id/logout"
         android:title="Logout"
-        android:orderInCategory="1"
+        android:orderInCategory="100"
         app:showAsAction="never" />
 </menu>
