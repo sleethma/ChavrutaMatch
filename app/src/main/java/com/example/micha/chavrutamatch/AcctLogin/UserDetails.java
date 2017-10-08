@@ -35,6 +35,7 @@ public class UserDetails extends AppCompatActivity{
     private static String mUserEmail;
     private static  SharedPreferences mPreferences;
     private static Context mContext;
+    private static String mUserBio;
 
 
     public UserDetails(String id, String password, String phoneNumber, String email
@@ -72,13 +73,17 @@ public class UserDetails extends AppCompatActivity{
     }
 
     public static void  setUserData(){
-        SharedPreferences mPreferences = mContext.getSharedPreferences("user_data", MODE_PRIVATE);
-        mUserPhoneNumber = mPreferences.getString("user phone number key",null);
-        mUserName = mPreferences.getString("User Name", null);
-        mUserEmail = mPreferences.getString("User Email", null);
-        mUserAvatarNumberString = mPreferences.getString("User Avatar",null);
-        mUserFirstName = mPreferences.getString("User First Name",null);
-        mUserLastName = mPreferences.getString("User Last Name",null);
+        SharedPreferences prefs = mContext.getSharedPreferences("user_data", MODE_PRIVATE);
+
+        //get info from newUserLogin if exists
+        mUserPhoneNumber = prefs.getString("user phone number key", null);
+        mUserEmail = prefs.getString("user email key", null);
+        mUserName = prefs.getString("user name key", null);
+        mUserFirstName = prefs.getString("user first name key", null);
+        mUserLastName = prefs.getString("user last name key", null);
+        mUserAvatarNumberString = prefs.getString("user avatar number key", null);
+        mUserBio = prefs.getString("user bio key", null);
+        mUserId = prefs.getString("user account id key", null);
     }
 
     //gets application context

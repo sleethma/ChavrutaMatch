@@ -264,6 +264,8 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.my_profile) {
             // Access addBio for profile edit
             Intent intent = new Intent(this, AddBio.class);
+            Boolean updateBio = true;
+            intent.putExtra("update_bio", updateBio);
             startActivity(intent);
             return true;
         }

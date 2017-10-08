@@ -64,6 +64,8 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
         String reg_url = "http://brightlightproductions.online/chavruta_session_add.php";
         String json_url = "http://brightlightproductions.online/get_chavrutaJSON.php";
         String new_user_url = "http://brightlightproductions.online/chavruta_user_profiles_add.php";
+        String update_user_url = "http://brightlightproductions.online/chavruta_user_profiles_update.php";
+
         String initial_chavruta_request_update_url =
                 "http://brightlightproductions.online/initial_chavruta_request_update.php";
         //@ my_chavrutas_url is changed in line to send individual user id
@@ -186,7 +188,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
             }
         }
         //stores new user in user profile db
-        if (chosenBkgdTaskCheck.equals("new user post")) {
+        if (chosenBkgdTaskCheck.equals("user post")) {
             //get params
             String userId = params[1];
             String userName = params[2];
@@ -196,11 +198,20 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
             String userPhoneNumber = params[6];
             String userEmail = params[7];
             String userBio = params[8];
+            //@var postType: either "update user post" or "new user post"
+            String postType = params[9];
 
             //establish connection
             try {
-                URL newUserUrl = new URL(new_user_url);
-                HttpURLConnection httpURLConnection = (HttpURLConnection) newUserUrl.openConnection();
+                URL userPostUrl;
+                if(postType.equals("new user post")){
+                    userPostUrl = new URL(new_user_url);
+                }else{
+                    userPostUrl = new URL(update_user_url);
+                }
+                HttpURLConnection httpURLConnection = (HttpURLConnection) userPostUrl.openConnection();
+
+
                 httpURLConnection.setRequestMethod("POST");
                 httpURLConnection.setDoOutput(true);
                 //make object of output stream
@@ -209,6 +220,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
 
                 String data =
                         URLEncoder.encode("user_id", "UTF-8") + "=" + URLEncoder.encode(
+
                                 userId, "UTF-8") + "&" +
                                 URLEncoder.encode("user_name", "UTF-8") + "=" + URLEncoder.encode(
                                 userName, "UTF-8") + "&" +

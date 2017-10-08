@@ -22,6 +22,7 @@ public class ChavrutaUtils {
         return userFirstLastName;
     }
 
+
 }
 //    static ArrayList<HostSessionData> mUnsortedChavrutaArray;
 //

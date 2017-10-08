@@ -40,7 +40,6 @@ public class LoginActivity extends AppCompatActivity {
         AccessToken currentAccessToken = AccountKit.getCurrentAccessToken();
         if (currentAccessToken != null) {
             //iff previously logged in, proceed to the main activity
-
             launchMainActivity();
         }
     }

@@ -50,8 +50,10 @@ public class AddBio extends AppCompatActivity {
     Boolean nullAvatar;
     Boolean nullBio;
     Boolean nullId;
-
+    //controls whether or not db update necessary
     Boolean bioDataChanged = false;
+    //controls whether activity used to update or to create new account
+    Boolean updateBio = false;
 
 
 //TODO: Add input validation using: https://www.androidhive.info/2015/09/android-material-design-floating-labels-for-edittext/
@@ -61,6 +63,8 @@ public class AddBio extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_bio);
         ButterKnife.bind(this);
+
+        if (getIntent().getExtras() != null) updateBio = getIntent().getExtras().getBoolean("update_bio");
         prefs = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE);
 
         //get info from newUserLogin if exists
@@ -72,7 +76,7 @@ public class AddBio extends AppCompatActivity {
         mUserAvatarNumberString = prefs.getString(getString(R.string.user_avatar_number_key), null);
         mUserBio = prefs.getString(getString(R.string.user_bio_key), null);
         mUserId = prefs.getString(getString(R.string.user_account_id_key), null);
-
+        getmUserId()
         UserPhoneView.setText(mUserPhoneNumber);
         UserEmailView.setText(mUserEmail);
         UserNameView.setText(mUserName);
@@ -135,10 +139,16 @@ public class AddBio extends AppCompatActivity {
 
     //posts saved user bio info to server
     public void postUserBio() {
-        String newUserPost = "new user post";
+        String userPost = "user post";
+        String userPostType;
+        if (updateBio) {
+            userPostType = "update user post";
+        } else {
+            userPostType = "new user post";
+        }
         ServerConnect postUserToServer = new ServerConnect(this);
-        postUserToServer.execute(newUserPost, mUserId, mUserName, mUserAvatarNumberString, mUserFirstName, mUserLastName,
-                mUserPhoneNumber, mUserEmail, mUserBio);
+        postUserToServer.execute(userPost, mUserId, mUserName, mUserAvatarNumberString, mUserFirstName, mUserLastName,
+                mUserPhoneNumber, mUserEmail, mUserBio, userPostType);
     }
 
     //checks to see if user changed data before saving in SP and DB
@@ -157,15 +167,15 @@ public class AddBio extends AppCompatActivity {
             mUserLastName = newUserLastName;
             bioDataChanged = true;
         }
-        if (newUserName == null || !mUserName.equals(newUserName)){
+        if (mUserName == null || !mUserName.equals(newUserName)){
             mUserName = newUserName;
             bioDataChanged = true;
         }
-        if (newUserPhoneNumber == null || !mUserPhoneNumber.equals(newUserPhoneNumber)){
+        if (mUserPhoneNumber == null || !mUserPhoneNumber.equals(newUserPhoneNumber)){
             mUserPhoneNumber = newUserPhoneNumber;
             bioDataChanged = true;
         }
-        if (newUserEmail == null || !mUserEmail.equals(newUserEmail)){
+        if (mUserEmail == null || !mUserEmail.equals(newUserEmail)){
             mUserEmail = newUserEmail;
             bioDataChanged = true;
         }
