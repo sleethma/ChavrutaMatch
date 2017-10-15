@@ -12,10 +12,17 @@ import android.util.Log;
 import android.widget.Toast;
 import android.content.SharedPreferences;
 
+import com.example.micha.chavrutamatch.AddBio;
+import com.example.micha.chavrutamatch.Data.HostSessionData;
 import com.example.micha.chavrutamatch.MainActivity;
 import com.example.micha.chavrutamatch.R;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import static android.R.attr.defaultValue;
+import static android.R.attr.targetActivity;
 import static android.content.Context.MODE_PRIVATE;
 
 /**
@@ -35,6 +42,9 @@ public class UserDetails extends AppCompatActivity{
     private static String mUserEmail;
     private static  SharedPreferences mPreferences;
     private static Context mContext;
+
+
+
     private static String mUserBio;
 
 
@@ -72,7 +82,7 @@ public class UserDetails extends AppCompatActivity{
        return new String[]  {mUserId, mUserName, mUserAvatarNumberString, mUserFirstName, mUserLastName};
     }
 
-    public static void  setUserData(){
+    public static void  setUserDataFromSP(){
         SharedPreferences prefs = mContext.getSharedPreferences("user_data", MODE_PRIVATE);
 
         //get info from newUserLogin if exists
@@ -95,8 +105,13 @@ public class UserDetails extends AppCompatActivity{
         UserDetails.mUserAvatarNumberString = mUserAvatarNumberString;
     }
 
+
     public static String getmUserId() {
         return mUserId;
+    }
+
+    public static void setmUserBio(String mUserBio) {
+        UserDetails.mUserBio = mUserBio;
     }
 
     public static void setmUserId(String mUserId) {
@@ -121,6 +136,10 @@ public class UserDetails extends AppCompatActivity{
 
     public static String getmUserEmail() {
         return mUserEmail;
+    }
+
+    public static String getmUserBio() {
+        return mUserBio;
     }
 
     public static void setmUserEmail(String mUserEmail) {

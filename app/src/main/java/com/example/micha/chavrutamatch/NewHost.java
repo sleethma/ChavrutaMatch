@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewAnimationUtils;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -72,6 +73,7 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
     @BindView(R.id.tv_host_user_name)
     TextView tvAddHost;
 
+
     //host strings to db
     private String mHostFirstName;
     private String mHostLastName;
@@ -99,17 +101,41 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         setContentView(R.layout.new_host_entry);
         ButterKnife.bind(this);
 
+        //ivHostAvatar.setImageResource(R.drawable.doggie_avatar_128);
+//        ivHostAvatar.setImageResource(R.drawable.david_star_avatar);
+        //ivHostAvatar.setImageResource(R.drawable.luchos_avatar);
+//        ivHostAvatar.setImageResource(R.drawable.chai_avatar);
+//        ivHostAvatar.setImageResource(R.drawable.israeli_flag_avatar);
+//        ivHostAvatar.setImageResource(R.drawable.kiddush_avatar);
+//        ivHostAvatar.setImageResource(R.drawable.shalom_avatar);
+//        ivHostAvatar.setImageResource(R.drawable.love_avatar);
+//        ivHostAvatar.setImageResource(R.drawable.rainbow_heart_avatar);
+      //  ivHostAvatar.setImageResource(R.drawable.rainbow_heart_avatar);
+     //   ivHostAvatar.setImageResource(R.drawable.ic_unknown_user);
+
+
+
+
+
+        
+
+
+
         ibStartTime.setOnClickListener(this);
         ibHostEndTime.setOnClickListener(this);
         bTimeSet.setOnClickListener(this);
         ibDate.setOnClickListener(this);
         ibHostIt.setOnClickListener(this);
         setCurrentDateVars();
-
+        //todo: delete below method "setUserDataInSP" if works with out
         //sets UserData in UserDetail passing in an Activity Context @HostSelect for UserData retrieval
-        UserDetails.setUserData();
+//        UserDetails.setUserDataInSP();
         mHostFirstName = UserDetails.getmUserFirstName();
         mHostLastName = UserDetails.getmUserLastName();
+
+        //auto moves edittext when softkeyboard called
+        this.getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
         flHostPic.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -271,11 +297,11 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         mLocation = etHostAddress.getText().toString();
         mHostId = UserDetails.getmUserId();
         String confirmed ="not confirmed";
-        String chavrutaRequest1 = "1", chavrutaRequest2 = "2", chavrutaRequest3 = "3";
+        String chavrutaRequest1 = "None", chavrutaRequest2 = "None", chavrutaRequest3 = "None";
         String newHost = "new host";
         ServerConnect postToServer = new ServerConnect(this);
         postToServer.execute(newHost, mHostFirstName, mHostLastName, mSessionMessage, mSessionDate,
-                mStartTime, mEndTime, mSefer, mLocation, mHostId,chavrutaRequest1,chavrutaRequest2,chavrutaRequest3, confirmed);
+                mStartTime, mEndTime, mSefer, mLocation, mHostId, chavrutaRequest1, chavrutaRequest2, chavrutaRequest3, confirmed);
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
@@ -295,6 +321,13 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
                 v, (int) v.getWidth() / 2, (int) v.getHeight() / 2, 0, finalRadius);
         v.setBackgroundColor(Color.GREEN);
         anim.start();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent =new Intent(this, AddSelect.class);
+        startActivity(intent);
     }
 
 }

@@ -31,11 +31,15 @@ public class LoginActivity extends AppCompatActivity {
     public static int APP_REQUEST_CODE = 1;
     private static final String LOG_TAG = LoginActivity.class.getSimpleName();
     public static boolean mIsConnected;
+    SharedPreferences prefs;
+    private String mUserId;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_type_select);
+
+        prefs = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE);
         //check for an existing access token
         AccessToken currentAccessToken = AccountKit.getCurrentAccessToken();
         if (currentAccessToken != null) {
@@ -59,13 +63,17 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(this, toastMessage, Toast.LENGTH_LONG).show();
             } else if (loginResult.getAccessToken() != null) {
                 //on successful login and new user, proceed to the AddBio activity
-                SharedPreferences prefs = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE);
                 //@newUser = users first ever login
                 Boolean newUser = prefs.getBoolean("new_user_key", true);
+                mUserId = loginResult.getAccessToken().getAccountId();
+
                 if (newUser) {
                     SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE).edit();
                     editor.putBoolean("new_user_key", false);
-                    editor.putString(getString(R.string.user_avatar_number_key), "1");
+                    editor.putString(getString(R.string.user_avatar_number_key), "0");
+                    UserDetails.setmUserAvatarNumberString("0");
+                    editor.putString(getString(R.string.user_account_id_key), mUserId);
+                    UserDetails.setmUserId(mUserId);
                     editor.apply();
                     launchAddBioActivity();
                 } else {

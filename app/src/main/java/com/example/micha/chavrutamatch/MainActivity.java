@@ -76,6 +76,49 @@ public class MainActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
         mContext = this;
+
+        //activate user details class for account kit
+
+        //check if already logged in
+        //get current account and create new anonymous inner class
+        AccountKit.getCurrentAccount(new AccountKitCallback<Account>() {
+            @Override
+            public void onSuccess(final com.facebook.accountkit.Account account) {
+                // Get Account Kit ID
+                String accountKitId = account.getId();
+                UserDetails.setmUserId(accountKitId);
+                //stores user id, email, or phone in SP
+                SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE).edit();
+                editor.putString(getString(R.string.user_account_id_key), accountKitId);
+                editor.putBoolean("new_user_key", false);
+
+                PhoneNumber phoneNumber = account.getPhoneNumber();
+                if (account.getPhoneNumber() != null) {
+                    // if the phone number is available, display it
+                    String formattedPhoneNumber = formatPhoneNumber(phoneNumber.toString());
+                    UserDetails.setmUserPhoneNumber(formattedPhoneNumber);
+                    editor.putString(getString(R.string.user_phone_key), formattedPhoneNumber);
+
+                } else {
+                    // if the email address is available, store it
+                    String emailString = account.getEmail();
+                    UserDetails.setmUserEmail(emailString);
+                    editor.putString(getString(R.string.user_email_key), emailString);
+                }
+                editor.apply();
+            }
+
+            @Override
+            public void onError(final AccountKitError error) {
+                //display error
+//                String toastMessage = error.getErrorType().getMessage();
+//                Toast.makeText(MainActivity.this, toastMessage, Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
         //receives intent from ServerConnect to display myChavruta list, else gets myChavruta info from db
         if (getIntent().getExtras() != null) {
             jsonString = getIntent().getExtras().getString("myChavrutaKey");
@@ -85,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
             //add and remove views to display myChavrutas
             if (myChavrutasArrayList != null && !jsonString.isEmpty()) {
                 //parses and adds data in JSON string from MyChavruta Server call
-                parseJSONEntry();
+                parseJSONMyChavrutas();
                 //attaches data source to adapter and displays list
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
                 myChavrutaListView.setLayoutManager(linearLayoutManager);
@@ -110,47 +153,7 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
 
-            //activate user details class for account kit
-            final UserDetails userDetails = new UserDetails();
 
-            //check if already logged in
-            //get current account and create new anonymous inner class
-            AccountKit.getCurrentAccount(new AccountKitCallback<Account>() {
-                @Override
-                public void onSuccess(final com.facebook.accountkit.Account account) {
-                    // Get Account Kit ID
-                    String accountKitId = account.getId();
-                    UserDetails.setmUserId(accountKitId);
-                    //stores user id, email, or phone in SP
-                    SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE).edit();
-                    editor.putString(getString(R.string.user_account_id_key), accountKitId);
-                    editor.putBoolean("new_user_key", false);
-
-                    PhoneNumber phoneNumber = account.getPhoneNumber();
-                    if (account.getPhoneNumber() != null) {
-                        // if the phone number is available, display it
-                        String formattedPhoneNumber = formatPhoneNumber(phoneNumber.toString());
-                        UserDetails.setmUserPhoneNumber(formattedPhoneNumber);
-                        editor.putString(getString(R.string.user_phone_key), formattedPhoneNumber);
-
-                    } else {
-                        // if the email address is available, store it
-                        String emailString = account.getEmail();
-                        UserDetails.setmUserEmail(emailString);
-                        editor.putString(getString(R.string.user_email_key), emailString);
-                    }
-                    editor.apply();
-                }
-
-                @Override
-                public void onError(final AccountKitError error) {
-                    //display error
-//                String toastMessage = error.getErrorType().getMessage();
-//                Toast.makeText(MainActivity.this, toastMessage, Toast.LENGTH_LONG).show();
-                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                    startActivity(intent);
-                }
-            });
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
         } else {
@@ -165,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
                 ServerConnect getMyChavrutas = new ServerConnect(this);
                 getMyChavrutas.execute(getMyChavrutasKey);
             } else {
+                //device is not logged in
                 AccountKit.logOut();
                 launchLoginActivity();
             }
@@ -183,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
 
     //parses JSON string data to form myChavrutas ListView
     //@ var chavrutaId = autoInc from db
-    public void parseJSONEntry() {
+    public void parseJSONMyChavrutas() {
         String chavrutaId;
 
         String hostFirstName, hostLastName, sessionMessage, sessionDate,

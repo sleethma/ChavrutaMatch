@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -46,6 +47,7 @@ import butterknife.ButterKnife;
 
 import static android.R.attr.host;
 import static android.R.attr.resource;
+import static android.R.attr.visible;
 import static android.content.Context.MODE_PRIVATE;
 import static com.example.micha.chavrutamatch.R.drawable.not_confirmed_rounded_corners;
 import static com.example.micha.chavrutamatch.R.id.user_first_name;
@@ -167,6 +169,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
         Button confirmRequest_3;
         Button chavrutaConfirmed;
         ImageButton addHost;
+        FrameLayout noRequesterView;
 
         public ViewHolder(View listItemView) {
             super(listItemView);
@@ -191,6 +194,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
             confirmRequest_2 = (Button) listItemView.findViewById(R.id.b_confirm_request_2);
             confirmRequest_3 = (Button) listItemView.findViewById(R.id.b_confirm_request_3);
             chavrutaConfirmed = (Button) listItemView.findViewById(R.id.b_chavruta_confirmed);
+            noRequesterView = (FrameLayout) listItemView.findViewById(R.id.fl_awaiting_requester);
         }
 
         void bind(OpenChavrutaAdapter.ViewHolder holder, int listIndex) {
@@ -389,6 +393,10 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                             setViewHolderConfirmations(currentItem, 3);
                         }
                     });
+                }
+                //if no requesters display
+                if(isRequest1 == false && isRequest2 == false && isRequest3 == false){
+                    holder.noRequesterView.setVisibility(View.VISIBLE);
                 }
             }
 

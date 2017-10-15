@@ -21,8 +21,8 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintRight_toLeftOf="@+id/session_sefer"
         android:layout_marginLeft="50dp"
-        android:layout_marginRight="0dp"
-        app:layout_constraintLeft_toLeftOf="parent" />
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginStart="50dp" />
 
     <TextView
         android:id="@+id/session_sefer"
@@ -36,7 +36,8 @@
         app:layout_constraintLeft_toRightOf="@+id/tv_hosting_label"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginRight="50dp" />
+        android:layout_marginRight="50dp"
+        android:layout_marginEnd="50dp" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -49,7 +50,8 @@
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@+id/view2"
-        app:layout_constraintTop_toBottomOf="@+id/session_sefer">
+        app:layout_constraintTop_toBottomOf="@+id/session_sefer"
+        android:id="@+id/linearLayout4">
 
         //requster 1 horizontal layout
 
@@ -206,6 +208,7 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/tv_confirm_request_1" />
         </LinearLayout>
+
     </LinearLayout>
 
     <TextView
@@ -368,6 +371,43 @@
         android:src="@drawable/ic_unknown_user"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/session_sefer" />
+
+    <FrameLayout
+        android:id="@+id/fl_awaiting_requester"
+        android:layout_width="0dp"
+        android:layout_height="219dp"
+        android:text="Sample"
+        android:layout_marginRight="8dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/linearLayout4"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/session_sefer"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="8dp"
+        android:visibility="visible">
+
+        <TextView
+            android:id="@+id/tv_awaiting_requester"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_marginTop="120dp"
+            android:background="@drawable/rounded_corner_motto"
+            android:gravity="center_vertical"
+            android:text="Awaiting Chavruta Sign-ups"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:textStyle="bold"/>
+
+        <ImageView
+            android:id="@+id/iv_logo_chavruta"
+            android:layout_width="166dp"
+            android:layout_height="100dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:elevation="4dp"
+            android:src="@drawable/chavruta_match_logo" />
+    </FrameLayout>
 
 </android.support.constraint.ConstraintLayout>
 

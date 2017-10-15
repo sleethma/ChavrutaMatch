@@ -83,6 +83,23 @@ public class AddSelect extends AppCompatActivity {
                 });
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        addHostButton.clearAnimation();
+        addGuestButton.clearAnimation();
+        Intent intent =new Intent(this, MainActivity.class);
+        startActivity(intent);
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        addHostButton.clearAnimation();
+        addGuestButton.clearAnimation();
+    }
+
+
     private void fadeAnimation(View v) {
         v.animate().alpha(0);
     }

@@ -159,4 +159,11 @@ public class HostSelect extends AppCompatActivity {
         v.setBackgroundColor(Color.GREEN);
         anim.start();
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent =new Intent(this, AddSelect.class);
+        startActivity(intent);
+    }
 }

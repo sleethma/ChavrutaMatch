@@ -7,6 +7,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
+import com.example.micha.chavrutamatch.AddBio;
+import com.example.micha.chavrutamatch.AddSelect;
 import com.example.micha.chavrutamatch.HostSelect;
 import com.example.micha.chavrutamatch.MainActivity;
 
@@ -74,6 +76,42 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
         //checks which ServerConnect instance was sent
         String chosenBkgdTaskCheck = params[0];
 
+        //retrieves user details from db if user exists
+        if (chosenBkgdTaskCheck.equals("get UserDetails")){
+            try {
+                HttpURLConnection httpURLConnection;
+                    String userID = UserDetails.getmUserId();
+                    String getUserDetailsUrlString = "http://brightlightproductions.online/get_json_user_details.php?user_id=" +
+                            userID;
+                URL getUserDetailsUrl = new URL(getUserDetailsUrlString);
+                    httpURLConnection = (HttpURLConnection) getUserDetailsUrl.openConnection();
+
+                httpURLConnection.setRequestMethod("GET");
+                //create inputstream
+                InputStream inputStream = httpURLConnection.getInputStream();
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                StringBuilder stringBuilder = new StringBuilder();
+
+                while ((jsonString = bufferedReader.readLine()) != null) {
+                    stringBuilder.append(jsonString + "\n");
+                }
+                bufferedReader.close();
+                inputStream.close();
+                httpURLConnection.disconnect();
+                postExecuteResponse = 6;
+
+                jsonString = stringBuilder.toString().trim();
+
+                return jsonString;
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+
         //assures register button sent this background call
         if (chosenBkgdTaskCheck.equals("new host")) {
             //get params
@@ -89,6 +127,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
             String chavrutaRequest1 = params[10];
             String chavrutaRequest2 = params[11];
             String chavrutaRequest3 = params[12];
+            String confirmed = params[13];
 
             //establish connection
             try {
@@ -126,7 +165,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                                 URLEncoder.encode("chavruta_request_3", "UTF-8") + "=" + URLEncoder.encode(
                                 chavrutaRequest3, "UTF-8") + "&" +
                                 URLEncoder.encode("not_confirmed", "UTF-8") + "=" + URLEncoder.encode(
-                                chavrutaRequest3, "UTF-8");
+                                confirmed, "UTF-8");
 
                 bufferedWriter.write(data);
                 bufferedWriter.flush();
@@ -142,7 +181,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 e.printStackTrace();
             }
         }
-        //
+        //determines which data set is needed to populate open host list or MainActivity my chavruta list
         if (chosenBkgdTaskCheck.equals("getJSONKey") || chosenBkgdTaskCheck.equals("my chavrutas")) {
             try {
                 HttpURLConnection httpURLConnection;
@@ -220,7 +259,6 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
 
                 String data =
                         URLEncoder.encode("user_id", "UTF-8") + "=" + URLEncoder.encode(
-
                                 userId, "UTF-8") + "&" +
                                 URLEncoder.encode("user_name", "UTF-8") + "=" + URLEncoder.encode(
                                 userName, "UTF-8") + "&" +
@@ -387,6 +425,11 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
             case 5:
                 //user request sent to host
                 Toast.makeText(mContextRegister, result, Toast.LENGTH_LONG).show();
+                break;
+            case 6:
+                Intent intent = new Intent(this.mContextRegister, AddBio.class);
+                intent.putExtra("user_data_json_string", jsonString);
+                mContextRegister.startActivity(intent);
                 break;
         }
         postExecuteResponse = 0;
