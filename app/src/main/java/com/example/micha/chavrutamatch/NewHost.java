@@ -101,26 +101,6 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         setContentView(R.layout.new_host_entry);
         ButterKnife.bind(this);
 
-        //ivHostAvatar.setImageResource(R.drawable.doggie_avatar_128);
-//        ivHostAvatar.setImageResource(R.drawable.david_star_avatar);
-        //ivHostAvatar.setImageResource(R.drawable.luchos_avatar);
-//        ivHostAvatar.setImageResource(R.drawable.chai_avatar);
-//        ivHostAvatar.setImageResource(R.drawable.israeli_flag_avatar);
-//        ivHostAvatar.setImageResource(R.drawable.kiddush_avatar);
-//        ivHostAvatar.setImageResource(R.drawable.shalom_avatar);
-//        ivHostAvatar.setImageResource(R.drawable.love_avatar);
-//        ivHostAvatar.setImageResource(R.drawable.rainbow_heart_avatar);
-      //  ivHostAvatar.setImageResource(R.drawable.rainbow_heart_avatar);
-     //   ivHostAvatar.setImageResource(R.drawable.ic_unknown_user);
-
-
-
-
-
-        
-
-
-
         ibStartTime.setOnClickListener(this);
         ibHostEndTime.setOnClickListener(this);
         bTimeSet.setOnClickListener(this);

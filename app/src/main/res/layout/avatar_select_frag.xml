@@ -1,5 +1,44 @@
+<<<<<<< Updated upstream
 <?xml version="1.0" encoding="utf-8"?>
 <GridView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent">
 
 </GridView>
+||||||| merged common ancestors
+=======
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <GridView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/gv_avatar_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="7"
+        android:adjustViewBounds="true"
+        android:columnWidth="180dp"
+        android:gravity="center"
+        android:horizontalSpacing="8dp"
+        android:numColumns="2"
+        android:padding="8dp"
+        android:verticalSpacing="8dp">
+    </GridView>
+
+    <Button
+        android:id="@+id/next_button"
+        android:layout_width="270dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/not_confirmed_rounded_corners"
+        android:layout_weight="1"
+        android:textSize="20sp"
+        android:text="Next" />
+
+
+</LinearLayout>
+>>>>>>> Stashed changes

@@ -1,14 +1,21 @@
 package com.example.micha.chavrutamatch;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
@@ -21,12 +28,14 @@ import org.json.JSONObject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.example.micha.chavrutamatch.MainActivity.mContext;
+
 
 /**
  * Created by micha on 8/26/2017.
  */
 
-public class AddBio extends AppCompatActivity {
+public class AddBio extends AppCompatActivity implements AvatarSelect.OnImageClickListener {
 
     private static String LOG_TAG = AddBio.class.getSimpleName();
     static String mUserId, mUserEmail, mUserPhoneNumber, mUserName, mUserFirstName, mUserLastName,
@@ -47,6 +56,7 @@ public class AddBio extends AppCompatActivity {
     ImageView UserAvatarView;
     SharedPreferences prefs;
 
+
     //controls whether or not db update necessary
     Boolean bioDataChanged = false;
     //controls whether activity used to update or to create new account
@@ -64,7 +74,15 @@ public class AddBio extends AppCompatActivity {
         UserAvatarView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(mContext, AvatarSelect.class);
+                startActivity(intent);
+//                android.support.v4.app.FragmentManager manager = getSupportFragmentManager();
+//                android.support.v4.app.FragmentTransaction transaction = manager.beginTransaction();
+//                AvatarSelect avatarFrag = new AvatarSelect();
+//                getSupportFragmentManager().beginTransaction()
+//                .add(R.id.fl_avatar_select_frag, avatarFrag);
+//                transaction.addToBackStack(null);
+//                transaction.commit();
             }
         });
 
@@ -283,4 +301,10 @@ public class AddBio extends AppCompatActivity {
         Intent intent = new Intent( this, MainActivity.class);
         startActivity(intent);
     }
+
+    public void onAvatarSelected(int position){
+        // Create a Toast that displays the position that was clicked
+        Toast.makeText(this, "Position clicked = " + position, Toast.LENGTH_SHORT).show();
+    }
+
 }
