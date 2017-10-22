@@ -1,5 +1,7 @@
 package com.example.micha.chavrutamatch.Data;
 
+import com.example.micha.chavrutamatch.R;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +36,7 @@ public class AvatarImgs {
             add(R.drawable.luchos_avatar);
         }
     };
+
 
     public static List<Integer> getAllAvatars() {
         return avatarImgList;

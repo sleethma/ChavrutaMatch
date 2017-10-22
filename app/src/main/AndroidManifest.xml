@@ -67,6 +67,10 @@
             android:name=".AddBio"
             android:screenOrientation="sensorPortrait"
             />
+        <activity
+            android:name=".AvatarSelectMasterList"
+            android:screenOrientation="sensorPortrait"
+            />
 
         <activity
             android:name=".NewHost"

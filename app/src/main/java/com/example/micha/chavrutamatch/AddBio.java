@@ -1,8 +1,6 @@
 package com.example.micha.chavrutamatch;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.support.v4.app.FragmentManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -19,11 +17,14 @@ import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
+import com.example.micha.chavrutamatch.Data.AvatarImgs;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -35,7 +36,7 @@ import static com.example.micha.chavrutamatch.MainActivity.mContext;
  * Created by micha on 8/26/2017.
  */
 
-public class AddBio extends AppCompatActivity implements AvatarSelect.OnImageClickListener {
+public class AddBio extends AppCompatActivity{
 
     private static String LOG_TAG = AddBio.class.getSimpleName();
     static String mUserId, mUserEmail, mUserPhoneNumber, mUserName, mUserFirstName, mUserLastName,
@@ -74,15 +75,15 @@ public class AddBio extends AppCompatActivity implements AvatarSelect.OnImageCli
         UserAvatarView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(mContext, AvatarSelect.class);
+                Intent intent = new Intent(getBaseContext(), AvatarSelectMasterList.class);
                 startActivity(intent);
-//                android.support.v4.app.FragmentManager manager = getSupportFragmentManager();
-//                android.support.v4.app.FragmentTransaction transaction = manager.beginTransaction();
-//                AvatarSelect avatarFrag = new AvatarSelect();
-//                getSupportFragmentManager().beginTransaction()
-//                .add(R.id.fl_avatar_select_frag, avatarFrag);
-//                transaction.addToBackStack(null);
-//                transaction.commit();
+//                FragmentManager manager = getSupportFragmentManager();
+//                AvatarSelectFragment avatarFrag = new AvatarSelectFragment();
+//                List<Integer> avatarIds = AvatarImgs.getAllAvatars();
+//                avatarFrag.setAvatarImageIds(avatarIds);
+//                manager.beginTransaction()
+//                .add(R.id.gv_avatar_list, avatarFrag)
+//                .commit();
             }
         });
 
