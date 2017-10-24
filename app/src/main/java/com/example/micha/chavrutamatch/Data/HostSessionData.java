@@ -16,6 +16,8 @@ public class HostSessionData {
     private String mHostFirstName;
     @Nullable
     private String mHostLastName;
+
+    private String mHostAvatarNumber;
     @Nullable
     private String mSessionMessage;
     @Nullable
@@ -48,7 +50,7 @@ public class HostSessionData {
     public Boolean requestThreeConfirmed = false;
 
 
-    public HostSessionData(String chavrutaId, String hostFirstName, String hostLastName, String sessionMessage,
+    public HostSessionData(String chavrutaId, String hostFirstName, String hostLastName, String hostAvatarNumber, String sessionMessage,
                            String sessionDate, String startTime, String endTime, String sefer,
                            String location, String hostId, String chavrutaRequest1, String chavrutaRequest2,
                            String chavrutaRequest3, String chavrutaRequest1Avatar, String chavrutaRequest1Name,
@@ -58,6 +60,7 @@ public class HostSessionData {
         setmChavrutaId(chavrutaId);
         setmHostFirstName(hostFirstName);
         setmHostLastName(hostLastName);
+        setmHostAvatarNumber(hostAvatarNumber);
         setmSessionMessage(sessionMessage);
         setmSessionDate(sessionDate);
         setmStartTime(startTime);
@@ -123,6 +126,10 @@ public class HostSessionData {
 
     public void setmChavrutaRequest3Name(String mChavrutaRequest3Name) {
         this.mChavrutaRequest3Name = mChavrutaRequest3Name;
+    }
+
+    public void setmHostAvatarNumber(String mHostAvatarNumber){
+        this.mHostAvatarNumber = mHostAvatarNumber;
     }
 
 

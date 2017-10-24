@@ -35,7 +35,7 @@ public class UserDetails extends AppCompatActivity{
     private static String mUserId;
     private static String mUserPassword;
     private static String mUserName;
-    private static String mUserAvatarNumberString= "1";
+    private static String mUserAvatarNumberString= "0";
     private static String mUserFirstName;
     private static String mUserLastName;
     private static String mUserPhoneNumber;
@@ -70,7 +70,7 @@ public class UserDetails extends AppCompatActivity{
         mUserEmail=param[6];
     }
 
-    public static String[]  getUserDataForChavruta(){
+    public static String[]  getUserDataFromSP(){
         SharedPreferences mPreferences = mContext.getSharedPreferences("user_data", MODE_PRIVATE);
         mUserPhoneNumber = mPreferences.getString("user phone number key",null);
         mUserName = mPreferences.getString("User Name", null);
@@ -82,8 +82,8 @@ public class UserDetails extends AppCompatActivity{
        return new String[]  {mUserId, mUserName, mUserAvatarNumberString, mUserFirstName, mUserLastName};
     }
 
-    public static void  setUserDataFromSP(){
-        SharedPreferences prefs = mContext.getSharedPreferences("user_data", MODE_PRIVATE);
+    public static void  setUserDetailsFromSP(Context context){
+        SharedPreferences prefs = context.getSharedPreferences("user_data", MODE_PRIVATE);
 
         //get info from newUserLogin if exists
         mUserPhoneNumber = prefs.getString("user phone number key", null);

@@ -25,11 +25,13 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
+import com.example.micha.chavrutamatch.Data.AvatarImgs;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 
 import org.w3c.dom.Text;
 
 import java.util.Calendar;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -77,6 +79,7 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
     //host strings to db
     private String mHostFirstName;
     private String mHostLastName;
+    private String mHostAvatarNumber;
     private String mSessionMessage;
     private String mSessionDate;
     private String mStartTime;
@@ -84,6 +87,7 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
     private String mSefer;
     private String mLocation;
     private String mHostId;
+    private List<Integer> allAvatars;
 
     private String format;
     private View.OnClickListener listener;
@@ -100,6 +104,13 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.new_host_entry);
         ButterKnife.bind(this);
+
+        //set up host avatar
+        UserDetails.setUserDetailsFromSP(this);
+        mHostAvatarNumber = UserDetails.getmUserAvatarNumberString();
+        allAvatars = AvatarImgs.getAllAvatars();
+        int mHostAvatarNumberInt = Integer.parseInt(mHostAvatarNumber);
+        ivHostAvatar.setImageResource(allAvatars.get(mHostAvatarNumberInt));
 
         ibStartTime.setOnClickListener(this);
         ibHostEndTime.setOnClickListener(this);
@@ -280,7 +291,7 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         String chavrutaRequest1 = "None", chavrutaRequest2 = "None", chavrutaRequest3 = "None";
         String newHost = "new host";
         ServerConnect postToServer = new ServerConnect(this);
-        postToServer.execute(newHost, mHostFirstName, mHostLastName, mSessionMessage, mSessionDate,
+        postToServer.execute(newHost, mHostFirstName, mHostLastName, mHostAvatarNumber,  mSessionMessage, mSessionDate,
                 mStartTime, mEndTime, mSefer, mLocation, mHostId, chavrutaRequest1, chavrutaRequest2, chavrutaRequest3, confirmed);
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);

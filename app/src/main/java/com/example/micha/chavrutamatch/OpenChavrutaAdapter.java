@@ -1,6 +1,7 @@
 package com.example.micha.chavrutamatch;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
@@ -15,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.micha.chavrutamatch.Data.AvatarImgs;
 import com.example.micha.chavrutamatch.Data.HostSessionData;
 
 import java.lang.reflect.Array;
@@ -63,8 +65,10 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
 //TODO use RoundedBitmapDrawable
     //RoundedBitmapDrawable drawable = RoundedBitmapDrawableFactory.create(context.getResources(), bitmap); drawable.setCircular(true);
 
+
     //number of views adapter will hold
     private int mNumberOfViews;
+    private int hostAvatarNumberInt= Integer.parseInt(UserDetails.getmUserAvatarNumberString());
     private Context mContext;
     String userId = UserDetails.getmUserId();
     Context mainActivityContext;
@@ -75,6 +79,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
     Boolean awaitingConfirmView;
     Boolean hostSelectView;
     ArrayList<HostSessionData> mChavrutaSessionsAL;
+    List<Integer> avatarList = AvatarImgs.getAllAvatars();
     private static final String LOG_TAG = OpenChavrutaAdapter.class.getSimpleName();
 
     /**
@@ -88,6 +93,8 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
         mChavrutaSessionsAL = chavrutaSessionsArrayList;
         mainActivityContext = MainActivity.mContext;
         hostSelectContext = HostSelect.mContext;
+        //calls so can access static user vars throughout adapter
+        UserDetails.setUserDetailsFromSP(mContext);
 //        orderArrayByDate(mChavrutaSessionsAL);
     }
 
@@ -107,7 +114,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
         int layoutIdForListItem;
-
+        //user is viewing open classes
         if (context == hostSelectContext) {
             layoutIdForListItem = R.layout.open_host_list_item;
             hostListItemView = false;
@@ -115,13 +122,13 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
             hostSelectView = true;
 
         } else {
-            //returns requested views based upon calling activity
+            //view is awaiting class confirmation by host
             if (viewType == 0) {
                 layoutIdForListItem = R.layout.my_chavruta_list_item;
                 hostListItemView = false;
                 awaitingConfirmView = true;
                 hostSelectView = false;
-
+            //view is user is hosting a class
             } else {
                 layoutIdForListItem = R.layout.hosting_chavrutas_list_item;
                 hostListItemView = true;
@@ -133,12 +140,6 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
         View view = layoutInflater.inflate(layoutIdForListItem, parent, false);
         ViewHolder viewHolder = new ViewHolder(view);
 
-        //set initial confirmed state for awaiting confirmation list item if populated before binding
-//        String learnerConfirmed = mChavrutaSessionsAL.get(0).getmConfirmed();
-//        if (awaitingConfirmView && learnerConfirmed.length() > 5) {
-//            viewHolder.chavrutaConfirmed.setBackgroundColor(Color.parseColor("#10ef2e"));
-//            viewHolder.chavrutaConfirmed.setText("Chavruta Matched");
-//        }
         return viewHolder;
     }
 
@@ -170,6 +171,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
         Button chavrutaConfirmed;
         ImageButton addHost;
         FrameLayout noRequesterView;
+        ImageView hostAvatar;
 
         public ViewHolder(View listItemView) {
             super(listItemView);
@@ -195,6 +197,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
             confirmRequest_3 = (Button) listItemView.findViewById(R.id.b_confirm_request_3);
             chavrutaConfirmed = (Button) listItemView.findViewById(R.id.b_chavruta_confirmed);
             noRequesterView = (FrameLayout) listItemView.findViewById(R.id.fl_awaiting_requester);
+            hostAvatar =(ImageView) listItemView.findViewById(R.id.iv_host_avatar);
         }
 
         void bind(OpenChavrutaAdapter.ViewHolder holder, int listIndex) {
@@ -233,6 +236,8 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
              requesterName = ChavrutaUtils.createUserFirstLastName(
                      currentItem.getmHostFirstName(), currentItem.getmHostLastName());
                 requesterAvatar = UserDetails.getmUserAvatarNumberString();
+                //todo: add host avatar number
+                holder.hostAvatar.setImageResource(avatarList.get(hostAvatarNumberInt));
                 //check which request slot is availiable and pass name of db column to server for insert
                 if (currentItem.getMchavrutaRequest1().length() < 5) {
                     requestSlotOpen = "chavruta_request_1";
@@ -259,6 +264,8 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
             //set initial confirmed state for awaiting confirmation list item
             if (awaitingConfirmView) {
                 String learnerConfirmed = currentItem.getmConfirmed();
+    //            int learnerAvatarNumber = Integer.parseInt(currentItem.getmChavrutaRequest1Avatar());
+    //            holder.hostAvatar.setImageResource(avatarList.get(learnerAvatarNumber));
                 if (learnerConfirmed.equals(userId)) {
                     holder.chavrutaConfirmed.setBackgroundColor(Color.parseColor("#10ef2e"));
                     holder.chavrutaConfirmed.setText("Chavruta Matched");

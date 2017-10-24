@@ -190,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
     public void parseJSONMyChavrutas() {
         String chavrutaId;
 
-        String hostFirstName, hostLastName, sessionMessage, sessionDate,
+        String hostFirstName, hostLastName, hostAvatarNumber, sessionMessage, sessionDate,
                 startTime, endTime, sefer, location, hostId,
                 chavrutaRequest1, chavrutaRequest1Avatar, chavrutaRequest1Name,
                 chavrutaRequest2, chavrutaRequest2Avatar, chavrutaRequest2Name,
@@ -209,6 +209,7 @@ public class MainActivity extends AppCompatActivity {
                 chavrutaId = jo.getString("chavruta_id");
                 hostFirstName = jo.getString("hostFirstName");
                 hostLastName = jo.getString("hostLastName");
+                hostAvatarNumber = jo.getString("hostAvatarNumber");
                 sessionMessage = jo.getString("sessionMessage");
                 sessionDate = jo.getString("sessionDate");
                 startTime = jo.getString("startTime");
@@ -230,7 +231,7 @@ public class MainActivity extends AppCompatActivity {
 
                 //make user data object of UserDataSetter class
                 HostSessionData myChavrutaData = new HostSessionData(chavrutaId, hostFirstName,
-                        hostLastName, sessionMessage, sessionDate, startTime, endTime, sefer, location,
+                        hostLastName, hostAvatarNumber, sessionMessage, sessionDate, startTime, endTime, sefer, location,
                         hostId, chavrutaRequest1, chavrutaRequest2, chavrutaRequest3,
                         chavrutaRequest1Avatar, chavrutaRequest1Name, chavrutaRequest2Avatar, chavrutaRequest2Name,
                         chavrutaRequest3Avatar, chavrutaRequest3Name,

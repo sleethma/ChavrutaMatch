@@ -117,17 +117,18 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
             //get params
             String hostFirstName = params[1];
             String hostLastName = params[2];
-            String sessionMessage = params[3];
-            String sessionDate = params[4];
-            String startTime = params[5];
-            String endTime = params[6];
-            String sefer = params[7];
-            String location = params[8];
-            String hostId = params[9];
-            String chavrutaRequest1 = params[10];
-            String chavrutaRequest2 = params[11];
-            String chavrutaRequest3 = params[12];
-            String confirmed = params[13];
+            String hostAvatarNumber = params[3];
+            String sessionMessage = params[4];
+            String sessionDate = params[5];
+            String startTime = params[6];
+            String endTime = params[7];
+            String sefer = params[8];
+            String location = params[9];
+            String hostId = params[10];
+            String chavrutaRequest1 = params[11];
+            String chavrutaRequest2 = params[12];
+            String chavrutaRequest3 = params[13];
+            String confirmed = params[14];
 
             //establish connection
             try {
@@ -144,6 +145,8 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                                 hostFirstName, "UTF-8") + "&" +
                                 URLEncoder.encode("host_last_name", "UTF-8") + "=" + URLEncoder.encode(
                                 hostLastName, "UTF-8") + "&" +
+                                URLEncoder.encode("host_avatar_number", "UTF-8") + "=" + URLEncoder.encode(
+                                hostAvatarNumber, "UTF-8") + "&" +
                                 URLEncoder.encode("session_message", "UTF-8") + "=" + URLEncoder.encode(
                                 sessionMessage, "UTF-8") + "&" +
                                 URLEncoder.encode("session_date", "UTF-8") + "=" + URLEncoder.encode(
