@@ -77,6 +77,9 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         mContext = this;
 
+        //sets up UserDetails
+        UserDetails.setUserDetailsFromSP(mContext);
+
         //activate user details class for account kit
 
         //check if already logged in

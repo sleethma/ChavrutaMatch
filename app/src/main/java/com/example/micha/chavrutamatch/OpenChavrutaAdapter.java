@@ -94,7 +94,6 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
         mainActivityContext = MainActivity.mContext;
         hostSelectContext = HostSelect.mContext;
         //calls so can access static user vars throughout adapter
-        UserDetails.setUserDetailsFromSP(mContext);
 //        orderArrayByDate(mChavrutaSessionsAL);
     }
 
@@ -214,6 +213,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
             if (holder.getItemViewType() == 1 && mContext == mainActivityContext) {
                 hostListItemView = true;
                 awaitingConfirmView = false;
+                holder.hostAvatar.setImageResource(avatarList.get(hostAvatarNumberInt));
                 requestSlotOpen = "0";
                 requesterAvatar = null;
                 requesterName = null;
@@ -264,8 +264,9 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
             //set initial confirmed state for awaiting confirmation list item
             if (awaitingConfirmView) {
                 String learnerConfirmed = currentItem.getmConfirmed();
-    //            int learnerAvatarNumber = Integer.parseInt(currentItem.getmChavrutaRequest1Avatar());
-    //            holder.hostAvatar.setImageResource(avatarList.get(learnerAvatarNumber));
+                String test = currentItem.getmHostAvatarNumber();
+                int currentHostAvatarNumberInt = Integer.parseInt(currentItem.getmHostAvatarNumber());
+                holder.hostAvatar.setImageResource(avatarList.get(currentHostAvatarNumberInt));
                 if (learnerConfirmed.equals(userId)) {
                     holder.chavrutaConfirmed.setBackgroundColor(Color.parseColor("#10ef2e"));
                     holder.chavrutaConfirmed.setText("Chavruta Matched");
@@ -315,7 +316,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
 
 
                 //sets the initial color of confirmed button to green to indicate confirmed
-                if (currentItem.getMchavrutaRequest1().length() > 5) {
+                if (request1.length() > 5) {
                     isRequest1 = true;
                     holder.pendingRequest_1.setVisibility(View.VISIBLE);
                     if (idOfConfirmedUser.equals(request1)) {
@@ -326,8 +327,8 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                     }
                     holder.confirmRequestName_1.setText(
                             chavrutaRequestName1);
-                    //todo: use var chavrutaRequestName1 to get id integer and set associated resource using enum class
-                    holder.confirmRequestAvatar_1.setImageResource(R.drawable.ic_unknown_user);
+                    int host1AvatarNumber = Integer.parseInt(currentItem.getmChavrutaRequest1Avatar());
+                    holder.confirmRequestAvatar_1.setImageResource(avatarList.get(host1AvatarNumber));
                 } else {
                     holder.pendingRequest_1.setVisibility(View.GONE);
                 }
@@ -342,7 +343,8 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                     }
                     holder.confirmRequestName_2.setText(
                             chavrutaRequestName2);
-                    holder.confirmRequestAvatar_2.setImageResource(R.drawable.chavruta_logo);
+                    int host2AvatarNumber = Integer.parseInt(currentItem.getmChavrutaRequest2Avatar());
+                    holder.confirmRequestAvatar_2.setImageResource(avatarList.get(host2AvatarNumber));
 
                 } else {
                     holder.pendingRequest_2.setVisibility(View.GONE);
@@ -358,7 +360,8 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                     }
                     holder.confirmRequestName_3.setText(
                             chavrutaRequestName3);
-                    holder.confirmRequestAvatar_3.setImageResource(R.drawable.icon_profile_empty);
+                    int host3AvatarNumber = Integer.parseInt(currentItem.getmChavrutaRequest2Avatar());
+                    holder.confirmRequestAvatar_3.setImageResource(avatarList.get(host3AvatarNumber));
 
                 } else {
                     holder.pendingRequest_3.setVisibility(View.GONE);

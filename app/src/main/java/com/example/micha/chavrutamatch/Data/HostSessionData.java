@@ -132,6 +132,10 @@ public class HostSessionData {
         this.mHostAvatarNumber = mHostAvatarNumber;
     }
 
+    public String getmHostAvatarNumber(){
+        return mHostAvatarNumber;
+    }
+
 
     public String[] getAllStringHostDataForMyChavruta() {
         return new String[]{mHostFirstName, mHostLastName, mSessionMessage, mSessionDate, mStartTime,
