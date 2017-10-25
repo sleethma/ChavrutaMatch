@@ -33,6 +33,7 @@ dependencies {
     compile 'com.facebook.android:account-kit-sdk:4.+'
     compile 'com.facebook.android:facebook-android-sdk:4.+'
     compile 'com.android.support:recyclerview-v7:25.3.1'
+    compile 'de.hdodenhof:circleimageview:2.2.0'
 
     testCompile 'junit:junit:4.12'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.7.0'

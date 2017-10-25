@@ -10,7 +10,6 @@ import java.util.List;
  */
 
 
-
 public class AvatarImgs {
 
     private static List<Integer> avatarImgList = new ArrayList<Integer>() {
@@ -40,6 +39,10 @@ public class AvatarImgs {
 
     public static List<Integer> getAllAvatars() {
         return avatarImgList;
+    }
+
+    public static int getAvatarNumberResId(int number) {
+        return avatarImgList.get(number);
     }
 }
 

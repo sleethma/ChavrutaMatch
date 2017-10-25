@@ -25,6 +25,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
+import com.example.micha.chavrutamatch.Data.AvatarImgs;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 
 import org.json.JSONArray;
@@ -43,8 +44,8 @@ import butterknife.ButterKnife;
 
 public class HostSelect extends AppCompatActivity {
 
-    @BindView(R.id.fl_host_pic)
-    FrameLayout flHostPic;
+    @BindView(R.id.iv_user_avatar)
+    ImageView userPic;
     // @BindView(R.id.b_host_chavruta) ImageButton hostChavruta;
     @BindView(R.id.all_hosts_list_view)
     RecyclerView allHostsList;
@@ -70,6 +71,10 @@ public class HostSelect extends AppCompatActivity {
         ButterKnife.bind(this);
         userId = UserDetails.getmUserId();
         mContext = this;
+
+        //sets HostImage in title bar
+        int hostAvatarNumberInt = Integer.parseInt(UserDetails.getmUserAvatarNumberString());
+        userPic.setImageResource(AvatarImgs.getAvatarNumberResId(hostAvatarNumberInt));
 
         //constructs the data source
         openChavrutaArrayList = new ArrayList<>();

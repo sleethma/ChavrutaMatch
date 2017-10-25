@@ -267,9 +267,11 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                 String test = currentItem.getmHostAvatarNumber();
                 int currentHostAvatarNumberInt = Integer.parseInt(currentItem.getmHostAvatarNumber());
                 holder.hostAvatar.setImageResource(avatarList.get(currentHostAvatarNumberInt));
+                holder.hostAvatar.setBackgroundResource(R.drawable.circle_background);
+
                 if (learnerConfirmed.equals(userId)) {
-                    holder.chavrutaConfirmed.setBackgroundColor(Color.parseColor("#10ef2e"));
-                    holder.chavrutaConfirmed.setText("Chavruta Matched");
+                    holder.chavrutaConfirmed.setBackgroundResource(R.drawable.confirmed_rounded_corners);
+                    holder.chavrutaConfirmed.setText("ChavrutaMatch!");
                 }else{
                         holder.chavrutaConfirmed.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
                     holder.chavrutaConfirmed.setText("Not Confirmed");
