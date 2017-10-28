@@ -20,8 +20,10 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.micha.chavrutamatch.Data.AvatarImgs;
 import com.example.micha.chavrutamatch.Data.HostSessionData;
 
 import org.json.JSONArray;
@@ -39,6 +41,7 @@ import com.example.micha.chavrutamatch.AcctLogin.LoginActivity;
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.Data.HostSessionData;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
+import com.example.micha.chavrutamatch.Utils.RecyclerViewListDecor;
 import com.facebook.accountkit.Account;
 import com.facebook.accountkit.AccountKit;
 import com.facebook.accountkit.AccountKitCallback;
@@ -60,6 +63,10 @@ public class MainActivity extends AppCompatActivity {
     ImageView noMatchView;
     @BindView(R.id.lv_my_chavruta)
     RecyclerView myChavrutaListView;
+    @BindView(R.id.iv_host_avatar)
+    ImageView userAvatar;
+    @BindView(R.id.tv_my_chavruta_label)
+    TextView myChavrutaLabel;
     OpenChavrutaAdapter mAdapter;
     static ArrayList<HostSessionData> myChavrutasArrayList;
     static Context mContext;
@@ -68,19 +75,26 @@ public class MainActivity extends AppCompatActivity {
     JSONArray jsonArray;
     String accountId;
 
+    //adds spacing b/n listitems
+    private final int VERTICAL_LIST_ITEM_SPACE = 40;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         ButterKnife.bind(this);
         mContext = this;
 
+        //delete if successful in xml
+//        Toolbar tool_bar = (Toolbar) findViewById(R.id.toolbar);
+//        setSupportActionBar(tool_bar);
+//        tool_bar.setLogo(R.drawable.chavruta_match_logo);
+
         //sets up UserDetails
         UserDetails.setUserDetailsFromSP(mContext);
-
-        //activate user details class for account kit
+        userAvatar.setImageResource(AvatarImgs.getAvatarNumberResId(
+                Integer.parseInt(UserDetails.getmUserAvatarNumberString())));
 
         //check if already logged in
         //get current account and create new anonymous inner class
@@ -135,18 +149,23 @@ public class MainActivity extends AppCompatActivity {
                 //attaches data source to adapter and displays list
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
                 myChavrutaListView.setLayoutManager(linearLayoutManager);
+
+                //add ItemDecoration
+                myChavrutaListView.addItemDecoration(new RecyclerViewListDecor(VERTICAL_LIST_ITEM_SPACE));
+
                 //todo: uncomment below to optimize UI if works with multiple listitem layout types
 //                myChavrutaListView.setHasFixedSize(true);
                 mAdapter = new OpenChavrutaAdapter(this, myChavrutasArrayList);
                 myChavrutaListView.setAdapter(mAdapter);
                 noMatchView.setVisibility(View.GONE);
+                myChavrutaLabel.setVisibility(View.VISIBLE);
                 myChavrutaListView.setVisibility(View.VISIBLE);
-
-
             } else {
                 //sets empty array list view
                 myChavrutaListView.setVisibility(View.GONE);
                 noMatchView.setVisibility(View.VISIBLE);
+                myChavrutaLabel.setVisibility(View.GONE);
+
                 //Todo: delete this and reapply to another element more revelant
                 noMatchView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -176,7 +195,6 @@ public class MainActivity extends AppCompatActivity {
                 launchLoginActivity();
             }
         }
-
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -230,7 +248,6 @@ public class MainActivity extends AppCompatActivity {
                 chavrutaRequest3Avatar = jo.getString("chavruta_request_3_avatar");
                 chavrutaRequest3Name = jo.getString("chavruta_request_1_name");
                 confirmed = jo.getString("confirmed");
-
 
                 //make user data object of UserDataSetter class
                 HostSessionData myChavrutaData = new HostSessionData(chavrutaId, hostFirstName,
@@ -298,12 +315,6 @@ public class MainActivity extends AppCompatActivity {
         view.setVisibility(View.INVISIBLE);
     }
 
-    //Account Activity from FB login
-    public void onLogout(View view) {
-        // logout of Account Kit
-        AccountKit.logOut();
-        launchLoginActivity();
-    }
 
     private void launchLoginActivity() {
         Intent intent = new Intent(this, LoginActivity.class);
@@ -323,5 +334,11 @@ public class MainActivity extends AppCompatActivity {
         return phoneNumber;
     }
 
+    public void loadProfile(View view){
+        Intent intent = new Intent(this, AddBio.class);
+        Boolean updateBio = true;
+        intent.putExtra("update_bio", updateBio);
+        startActivity(intent);
+    }
 }
 

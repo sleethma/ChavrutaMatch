@@ -7,6 +7,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -27,6 +28,7 @@ import android.widget.Toast;
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.Data.AvatarImgs;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
+import com.example.micha.chavrutamatch.Utils.ChavrutaTextValidation;
 
 import org.w3c.dom.Text;
 
@@ -111,6 +113,8 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         allAvatars = AvatarImgs.getAllAvatars();
         int mHostAvatarNumberInt = Integer.parseInt(mHostAvatarNumber);
         ivHostAvatar.setImageResource(allAvatars.get(mHostAvatarNumberInt));
+        tvAddHost.setText(UserDetails.getmUserName());
+        tvAddHost.setTypeface(Typeface.DEFAULT_BOLD);
 
         ibStartTime.setOnClickListener(this);
         ibHostEndTime.setOnClickListener(this);
@@ -118,9 +122,6 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         ibDate.setOnClickListener(this);
         ibHostIt.setOnClickListener(this);
         setCurrentDateVars();
-        //todo: delete below method "setUserDataInSP" if works with out
-        //sets UserData in UserDetail passing in an Activity Context @HostSelect for UserData retrieval
-//        UserDetails.setUserDataInSP();
         mHostFirstName = UserDetails.getmUserFirstName();
         mHostLastName = UserDetails.getmUserLastName();
 
@@ -279,22 +280,29 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
     }
 
     public void postNewHostSession() {
-        //TODO: import profile data of host mHostFirstName, mHostLastName
+        ChavrutaTextValidation textValidator = new ChavrutaTextValidation();
+        //checks if all text validated and appropriate
+        Boolean  textValidationPass = true;
         mSessionMessage = tvHostClassMessage.getText().toString();
         mSessionDate = tvDate.getText().toString();
         mStartTime = tv_StartTime.getText().toString();
         mEndTime = tvEndTime.getText().toString();
         mSefer = etHostTopic.getText().toString();
+        textValidationPass = textValidator.validateSeferInAddHost(mSefer);
         mLocation = etHostAddress.getText().toString();
         mHostId = UserDetails.getmUserId();
-        String confirmed ="not confirmed";
+        String confirmed = "not confirmed";
         String chavrutaRequest1 = "None", chavrutaRequest2 = "None", chavrutaRequest3 = "None";
         String newHost = "new host";
-        ServerConnect postToServer = new ServerConnect(this);
-        postToServer.execute(newHost, mHostFirstName, mHostLastName, mHostAvatarNumber,  mSessionMessage, mSessionDate,
-                mStartTime, mEndTime, mSefer, mLocation, mHostId, chavrutaRequest1, chavrutaRequest2, chavrutaRequest3, confirmed);
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
+        if (textValidationPass) {
+            ServerConnect postToServer = new ServerConnect(this);
+            postToServer.execute(newHost, mHostFirstName, mHostLastName, mHostAvatarNumber, mSessionMessage, mSessionDate,
+                    mStartTime, mEndTime, mSefer, mLocation, mHostId, chavrutaRequest1, chavrutaRequest2, chavrutaRequest3, confirmed);
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+        } else {
+            Toast.makeText(this, "invalid text given", Toast.LENGTH_SHORT).show();
+        }
     }
 
     //Animations

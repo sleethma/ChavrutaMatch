@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewPropertyAnimator;
@@ -31,9 +32,13 @@ import com.example.micha.chavrutamatch.Data.ServerConnect;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import com.example.micha.chavrutamatch.Data.HostSessionData;
+import com.example.micha.chavrutamatch.Utils.RecyclerViewListDecor;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -54,15 +59,14 @@ public class HostSelect extends AppCompatActivity {
     ArrayList<HostSessionData> openChavrutaArrayList;
     static Context mContext;
 
-
     public String jsonString;
     JSONObject jsonObject;
     JSONArray jsonArray;
     String userId;
-
+    //adds spacing b/n listitems
+    private final int VERTICAL_LIST_ITEM_SPACE = 40;
 
     OpenChavrutaAdapter mAdapter;
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -87,18 +91,21 @@ public class HostSelect extends AppCompatActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         allHostsList.setLayoutManager(layoutManager);
 
+        //decorates list with spacing
+        allHostsList.addItemDecoration(new RecyclerViewListDecor(VERTICAL_LIST_ITEM_SPACE));
 
         //attaches data source to adapter
         mAdapter = new OpenChavrutaAdapter(this, openChavrutaArrayList);
 
         allHostsList.setAdapter(mAdapter);
 
-        scrollImg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                makeCircularRevealAnim(v);
-            }
-        });
+        //todo:functioning ripple effect removed and applied elsewhere
+//        scrollImg.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                makeCircularRevealAnim(v);
+//            }
+//        });
     }
 
     //@ var chavrutaId = autoInc from db
@@ -107,9 +114,9 @@ public class HostSelect extends AppCompatActivity {
 
         String hostFirstName, hostLastName, hostAvatarNumber, sessionMessage, sessionDate,
                 startTime, endTime, sefer, location, hostId,
-                chavrutaRequest1,chavrutaRequest1Avatar, chavrutaRequest1Name,
-                chavrutaRequest2, chavrutaRequest2Avatar,chavrutaRequest2Name,
-                chavrutaRequest3,chavrutaRequest3Avatar, chavrutaRequest3Name,confirmed;
+                chavrutaRequest1, chavrutaRequest1Avatar, chavrutaRequest1Name,
+                chavrutaRequest2, chavrutaRequest2Avatar, chavrutaRequest2Name,
+                chavrutaRequest3, chavrutaRequest3Avatar, chavrutaRequest3Name, confirmed;
         try {
 
             jsonObject = new JSONObject(jsonString);
@@ -142,19 +149,25 @@ public class HostSelect extends AppCompatActivity {
                 chavrutaRequest3Name = jo.getString("chavruta_request_1_name");
                 confirmed = jo.getString("confirmed");
 
+            //only adds to array for adapter if user is not already requesting or hosting class
+                if (userId.equals(chavrutaRequest1) || userId.equals(chavrutaRequest2) ||
+                        userId.equals(chavrutaRequest3) || userId.equals(hostId)) {
+                } else {
                     //make user data object of UserDataSetter class
                     HostSessionData hostClassData = new HostSessionData(chavrutaId, hostFirstName, hostLastName, hostAvatarNumber, sessionMessage, sessionDate,
                             startTime, endTime, sefer, location, hostId, chavrutaRequest1, chavrutaRequest2, chavrutaRequest3,
-                            chavrutaRequest1Avatar, chavrutaRequest1Name,chavrutaRequest2Avatar,chavrutaRequest2Name,
-                            chavrutaRequest3Avatar, chavrutaRequest3Name,confirmed);
+                            chavrutaRequest1Avatar, chavrutaRequest1Name, chavrutaRequest2Avatar, chavrutaRequest2Name,
+                            chavrutaRequest3Avatar, chavrutaRequest3Name, confirmed);
                     openChavrutaArrayList
                             .add(hostClassData);
-
+                }
                 count++;
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        int testSize = openChavrutaArrayList.size();
+        Toast.makeText(mContext, "size = " + testSize, Toast.LENGTH_SHORT).show();
     }
 
     private void makeCircularRevealAnim(View v) {
@@ -169,7 +182,7 @@ public class HostSelect extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent intent =new Intent(this, AddSelect.class);
+        Intent intent = new Intent(this, AddSelect.class);
         startActivity(intent);
     }
 }
