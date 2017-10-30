@@ -45,9 +45,9 @@ public class HostSessionData {
 @Nullable
     private String mConfirmed;
 
-    public Boolean requestOneConfirmed = false;
-    public Boolean requestTwoConfirmed = false;
-    public Boolean requestThreeConfirmed = false;
+    public Boolean requestOneConfirmed = true;
+    public Boolean requestTwoConfirmed = true;
+    public Boolean requestThreeConfirmed = true;
 
 
     public HostSessionData(String chavrutaId, String hostFirstName, String hostLastName, String hostAvatarNumber, String sessionMessage,

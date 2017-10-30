@@ -40,19 +40,70 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintHorizontal_bias="0.503" />
 
+
     <LinearLayout
         android:id="@+id/linearLayout4"
-        android:layout_width="wrap_content"
+        android:layout_width="210dp"
         android:layout_height="0dp"
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="6dp"
+        android:layout_marginTop="12dp"
         android:orientation="vertical"
         android:weightSum="1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@+id/view2"
         app:layout_constraintTop_toBottomOf="@+id/session_sefer">
+
+        <FrameLayout
+            android:id="@+id/fl_awaiting_requester"
+            android:layout_width="180dp"
+            android:layout_height="200dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintLeft_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout4">
+
+            <TextView
+                android:id="@+id/tv_awaiting_requester"
+                android:layout_width="match_parent"
+                android:layout_height="58dp"
+                android:layout_gravity="left"
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="130dp"
+                android:background="@drawable/rounded_corner_motto"
+                android:gravity="center_vertical"
+                android:text="Awaiting Chavruta \n Sign-ups"
+                android:textAlignment="center"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/iv_logo_chavruta"
+                android:layout_width="150dp"
+                android:layout_height="100dp"
+                android:layout_gravity="left"
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
+                android:elevation="4dp"
+                android:src="@drawable/chavruta_match_logo" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/tv_requests_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CHAVRUTA REQUESTS (pick one)"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="12sp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toTopOf="@+id/linearLayout4"
+            app:layout_constraintEnd_toEndOf="parent"
+           />
 
         //requster 1 horizontal layout
 
@@ -96,7 +147,7 @@
 
             <Button
                 android:id="@+id/b_confirm_request_1"
-                android:layout_width="32dp"
+                android:layout_width="30dp"
                 android:layout_height="28dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginEnd="16dp"
@@ -104,11 +155,24 @@
                 android:background="@drawable/not_confirmed_rounded_corners"
                 android:focusable="false"
                 android:stateListAnimator="@animator/button_raise"
-                android:text="x"
                 android:visibility="visible"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/tv_confirm_request_1" />
+
         </LinearLayout>
+
+        <View
+            android:layout_height="1dp"
+            android:layout_width="120dp"
+            android:id="@+id/v_underline_requester_1"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="16dp"
+            android:visibility="gone"
+            android:background="@android:color/black">
+        </View>
 
         //requester 2 horizontal layout
 
@@ -153,17 +217,29 @@
 
             <Button
                 android:id="@+id/b_confirm_request_2"
-                android:layout_width="32dp"
+                android:layout_width="30dp"
                 android:layout_height="28dp"
                 android:layout_gravity="center_vertical"
                 android:background="@drawable/not_confirmed_rounded_corners"
                 android:focusable="false"
                 android:stateListAnimator="@animator/button_raise"
-                android:text="x"
                 android:visibility="visible"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/tv_confirm_request_1" />
+
         </LinearLayout>
+
+        <View
+            android:layout_height="1dp"
+            android:layout_width="120dp"
+            android:id="@+id/v_underline_requester_2"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="16dp"
+            android:visibility="gone"
+            android:background="@android:color/black"/>
 
         //requester 3 horizontal layout
 
@@ -208,46 +284,74 @@
 
             <Button
                 android:id="@+id/b_confirm_request_3"
-                android:layout_width="32dp"
+                android:layout_width="30dp"
                 android:layout_height="28dp"
                 android:layout_gravity="center_vertical"
                 android:background="@drawable/not_confirmed_rounded_corners"
                 android:focusable="false"
                 android:stateListAnimator="@animator/button_raise"
-                android:text="x"
                 android:visibility="visible"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/tv_confirm_request_1" />
         </LinearLayout>
+        <View
+            android:layout_height="1dp"
+            android:layout_width="120dp"
+            android:id="@+id/v_underline_requester_3"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="16dp"
+            android:visibility="gone"
+            android:background="@android:color/black"/>
+
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_host_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="12dp"
+        android:text="HOST"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toStartOf="@+id/session_sefer"
+        app:layout_constraintHorizontal_bias="0.086"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/session_sefer" />
 
     <TextView
         android:id="@+id/host_first_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
         android:layout_marginTop="8dp"
         android:paddingBottom="8dp"
         android:text="Anonymous"
         android:textAlignment="center"
         android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/tv_location_label"
         app:layout_constraintLeft_toRightOf="@+id/iv_host_avatar"
-        app:layout_constraintTop_toBottomOf="@+id/session_sefer" />
+        app:layout_constraintTop_toTopOf="@+id/iv_host_avatar" />
 
 
-    <ImageButton
-        android:id="@+id/ib_add_match"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="15dp"
-        android:background="@drawable/fab_ripple"
-        android:focusable="false"
-        android:src="@drawable/ib_add_match"
-        android:stateListAnimator="@animator/button_raise"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+    <!--<ImageButton-->
+        <!--android:id="@+id/ib_add_match"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_margin="15dp"-->
+        <!--android:background="@drawable/fab_ripple"-->
+        <!--android:focusable="false"-->
+        <!--android:src="@drawable/ib_add_match"-->
+        <!--android:stateListAnimator="@animator/button_raise"-->
+        <!--android:visibility="gone"-->
+        <!--app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--app:layout_constraintLeft_toLeftOf="parent"-->
+        <!--app:layout_constraintRight_toRightOf="parent" />-->
 
 
     <TextView
@@ -340,7 +444,7 @@
         android:id="@+id/end_time"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="0dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
         android:text="No End Time!"
@@ -374,13 +478,12 @@
         android:layout_height="35dp"
         android:layout_gravity="center"
         android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:src="@drawable/ic_unknown_user"
         app:civ_border_color="#FF000000"
         app:civ_border_width="1dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/session_sefer" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_host_label" />
 
     <View
         android:id="@+id/v_bottom_line"
@@ -392,45 +495,7 @@
         app:layout_constraintTop_toBottomOf="@+id/view2"
         tools:layout_editor_absoluteY="250dp" />
 
-    <FrameLayout
-        android:id="@+id/fl_awaiting_requester"
-        android:layout_width="0dp"
-        android:layout_height="219dp"
-        android:layout_marginEnd="28dp"
-        android:layout_marginRight="32dp"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintLeft_toRightOf="@+id/linearLayout4"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/session_sefer"
-        app:layout_constraintVertical_bias="0.0">
 
-        <TextView
-            android:id="@+id/tv_awaiting_requester"
-            android:layout_width="match_parent"
-            android:layout_height="58dp"
-            android:layout_gravity="left"
-            android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="130dp"
-            android:background="@drawable/rounded_corner_motto"
-            android:gravity="center_vertical"
-            android:text="Awaiting Chavruta \n Sign-ups"
-            android:textAlignment="center"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-
-        <ImageView
-            android:id="@+id/iv_logo_chavruta"
-            android:layout_width="150dp"
-            android:layout_height="100dp"
-            android:layout_gravity="left"
-            android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp"
-            android:elevation="4dp"
-            android:src="@drawable/chavruta_match_logo" />
-    </FrameLayout>
 
 </android.support.constraint.ConstraintLayout>
 

@@ -157,6 +157,10 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
         LinearLayout pendingRequest_1;
         LinearLayout pendingRequest_2;
         LinearLayout pendingRequest_3;
+        View underlinePendingRequest_1;
+        View underlinePendingRequest_2;
+        View underlinePendingRequest_3;
+        TextView pendingRequestLabel;
         ImageView confirmRequestAvatar_1;
         ImageView confirmRequestAvatar_2;
         ImageView confirmRequestAvatar_3;
@@ -180,6 +184,11 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
             pendingRequest_1 = (LinearLayout) listItemView.findViewById(R.id.ll_requester_viewgroup_1);
             pendingRequest_2 = (LinearLayout) listItemView.findViewById(R.id.ll_requester_viewgroup_2);
             pendingRequest_3 = (LinearLayout) listItemView.findViewById(R.id.ll_requester_viewgroup_3);
+            underlinePendingRequest_1 = (View) listItemView.findViewById(R.id.v_underline_requester_1);
+            underlinePendingRequest_2 = (View) listItemView.findViewById(R.id.v_underline_requester_2);
+            underlinePendingRequest_3 = (View) listItemView.findViewById(R.id.v_underline_requester_3);
+            pendingRequestLabel = (TextView) listItemView.findViewById(R.id.tv_requests_label);
+
             confirmRequestName_1 = (TextView) listItemView.findViewById(R.id.tv_confirm_request_1);
             confirmRequestName_2 = (TextView) listItemView.findViewById(R.id.tv_confirm_request_2);
             confirmRequestName_3 = (TextView) listItemView.findViewById(R.id.tv_confirm_request_3);
@@ -315,9 +324,9 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                 if (request1.length() > 5) {
                     isRequest1 = true;
                     holder.pendingRequest_1.setVisibility(View.VISIBLE);
-                    if (idOfConfirmedUser.equals(request1)) {
-                        holder.confirmRequest_1.setBackgroundColor(Color.parseColor("#10ef2e"));
-                        currentItem.setRequestOneConfirmed(true);
+                    holder.underlinePendingRequest_1.setVisibility(View.VISIBLE);
+                    if (idOfConfirmedUser.equals(request1) && currentItem.requestOneConfirmed) {
+                        holder.confirmRequest_1.setBackgroundResource(R.drawable.ic_confirm_class);
                     } else {
                         currentItem.setRequestOneConfirmed(false);
                     }
@@ -327,13 +336,15 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                     holder.confirmRequestAvatar_1.setImageResource(avatarList.get(host1AvatarNumber));
                 } else {
                     holder.pendingRequest_1.setVisibility(View.GONE);
+                    holder.underlinePendingRequest_1.setVisibility(View.GONE);
+                    currentItem.setRequestOneConfirmed(false);
                 }
                 if (request2.length() > 5) {
                     holder.pendingRequest_2.setVisibility(View.VISIBLE);
+                    holder.underlinePendingRequest_2.setVisibility(View.VISIBLE);
                     isRequest2 = true;
-                    if (idOfConfirmedUser.equals(request2)) {
-                        holder.confirmRequest_2.setBackgroundColor(Color.parseColor("#10ef2e"));
-                        currentItem.setRequestTwoConfirmed(true);
+                    if (idOfConfirmedUser.equals(request2) && currentItem.requestTwoConfirmed) {
+                        holder.confirmRequest_2.setBackgroundResource(R.drawable.ic_confirm_class);
                     } else {
                         currentItem.setRequestTwoConfirmed(false);
                     }
@@ -344,13 +355,15 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
 
                 } else {
                     holder.pendingRequest_2.setVisibility(View.GONE);
+                    holder.underlinePendingRequest_2.setVisibility(View.GONE);
+                    currentItem.setRequestTwoConfirmed(false);
                 }
                 if (request3.length() > 5) {
                     holder.pendingRequest_3.setVisibility(View.VISIBLE);
+                    holder.underlinePendingRequest_3.setVisibility(View.VISIBLE);
                     isRequest3 = true;
-                    if (idOfConfirmedUser.equals(request3)) {
-                        holder.confirmRequest_3.setBackgroundColor(Color.parseColor("#10ef2e"));
-                        currentItem.setRequestThreeConfirmed(true);
+                    if (idOfConfirmedUser.equals(request3) && currentItem.requestThreeConfirmed) {
+                        holder.confirmRequest_3.setBackgroundResource(R.drawable.ic_confirm_class);
                     } else {
                         currentItem.setRequestThreeConfirmed(false);
                     }
@@ -361,7 +374,18 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
 
                 } else {
                     holder.pendingRequest_3.setVisibility(View.GONE);
+                    currentItem.setRequestOneConfirmed(false);
+                    holder.underlinePendingRequest_3.setVisibility(View.GONE);
+
                 }
+
+                //populates view if there is a request
+                if(isRequest1 || isRequest2 || isRequest3){
+                    pendingRequestLabel.setVisibility(View.VISIBLE);
+                }else{
+                    pendingRequestLabel.setVisibility(View.GONE);
+                }
+
                 //confirms or unconfirms requested view with color change indicator and db update
                 if (isRequest1) {
                     holder.confirmRequest_1.setOnClickListener(new View.OnClickListener() {
@@ -423,7 +447,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                     if (!currentItem.requestOneConfirmed) {
                         currentItem.setRequestOneConfirmed(true);
                         currentItem.setmConfirmed(currentItem.getMchavrutaRequest1());
-                        confirmRequest_1.setBackgroundColor(Color.parseColor("#10ef2e"));
+                        confirmRequest_1.setBackgroundResource(R.drawable.ic_confirm_class);
 
                         //set other request confirmations to false
                         currentItem.setRequestTwoConfirmed(false);
@@ -443,7 +467,9 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                     if (!currentItem.requestTwoConfirmed) {
                         currentItem.setRequestTwoConfirmed(true);
                         currentItem.setmConfirmed(currentItem.getMchavrutaRequest2());
-                        confirmRequest_2.setBackgroundColor(Color.parseColor("#10ef2e"));
+                        //confirmRequest_2.setBackgroundColor(Color.parseColor("#10ef2e"));
+                        confirmRequest_2.setBackgroundResource(R.drawable.ic_confirm_class);
+
 
                         //set other request confirmations to false
                         currentItem.setRequestOneConfirmed(false);
@@ -462,7 +488,8 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                     if (!currentItem.requestThreeConfirmed) {
                         currentItem.setRequestThreeConfirmed(true);
                         currentItem.setmConfirmed(currentItem.getMchavrutaRequest3());
-                        confirmRequest_3.setBackgroundColor(Color.parseColor("#10ef2e"));
+                        //confirmRequest_3.setBackgroundColor(Color.parseColor("#10ef2e"));
+                        confirmRequest_3.setBackgroundResource(R.drawable.ic_confirm_class);
 
                         //set other request confirmations to false
                         currentItem.setRequestOneConfirmed(false);
@@ -481,6 +508,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
             }
             String chavrutaId = currentItem.getmChavrutaId();
             sendConfirmationtoDb(chavrutaId, currentItem.getmConfirmed());
+            notifyDataSetChanged();
         }
     }
 
