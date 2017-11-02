@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.Data.AvatarImgs;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
+import com.example.micha.chavrutamatch.Utils.ChavrutaUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -127,7 +128,11 @@ public class AddBio extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
+        //todo: delete me!
+        ChavrutaUtils cu = new ChavrutaUtils();
+        String jsonFileString = cu.getJsonFileFromResource(this);
+        //list of top 1000 city names
+        List<String> testList = cu.parseCityName(jsonFileString);
     }
 
 
