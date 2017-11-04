@@ -16,6 +16,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -29,6 +31,7 @@ import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.Data.AvatarImgs;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.example.micha.chavrutamatch.Utils.ChavrutaTextValidation;
+import com.example.micha.chavrutamatch.Utils.ChavrutaUtils;
 
 import org.w3c.dom.Text;
 
@@ -136,6 +139,20 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
             }
         });
 
+        //todo: delete me!
+        ChavrutaUtils cu = new ChavrutaUtils();
+        String jsonFileString = cu.getJsonFileFromResource(this);
+        //list of top 1000 city names
+        List<String> testList = cu.parseCityName(jsonFileString);
+
+// Get a reference to the AutoCompleteTextView in the layout
+        AutoCompleteTextView autoCompleteTextView = (AutoCompleteTextView) findViewById(R.id.ac_city_state);
+// Get the string array
+
+// Create the adapter and set it to the AutoCompleteTextView
+        ArrayAdapter<String> adapter =
+                new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, testList);
+        autoCompleteTextView.setAdapter(adapter);
 
     }
 

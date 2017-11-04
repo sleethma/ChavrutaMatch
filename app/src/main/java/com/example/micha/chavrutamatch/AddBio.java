@@ -129,12 +129,11 @@ public class AddBio extends AppCompatActivity {
             }
         });
         //todo: delete me!
-        ChavrutaUtils cu = new ChavrutaUtils();
-        String jsonFileString = cu.getJsonFileFromResource(this);
+        //ChavrutaUtils cu = new ChavrutaUtils();
+        //String jsonFileString = cu.getJsonFileFromResource(this);
         //list of top 1000 city names
-        List<String> testList = cu.parseCityName(jsonFileString);
+        //List<String> testList = cu.parseCityName(jsonFileString);
     }
-
 
     //sole purpose of method is to send notification check and remind user to
     // come back and fill out bio later!
