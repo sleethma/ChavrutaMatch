@@ -74,7 +74,7 @@ public class ChavrutaUtils {
                     state = jo.getString("state");
 
                     //add city and state to list
-                    top1000CitiesStatesUS.add(city + "," + state);
+                    top1000CitiesStatesUS.add(city + ", " + state);
                     String content_added = top1000CitiesStatesUS.get(count);
                     count++;
                 }

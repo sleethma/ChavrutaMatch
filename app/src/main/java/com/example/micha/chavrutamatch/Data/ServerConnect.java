@@ -2,6 +2,7 @@ package com.example.micha.chavrutamatch.Data;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -11,6 +12,8 @@ import com.example.micha.chavrutamatch.AddBio;
 import com.example.micha.chavrutamatch.AddSelect;
 import com.example.micha.chavrutamatch.HostSelect;
 import com.example.micha.chavrutamatch.MainActivity;
+import com.example.micha.chavrutamatch.R;
+import com.facebook.share.Share;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -23,6 +26,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+
+import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by micha on 7/29/2017.
@@ -42,14 +47,6 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
     //postExecuteResponse: 0= no click/error; 1=registration; 2=get JSON
     int postExecuteResponse = 0;
 
-
-    public ServerConnect(Context context, TextView textView) {
-        this.mContextRegister = context;
-        if (textView != null) {
-            this.jsonTextView = textView;
-        }
-    }
-
     public ServerConnect(Context context) {
         this.mContextRegister = context;
     }
@@ -64,7 +61,6 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
 
         //stores path of db php registration script on host: server_IPv4/db_folder/file
         String reg_url = "http://brightlightproductions.online/chavruta_session_add.php";
-        String json_url = "http://brightlightproductions.online/get_chavrutaJSON.php";
         String new_user_url = "http://brightlightproductions.online/chavruta_user_profiles_add.php";
         String update_user_url = "http://brightlightproductions.online/chavruta_user_profiles_update.php";
 
@@ -124,11 +120,12 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
             String endTime = params[7];
             String sefer = params[8];
             String location = params[9];
-            String hostId = params[10];
-            String chavrutaRequest1 = params[11];
-            String chavrutaRequest2 = params[12];
-            String chavrutaRequest3 = params[13];
-            String confirmed = params[14];
+            String hostCityState = params[10];
+            String hostId = params[11];
+            String chavrutaRequest1 = params[12];
+            String chavrutaRequest2 = params[13];
+            String chavrutaRequest3 = params[14];
+            String confirmed = params[15];
 
             //establish connection
             try {
@@ -159,6 +156,8 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                                 sefer, "UTF-8") + "&" +
                                 URLEncoder.encode("location", "UTF-8") + "=" + URLEncoder.encode(
                                 location, "UTF-8") + "&" +
+                                URLEncoder.encode("host_city_state", "UTF-8") + "=" + URLEncoder.encode(
+                                hostCityState, "UTF-8") + "&" +
                                 URLEncoder.encode("host_id", "UTF-8") + "=" + URLEncoder.encode(
                                 hostId, "UTF-8") + "&" +
                                 URLEncoder.encode("chavruta_request_1", "UTF-8") + "=" + URLEncoder.encode(
@@ -186,6 +185,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
         }
         //determines which data set is needed to populate open host list or MainActivity my chavruta list
         if (chosenBkgdTaskCheck.equals("getJSONKey") || chosenBkgdTaskCheck.equals("my chavrutas")) {
+
             try {
                 HttpURLConnection httpURLConnection;
                 if (chosenBkgdTaskCheck.equals("my chavrutas")) {
@@ -199,6 +199,9 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                     URL jsonMyChavrutasURL = new URL(my_chavrutas_url);
                     httpURLConnection = (HttpURLConnection) jsonMyChavrutasURL.openConnection();
                 } else {
+                    String hostCityState = UserDetails.getUserCityState();
+                    String json_url = "http://brightlightproductions.online/" +
+                            "get_chavrutaJSON.php?host_city_state=" + hostCityState;
                     URL jsonURL = new URL(json_url);
                     httpURLConnection = (HttpURLConnection) jsonURL.openConnection();
                     myChavruta = false;
@@ -240,8 +243,9 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
             String userPhoneNumber = params[6];
             String userEmail = params[7];
             String userBio = params[8];
+            String userCityState = params[9];
             //@var postType: either "update user post" or "new user post"
-            String postType = params[9];
+            String postType = params[10];
 
             //establish connection
             try {
@@ -275,6 +279,8 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                                 userPhoneNumber, "UTF-8") + "&" +
                                 URLEncoder.encode("user_email", "UTF-8") + "=" + URLEncoder.encode(
                                 userEmail, "UTF-8") + "&" +
+                                URLEncoder.encode("user_city_state", "UTF-8") + "=" + URLEncoder.encode(
+                                userCityState, "UTF-8") + "&" +
                                 URLEncoder.encode("user_bio", "UTF-8") + "=" + URLEncoder.encode(
                                 userBio, "UTF-8");
 

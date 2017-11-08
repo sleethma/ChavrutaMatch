@@ -12,6 +12,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -44,7 +46,7 @@ public class AddBio extends AppCompatActivity {
     private static String LOG_TAG = AddBio.class.getSimpleName();
     private final int REQUEST_CODE = 100;
     static String mUserId, mUserEmail, mUserPhoneNumber, mUserName, mUserFirstName, mUserLastName,
-            mUserBio, mUserAvatarNumberString, jsonString;
+            mUserBio, mUserAvatarNumberString, mUserCityState, jsonString;
     @BindView(R.id.et_user_phone_number)
     EditText UserPhoneView;
     @BindView(R.id.et_user_email)
@@ -60,7 +62,8 @@ public class AddBio extends AppCompatActivity {
     @BindView(R.id.iv_user_avatar)
     ImageView UserAvatarView;
     SharedPreferences prefs;
-
+    @BindView(R.id.ac_city_state)
+            AutoCompleteTextView autoCompleteTextView;
 
     //controls whether or not db update necessary
     Boolean bioDataChanged = false;
@@ -87,7 +90,6 @@ public class AddBio extends AppCompatActivity {
             Intent incomingIntent = getIntent();
 
             // check if data coming from avatar select frag & sets user selected avatar in addBio Activitiy
-
             if (incomingIntent.getBooleanExtra("affirm update bio", false)){
                 Bundle bundle = incomingIntent.getExtras();
                 updateBio = bundle.getBoolean("affirm update bio");
@@ -128,11 +130,15 @@ public class AddBio extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        //todo: delete me!
-        //ChavrutaUtils cu = new ChavrutaUtils();
-        //String jsonFileString = cu.getJsonFileFromResource(this);
-        //list of top 1000 city names
-        //List<String> testList = cu.parseCityName(jsonFileString);
+        //set auto-complete for closest US city
+        ChavrutaUtils cu = new ChavrutaUtils();
+        String jsonFileString = cu.getJsonFileFromResource(this);
+        List<String> testList = cu.parseCityName(jsonFileString);
+
+// Create the adapter and set it to the AutoCompleteTextView
+        ArrayAdapter<String> adapter =
+                new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, testList);
+        autoCompleteTextView.setAdapter(adapter);
     }
 
     //sole purpose of method is to send notification check and remind user to
@@ -153,17 +159,16 @@ public class AddBio extends AppCompatActivity {
         String newUserLastName = UserLastNameView.getText().toString();
         String newUserBio = UserBioView.getText().toString();
         String newUserAvatarNumberString = UserDetails.getmUserAvatarNumberString();
+        String newUserCityState = autoCompleteTextView.getText().toString();
 
         //check for changes before queing db
         dataChangeCheck(newUserBio, newUserFirstName, newUserLastName,
-                newUserName, newUserPhoneNumber, newUserEmail, newUserAvatarNumberString);
+                newUserName, newUserPhoneNumber, newUserEmail, newUserAvatarNumberString, newUserCityState);
 
         if (bioDataChanged) {
-
             UserDetails.setAllUserDataFromAddBio(mUserId, newUserName, newUserAvatarNumberString,
-                    newUserFirstName, newUserLastName, newUserPhoneNumber, newUserEmail);
+                    newUserFirstName, newUserLastName, newUserPhoneNumber, newUserEmail, newUserCityState);
             saveAddBioDataToSP();
-
             postUserBio();
         } else {
             Toast.makeText(this, "No Changes Made", Toast.LENGTH_SHORT).show();
@@ -180,25 +185,10 @@ public class AddBio extends AppCompatActivity {
         getUserDetailsFromDb.execute("get UserDetails", mUserId);
     }
 
-    //posts saved user bio info to server
-    public void postUserBio() {
-        final String userPost = "user post";
-        String userPostType;
-        if (updateBio) {
-            userPostType = "update user post";
-        } else {
-            userPostType = "new user post";
-        }
-
-        ServerConnect postUserToServer = new ServerConnect(this);
-        postUserToServer.execute(userPost, mUserId, mUserName, mUserAvatarNumberString, mUserFirstName, mUserLastName,
-                mUserPhoneNumber, mUserEmail, mUserBio, userPostType);
-    }
-
     //checks to see if user changed data before saving in SP and DB
     public void dataChangeCheck(String newUserBio, String newUserFirstName, String newUserLastName,
                                 String newUserName, String newUserPhoneNumber, String newUserEmail,
-                                String newUserAvatarNumberString) {
+                                String newUserAvatarNumberString, String newUserCityState) {
         bioDataChanged = false;
         if (mUserBio == null || !mUserBio.equals(newUserBio)) {
             mUserBio = newUserBio;
@@ -228,20 +218,24 @@ public class AddBio extends AppCompatActivity {
             mUserAvatarNumberString = newUserAvatarNumberString;
             bioDataChanged = true;
         }
+        if (mUserCityState == null || !mUserCityState.equals(newUserCityState)) {
+            mUserCityState = newUserCityState;
+            bioDataChanged = true;
+        }
     }
+    //posts saved user bio info to server
+    public void postUserBio() {
+        final String userPost = "user post";
+        String userPostType;
+        if (updateBio) {
+            userPostType = "update user post";
+        } else {
+            userPostType = "new user post";
+        }
 
-    public void setAddBioDataToUserDetails() {
-        //gets activity globals from static UserDetail class updated in method above
-        mUserPhoneNumber = UserDetails.getmUserPhoneNumber();
-        mUserEmail = UserDetails.getmUserEmail();
-        mUserName = UserDetails.getmUserName();
-        mUserFirstName = UserDetails.getmUserFirstName();
-        mUserLastName = UserDetails.getmUserLastName();
-        mUserAvatarNumberString = UserDetails.getmUserAvatarNumberString();
-        mUserBio = UserDetails.getmUserBio();
-        mUserId = prefs.getString(getString(R.string.user_account_id_key), null);
-        //todo: delete below if functional w/o
-        if (mUserId == null) mUserId = UserDetails.getmUserId();
+        ServerConnect postUserToServer = new ServerConnect(this);
+        postUserToServer.execute(userPost, mUserId, mUserName, mUserAvatarNumberString, mUserFirstName, mUserLastName,
+                mUserPhoneNumber, mUserEmail, mUserBio, mUserCityState, userPostType);
     }
 
     //populates activity data from SP
@@ -255,6 +249,7 @@ public class AddBio extends AppCompatActivity {
         mUserAvatarNumberString = prefs.getString(getString(R.string.user_avatar_number_key), "0");
         mUserBio = prefs.getString(getString(R.string.user_bio_key), null);
         mUserId = prefs.getString(getString(R.string.user_account_id_key), null);
+        mUserCityState = prefs.getString(getString(R.string.user_city_state), null);
         populateEditTextData();
         //todo: delete below if functional w/o
         if (mUserId == null) mUserId = UserDetails.getmUserId();
@@ -281,6 +276,7 @@ public class AddBio extends AppCompatActivity {
             mUserPhoneNumber = jo.getString("userPhoneNumber");
             mUserEmail = jo.getString("userEmail");
             mUserBio = jo.getString("userBio");
+            mUserCityState = jo.getString("userCityState");
             populateEditTextData();
         } catch (JSONException e) {
             e.printStackTrace();
@@ -293,8 +289,13 @@ public class AddBio extends AppCompatActivity {
         UserNameView.setText(mUserName);
         UserFirstNameView.setText(mUserFirstName);
         UserLastNameView.setText(mUserLastName);
+        if(UserDetails.getmUserAvatarNumberString() != null ){
         UserAvatarView.setImageResource(mAvatarsList.get(Integer.parseInt(UserDetails.getmUserAvatarNumberString())));
+        }else {
+            UserAvatarView.setImageResource(R.drawable.ic_unknown_user);
+        }
         UserBioView.setText(mUserBio);
+        autoCompleteTextView.setText(mUserCityState);
     }
 
     public void saveAddBioDataToSP() {
@@ -308,6 +309,7 @@ public class AddBio extends AppCompatActivity {
         editor.putString(getString(R.string.user_email_key), mUserEmail);
         editor.putString(getString(R.string.user_avatar_number_key), mUserAvatarNumberString);
         editor.putString(getString(R.string.user_bio_key), mUserBio);
+        editor.putString(getString(R.string.user_city_state_key), mUserCityState);
         editor.apply();
     }
 

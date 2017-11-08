@@ -23,6 +23,8 @@
     <string name="user_last_name_key">user last name key</string>
     <string name="user_first_name_key">user first name key</string>
     <string name="user_name_key">user name key</string>
+    <string name="user_city_state_key">user city state</string>
+
 
 
 
@@ -39,6 +41,7 @@
         and background</string>
     <string name="skip_bio">Skip for Now</string>
     <string name="user_data_file">user_data</string>
+    <string name="user_city_state">user city state</string>
     <string name="reset">reset</string>
 
 

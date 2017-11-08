@@ -40,6 +40,7 @@ public class UserDetails extends AppCompatActivity{
     private static String mUserLastName;
     private static String mUserPhoneNumber;
     private static String mUserEmail;
+    private static String mUserCityState;
     private static  SharedPreferences mPreferences;
     private static Context mContext;
 
@@ -68,6 +69,7 @@ public class UserDetails extends AppCompatActivity{
         mUserLastName=param[4];
         mUserPhoneNumber=param[5];
         mUserEmail=param[6];
+        mUserCityState = param[7];
     }
 
     public static String[]  getUserDataFromSP(){
@@ -110,8 +112,11 @@ public class UserDetails extends AppCompatActivity{
         return mUserId;
     }
 
-    public static void setmUserBio(String mUserBio) {
-        UserDetails.mUserBio = mUserBio;
+    public static void setUserCityState(String userCityState) {
+        mUserCityState =userCityState;
+    }
+    public static String getUserCityState(){
+        return mUserCityState;
     }
 
     public static void setmUserId(String mUserId) {

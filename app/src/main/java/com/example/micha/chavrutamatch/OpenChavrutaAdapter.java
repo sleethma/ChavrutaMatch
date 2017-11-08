@@ -64,7 +64,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
 
     //number of views adapter will hold
     private int mNumberOfViews;
-    private int hostAvatarNumberInt = Integer.parseInt(UserDetails.getmUserAvatarNumberString());
+    private int hostAvatarNumberInt;
     private Context mContext;
     String userId = UserDetails.getmUserId();
     Context mainActivityContext;
@@ -89,6 +89,8 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
         mChavrutaSessionsAL = chavrutaSessionsArrayList;
         mainActivityContext = MainActivity.mContext;
         hostSelectContext = HostSelect.mContext;
+        hostAvatarNumberInt= UserDetails.getmUserAvatarNumberString() != null ?
+                Integer.parseInt(UserDetails.getmUserAvatarNumberString()) : 0;
         //calls so can access static user vars throughout adapter
 //        orderArrayByDate(mChavrutaSessionsAL);
     }
@@ -238,9 +240,10 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                 //view is from HostSelect Context
                 hostListItemView = false;
                 awaitingConfirmView = false;
-
+                String userFirstName = UserDetails.getmUserFirstName();
+                String userLastName = UserDetails.getmUserLastName();
                 requesterName = ChavrutaUtils.createUserFirstLastName(
-                        currentItem.getmHostFirstName(), currentItem.getmHostLastName());
+                        userFirstName, userLastName);
                 requesterAvatar = UserDetails.getmUserAvatarNumberString();
                 //todo: add host avatar number
                 holder.hostAvatar.setImageResource(avatarList.get(hostAvatarNumberInt));
@@ -320,7 +323,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                 Boolean isRequest3 = false;
 
 
-                //sets the initial color of confirmed button to green to indicate confirmed
+                //sets the initial status of confirmed button to check to indicate confirmed
                 if (request1.length() > 5) {
                     isRequest1 = true;
                     holder.pendingRequest_1.setVisibility(View.VISIBLE);
@@ -332,8 +335,8 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                     }
                     holder.confirmRequestName_1.setText(
                             chavrutaRequestName1);
-                    int host1AvatarNumber = Integer.parseInt(currentItem.getmChavrutaRequest1Avatar());
-                    holder.confirmRequestAvatar_1.setImageResource(avatarList.get(host1AvatarNumber));
+                    int request1AvatarNumber = Integer.parseInt(currentItem.getmChavrutaRequest1Avatar());
+                    holder.confirmRequestAvatar_1.setImageResource(avatarList.get(request1AvatarNumber));
                 } else {
                     holder.pendingRequest_1.setVisibility(View.GONE);
                     holder.underlinePendingRequest_1.setVisibility(View.GONE);
@@ -350,8 +353,8 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                     }
                     holder.confirmRequestName_2.setText(
                             chavrutaRequestName2);
-                    int host2AvatarNumber = Integer.parseInt(currentItem.getmChavrutaRequest2Avatar());
-                    holder.confirmRequestAvatar_2.setImageResource(avatarList.get(host2AvatarNumber));
+                    int request2AvatarNumber = Integer.parseInt(currentItem.getmChavrutaRequest2Avatar());
+                    holder.confirmRequestAvatar_2.setImageResource(avatarList.get(request2AvatarNumber));
 
                 } else {
                     holder.pendingRequest_2.setVisibility(View.GONE);
@@ -369,8 +372,8 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                     }
                     holder.confirmRequestName_3.setText(
                             chavrutaRequestName3);
-                    int host3AvatarNumber = Integer.parseInt(currentItem.getmChavrutaRequest2Avatar());
-                    holder.confirmRequestAvatar_3.setImageResource(avatarList.get(host3AvatarNumber));
+                    int request3AvatarNumber = Integer.parseInt(currentItem.getmChavrutaRequest2Avatar());
+                    holder.confirmRequestAvatar_3.setImageResource(avatarList.get(request3AvatarNumber));
 
                 } else {
                     holder.pendingRequest_3.setVisibility(View.GONE);
@@ -442,7 +445,6 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
 
             switch (requestClicked) {
                 case 1:
-
                     //sets confirmed state for request 1
                     if (!currentItem.requestOneConfirmed) {
                         currentItem.setRequestOneConfirmed(true);

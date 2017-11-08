@@ -3,6 +3,7 @@ package com.example.micha.chavrutamatch;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
@@ -30,6 +31,7 @@ public class AddSelect extends AppCompatActivity {
     ImageButton addGuestButton;
     @BindView(R.id.b_host_chavruta)
     ImageButton addHostButton;
+    SharedPreferences sp;
 
     Context mContext;
 
@@ -58,6 +60,10 @@ public class AddSelect extends AppCompatActivity {
                         //end action ran after animation
                     }
                 });
+        //sets user city and state for ServerConnect call
+        sp = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE);
+        String userCityState = sp.getString(getString(R.string.user_city_state), null);
+        UserDetails.setUserCityState(userCityState);
 
         String getJSONKey = "getJSONKey";
         ServerConnect getJSONFromServer = new ServerConnect(currentContext);

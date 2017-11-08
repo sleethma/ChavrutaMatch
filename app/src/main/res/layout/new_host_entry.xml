@@ -17,19 +17,18 @@
         android:background="@color/colorPrimaryDark">
 
         //View Title
-
         <TextView
             android:id="@+id/tv_title_add_host"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="10dp"
             android:background="@drawable/rounded_corner"
             android:fontFamily="casual"
             android:elevation="8dp"
             android:gravity="bottom|center_horizontal"
             android:text=" Host a Chavruta Session "
             android:textColor="@color/colorPrimaryDark"
-            android:textSize="24sp"
+            android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintHorizontal_bias="0.505"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -41,8 +40,8 @@
             android:id="@+id/fl_host_pic"
             android:layout_width="123dp"
             android:layout_height="108dp"
-            android:layout_marginLeft="24dp"
-            android:layout_marginStart="24dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="20dp"
             android:background="@drawable/rounded_corner"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -64,13 +63,12 @@
             android:layout_width="wrap_content"
             android:layout_height="81dp"
             android:layout_gravity="center"
-            android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginTop="16dp"
             android:rotation="270"
             android:text="User"
             android:textAlignment="center"
-            app:layout_constraintHorizontal_bias="0.45"
+            app:layout_constraintHorizontal_bias="0.32"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="@+id/fl_host_pic"
             app:layout_constraintTop_toTopOf="@+id/fl_host_pic" />
@@ -108,6 +106,7 @@
             android:layout_width="183dp"
             android:layout_height="wrap_content"
             android:background="@color/colorPrimaryDark"
+            android:elevation="0dp"
             app:layout_constraintLeft_toRightOf="@+id/fl_host_pic"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/view">
@@ -134,6 +133,7 @@
             app:layout_constraintBottom_toBottomOf="@+id/fl_host_pic"
             app:layout_constraintLeft_toRightOf="@+id/fl_host_pic"
             app:layout_constraintRight_toRightOf="parent"
+            android:elevation="0dp"
             app:layout_constraintTop_toBottomOf="@+id/til_chavruta_sefer">
         <EditText
             android:id="@+id/host_address"
@@ -156,13 +156,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
+            android:layout_marginTop="8dp"
             android:background="@drawable/fab_ripple"
             android:src="@drawable/b_start_time"
             android:stateListAnimator="@animator/button_raise"
             android:textColor="@android:color/white"
             app:layout_constraintLeft_toLeftOf="parent"
-            tools:layout_editor_absoluteY="231dp"
-            />
+            app:layout_constraintTop_toBottomOf="@+id/til_city_state" />
 
         <TextView
             android:id="@+id/tv_start_time"
@@ -170,7 +170,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="6dp"
             android:background="@drawable/rounded_corner"
             android:paddingEnd="4dp"
             android:paddingLeft="4dp"
@@ -183,7 +183,7 @@
             android:visibility="invisible"
             app:layout_constraintLeft_toRightOf="@+id/ib_host_start_time"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/host_address" />
+            app:layout_constraintTop_toBottomOf="@+id/til_city_state" />
         //End time
 
         <ImageButton
@@ -207,7 +207,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="18dp"
             android:background="@drawable/rounded_corner"
             android:paddingEnd="4dp"
             android:paddingLeft="4dp"
@@ -231,7 +231,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="18dp"
             android:background="@drawable/rounded_corner"
             android:paddingEnd="4dp"
             android:paddingLeft="4dp"
@@ -288,25 +288,28 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tp_start_time" />
 
-        //location city
+        //location cit
         <android.support.design.widget.TextInputLayout
             android:id="@+id/til_city_state"
             style="@style/AddBioTextInputLayoutStyle"
-            android:layout_marginStart="8dp"
-            android:background="@drawable/rounded_corner"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
             android:layout_marginLeft="8dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:elevation="0dp"
+            android:background="@color/colorPrimaryDark"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintLeft_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ib_date">
+            app:layout_constraintTop_toBottomOf="@+id/fl_host_pic">
 
-        <AutoCompleteTextView
-            android:id="@+id/ac_city_state"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Closest City, State"
-            />
+            <AutoCompleteTextView
+                android:id="@+id/ac_city_state"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Closest City, State" />
         </android.support.design.widget.TextInputLayout>
 
         //Host Message
@@ -315,11 +318,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
+            android:layout_marginTop="12dp"
             android:background="@drawable/rounded_corner"
             android:paddingBottom="3dp"
             android:paddingEnd="5dp"
             android:paddingLeft="5dp"
-            android:layout_marginTop="6dp"
             android:paddingStart="5dp"
             android:paddingTop="3dp"
             android:text="About the Class: (Optional)"
@@ -327,23 +330,20 @@
             android:textStyle="bold"
             app:layout_constraintHorizontal_bias="0.502"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/til_city_state"
             app:layout_constraintRight_toRightOf="parent"
-            tools:layout_editor_absoluteY="393dp" />
+            app:layout_constraintTop_toBottomOf="@+id/ib_date" />
 
         <EditText
             android:id="@+id/et_host_class_message"
             android:layout_width="350dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="12dp"
             android:background="@drawable/rounded_corner"
+            android:digits="@string/alphanumeric_address_input"
             android:hint="@string/host_class_message_string"
             android:paddingBottom="3dp"
-            android:digits="@string/alphanumeric_address_input"
             android:paddingEnd="5dp"
             android:paddingLeft="8dp"
             android:paddingRight="5dp"
@@ -351,10 +351,11 @@
             android:paddingTop="3dp"
             android:textColor="@color/colorPrimaryDark"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.444"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_host_message_label"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintVertical_bias="0.035" />
 
         <ImageButton
             android:id="@+id/host_it"

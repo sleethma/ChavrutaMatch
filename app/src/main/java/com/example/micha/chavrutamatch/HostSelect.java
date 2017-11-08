@@ -77,7 +77,8 @@ public class HostSelect extends AppCompatActivity {
         mContext = this;
 
         //sets HostImage in title bar
-        int hostAvatarNumberInt = Integer.parseInt(UserDetails.getmUserAvatarNumberString());
+        int hostAvatarNumberInt = UserDetails.getmUserAvatarNumberString() !=null ?
+                Integer.parseInt(UserDetails.getmUserAvatarNumberString()) : 0;
         userPic.setImageResource(AvatarImgs.getAvatarNumberResId(hostAvatarNumberInt));
 
         //constructs the data source
@@ -113,7 +114,7 @@ public class HostSelect extends AppCompatActivity {
         String chavrutaId;
 
         String hostFirstName, hostLastName, hostAvatarNumber, sessionMessage, sessionDate,
-                startTime, endTime, sefer, location, hostId,
+                startTime, endTime, sefer, location, hostCityState, hostId,
                 chavrutaRequest1, chavrutaRequest1Avatar, chavrutaRequest1Name,
                 chavrutaRequest2, chavrutaRequest2Avatar, chavrutaRequest2Name,
                 chavrutaRequest3, chavrutaRequest3Avatar, chavrutaRequest3Name, confirmed;
@@ -137,6 +138,7 @@ public class HostSelect extends AppCompatActivity {
                 endTime = jo.getString("endTime");
                 sefer = jo.getString("sefer");
                 location = jo.getString("location");
+                hostCityState = jo.getString("hostCityState");
                 hostId = jo.getString("host_id");
                 chavrutaRequest1 = jo.getString("chavruta_request_1");
                 chavrutaRequest1Avatar = jo.getString("chavruta_request_1_avatar");
@@ -155,7 +157,7 @@ public class HostSelect extends AppCompatActivity {
                 } else {
                     //make user data object of UserDataSetter class
                     HostSessionData hostClassData = new HostSessionData(chavrutaId, hostFirstName, hostLastName, hostAvatarNumber, sessionMessage, sessionDate,
-                            startTime, endTime, sefer, location, hostId, chavrutaRequest1, chavrutaRequest2, chavrutaRequest3,
+                            startTime, endTime, sefer, location, hostCityState, hostId, chavrutaRequest1, chavrutaRequest2, chavrutaRequest3,
                             chavrutaRequest1Avatar, chavrutaRequest1Name, chavrutaRequest2Avatar, chavrutaRequest2Name,
                             chavrutaRequest3Avatar, chavrutaRequest3Name, confirmed);
                     openChavrutaArrayList

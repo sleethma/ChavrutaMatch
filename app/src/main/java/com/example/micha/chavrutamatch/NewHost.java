@@ -6,6 +6,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
@@ -79,19 +80,13 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
     ImageButton ibHostIt;
     @BindView(R.id.tv_host_user_name)
     TextView tvAddHost;
+    @BindView(R.id.ac_city_state)
+            AutoCompleteTextView acCityState;
 
 
     //host strings to db
-    private String mHostFirstName;
-    private String mHostLastName;
-    private String mHostAvatarNumber;
-    private String mSessionMessage;
-    private String mSessionDate;
-    private String mStartTime;
-    private String mEndTime;
-    private String mSefer;
-    private String mLocation;
-    private String mHostId;
+    private String mHostFirstName, mHostLastName, mHostAvatarNumber, mSessionMessage, mSessionDate,
+    mStartTime, mEndTime, mSefer, mLocation, mHostId, mHostCityState;
     private List<Integer> allAvatars;
 
     private String format;
@@ -103,12 +98,19 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
     private static int mMonth;
     private static int mDay;
     public static final int DIALOG_ID = 999;
+    SharedPreferences sp;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.new_host_entry);
         ButterKnife.bind(this);
+
+        //autopopulate location from SP
+        sp = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE);
+        if(sp.getString(getString(R.string.user_city_state_key), null) != null) {
+            acCityState.setText(sp.getString(getString(R.string.user_city_state_key), null));
+        }
 
         //set up host avatar
         UserDetails.setUserDetailsFromSP(this);
@@ -139,21 +141,15 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
             }
         });
 
-        //todo: delete me!
+        //set auto-complete for closest US city
         ChavrutaUtils cu = new ChavrutaUtils();
         String jsonFileString = cu.getJsonFileFromResource(this);
-        //list of top 1000 city names
         List<String> testList = cu.parseCityName(jsonFileString);
-
-// Get a reference to the AutoCompleteTextView in the layout
-        AutoCompleteTextView autoCompleteTextView = (AutoCompleteTextView) findViewById(R.id.ac_city_state);
-// Get the string array
 
 // Create the adapter and set it to the AutoCompleteTextView
         ArrayAdapter<String> adapter =
                 new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, testList);
-        autoCompleteTextView.setAdapter(adapter);
-
+        acCityState.setAdapter(adapter);
     }
 
     @Override
@@ -307,6 +303,7 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         mSefer = etHostTopic.getText().toString();
         textValidationPass = textValidator.validateSeferInAddHost(mSefer);
         mLocation = etHostAddress.getText().toString();
+        mHostCityState = acCityState.getText().toString();
         mHostId = UserDetails.getmUserId();
         String confirmed = "not confirmed";
         String chavrutaRequest1 = "None", chavrutaRequest2 = "None", chavrutaRequest3 = "None";
@@ -314,7 +311,7 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         if (textValidationPass) {
             ServerConnect postToServer = new ServerConnect(this);
             postToServer.execute(newHost, mHostFirstName, mHostLastName, mHostAvatarNumber, mSessionMessage, mSessionDate,
-                    mStartTime, mEndTime, mSefer, mLocation, mHostId, chavrutaRequest1, chavrutaRequest2, chavrutaRequest3, confirmed);
+                    mStartTime, mEndTime, mSefer, mLocation, mHostCityState, mHostId, chavrutaRequest1, chavrutaRequest2, chavrutaRequest3, confirmed);
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         } else {

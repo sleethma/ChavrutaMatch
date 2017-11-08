@@ -86,13 +86,9 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         mContext = this;
 
-        //delete if successful in xml
-//        Toolbar tool_bar = (Toolbar) findViewById(R.id.toolbar);
-//        setSupportActionBar(tool_bar);
-//        tool_bar.setLogo(R.drawable.chavruta_match_logo);
-
         //sets up UserDetails
         UserDetails.setUserDetailsFromSP(mContext);
+        if(UserDetails.getmUserAvatarNumberString() != null)
         userAvatar.setImageResource(AvatarImgs.getAvatarNumberResId(
                 Integer.parseInt(UserDetails.getmUserAvatarNumberString())));
 
@@ -108,8 +104,8 @@ public class MainActivity extends AppCompatActivity {
                 SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE).edit();
                 editor.putString(getString(R.string.user_account_id_key), accountKitId);
                 editor.putBoolean("new_user_key", false);
-
                 PhoneNumber phoneNumber = account.getPhoneNumber();
+
                 if (account.getPhoneNumber() != null) {
                     // if the phone number is available, display it
                     String formattedPhoneNumber = formatPhoneNumber(phoneNumber.toString());
@@ -127,9 +123,6 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onError(final AccountKitError error) {
-                //display error
-//                String toastMessage = error.getErrorType().getMessage();
-//                Toast.makeText(MainActivity.this, toastMessage, Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);
             }
@@ -146,6 +139,11 @@ public class MainActivity extends AppCompatActivity {
             if (myChavrutasArrayList != null && !jsonString.isEmpty()) {
                 //parses and adds data in JSON string from MyChavruta Server call
                 parseJSONMyChavrutas();
+                //todo
+                myChavrutaListView.requestLayout();
+
+                //sets a smaller view if less than
+//                if(myChavrutasArrayList.size() <=2) myChavrutaListView.getLayoutParams().height = 900;
                 //attaches data source to adapter and displays list
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
                 myChavrutaListView.setLayoutManager(linearLayoutManager);
@@ -167,14 +165,20 @@ public class MainActivity extends AppCompatActivity {
                 myChavrutaLabel.setVisibility(View.GONE);
 
                 //Todo: delete this and reapply to another element more revelant
-                noMatchView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        animateTransition(v);
-                    }
-                });
-            }
+//                noMatchView.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        animateTransition(v);
+//                    }
+//                });
 
+            }
+            //checks to ensure db has data after parsing
+            if(myChavrutasArrayList.size() < 1){
+                myChavrutaListView.setVisibility(View.GONE);
+                noMatchView.setVisibility(View.VISIBLE);
+                myChavrutaLabel.setVisibility(View.GONE);
+            }
 
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
@@ -207,12 +211,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //parses JSON string data to form myChavrutas ListView
-    //@ var chavrutaId = autoInc from db
     public void parseJSONMyChavrutas() {
         String chavrutaId;
 
         String hostFirstName, hostLastName, hostAvatarNumber, sessionMessage, sessionDate,
-                startTime, endTime, sefer, location, hostId,
+                startTime, endTime, sefer, location, hostCityState, hostId,
                 chavrutaRequest1, chavrutaRequest1Avatar, chavrutaRequest1Name,
                 chavrutaRequest2, chavrutaRequest2Avatar, chavrutaRequest2Name,
                 chavrutaRequest3, chavrutaRequest3Avatar, chavrutaRequest3Name,
@@ -225,7 +228,9 @@ public class MainActivity extends AppCompatActivity {
             //loop through array and extract objects, adding them individually as setter objects,
             //and adding objects to list adapter.
             int count = 0;
-            while (count < jsonArray.length()) {
+            //todo: delete below line for testing
+              while (count < jsonArray.length()) {
+//            while (count < 1){
                 JSONObject jo = jsonArray.getJSONObject(count);
                 chavrutaId = jo.getString("chavruta_id");
                 hostFirstName = jo.getString("hostFirstName");
@@ -237,6 +242,7 @@ public class MainActivity extends AppCompatActivity {
                 endTime = jo.getString("endTime");
                 sefer = jo.getString("sefer");
                 location = jo.getString("location");
+                hostCityState = jo.getString("hostCityState");
                 hostId = jo.getString("host_id");
                 chavrutaRequest1 = jo.getString("chavruta_request_1");
                 chavrutaRequest1Avatar = jo.getString("chavruta_request_1_avatar");
@@ -252,7 +258,7 @@ public class MainActivity extends AppCompatActivity {
                 //make user data object of UserDataSetter class
                 HostSessionData myChavrutaData = new HostSessionData(chavrutaId, hostFirstName,
                         hostLastName, hostAvatarNumber, sessionMessage, sessionDate, startTime, endTime, sefer, location,
-                        hostId, chavrutaRequest1, chavrutaRequest2, chavrutaRequest3,
+                        hostCityState, hostId, chavrutaRequest1, chavrutaRequest2, chavrutaRequest3,
                         chavrutaRequest1Avatar, chavrutaRequest1Name, chavrutaRequest2Avatar, chavrutaRequest2Name,
                         chavrutaRequest3Avatar, chavrutaRequest3Name,
                         confirmed);

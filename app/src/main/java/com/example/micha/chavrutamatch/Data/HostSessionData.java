@@ -24,6 +24,7 @@ public class HostSessionData {
     private String mSessionDate;
     @Nullable
     private String mStartTime;
+    private String mHostCityState;
     @Nullable
     private String mEndTime;
     @Nullable
@@ -50,9 +51,11 @@ public class HostSessionData {
     public Boolean requestThreeConfirmed = true;
 
 
+
+
     public HostSessionData(String chavrutaId, String hostFirstName, String hostLastName, String hostAvatarNumber, String sessionMessage,
                            String sessionDate, String startTime, String endTime, String sefer,
-                           String location, String hostId, String chavrutaRequest1, String chavrutaRequest2,
+                           String location, String hostCityState, String hostId, String chavrutaRequest1, String chavrutaRequest2,
                            String chavrutaRequest3, String chavrutaRequest1Avatar, String chavrutaRequest1Name,
                            String chavrutaRequest2Avatar, String chavrutaRequest2Name,
                            String chavrutaRequest3Avatar, String chavrutaRequest3Name, String confirmed) {
@@ -67,6 +70,7 @@ public class HostSessionData {
         setmEndTime(endTime);
         setmSefer(sefer);
         setmLocation(location);
+        setmHostCityState(hostCityState);
         setmHostId(hostId);
         setMchavrutaRequest1(chavrutaRequest1);
         setMchavrutaRequest2(chavrutaRequest2);
@@ -78,6 +82,10 @@ public class HostSessionData {
         setmChavrutaRequest1Name(chavrutaRequest1Name);
         setmChavrutaRequest2Name(chavrutaRequest2Name);
         setmChavrutaRequest3Name(chavrutaRequest3Name);
+    }
+
+    public void setmHostCityState(String mHostCityState) {
+        this.mHostCityState = mHostCityState;
     }
 
     public String getmChavrutaRequest1Avatar() {
