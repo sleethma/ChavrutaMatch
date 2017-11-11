@@ -46,9 +46,9 @@ public class HostSessionData {
 @Nullable
     private String mConfirmed;
 
-    public Boolean requestOneConfirmed = true;
-    public Boolean requestTwoConfirmed = true;
-    public Boolean requestThreeConfirmed = true;
+    public boolean requestOneConfirmed = true;
+    public boolean requestTwoConfirmed = true;
+    public boolean requestThreeConfirmed = true;
 
 
 
@@ -201,10 +201,6 @@ public class HostSessionData {
 
     public String getMchavrutaRequest1() {
         return mchavrutaRequest1;
-    }
-
-    public void getMchavrutaRequest_1_Data(){
-
     }
 
 

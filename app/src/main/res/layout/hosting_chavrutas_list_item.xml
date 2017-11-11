@@ -106,7 +106,6 @@
            />
 
         //requster 1 horizontal layout
-
         <LinearLayout
             android:id="@+id/ll_requester_viewgroup_1"
             android:layout_width="match_parent"
@@ -337,21 +336,6 @@
         app:layout_constraintBottom_toTopOf="@+id/tv_location_label"
         app:layout_constraintLeft_toRightOf="@+id/iv_host_avatar"
         app:layout_constraintTop_toTopOf="@+id/iv_host_avatar" />
-
-
-    <!--<ImageButton-->
-        <!--android:id="@+id/ib_add_match"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_margin="15dp"-->
-        <!--android:background="@drawable/fab_ripple"-->
-        <!--android:focusable="false"-->
-        <!--android:src="@drawable/ib_add_match"-->
-        <!--android:stateListAnimator="@animator/button_raise"-->
-        <!--android:visibility="gone"-->
-        <!--app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--app:layout_constraintLeft_toLeftOf="parent"-->
-        <!--app:layout_constraintRight_toRightOf="parent" />-->
 
 
     <TextView

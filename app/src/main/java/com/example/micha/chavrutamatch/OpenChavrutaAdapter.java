@@ -317,7 +317,6 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                 String chavrutaRequestName2 = currentItem.getmChavrutaRequest2Name();
                 String chavrutaRequestName3 = currentItem.getmChavrutaRequest3Name();
 
-                Log.i(LOG_TAG, request1 + "/n" + request2 + "/n" + request3);
                 Boolean isRequest1 = false;
                 Boolean isRequest2 = false;
                 Boolean isRequest3 = false;
@@ -329,7 +328,9 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                     holder.pendingRequest_1.setVisibility(View.VISIBLE);
                     holder.underlinePendingRequest_1.setVisibility(View.VISIBLE);
                     if (idOfConfirmedUser.equals(request1) && currentItem.requestOneConfirmed) {
+                        mChavrutaSessionsAL.get(position).setRequestOneConfirmed(true);
                         holder.confirmRequest_1.setBackgroundResource(R.drawable.ic_confirm_class);
+                        currentItem.setRequestOneConfirmed(true);
                     } else {
                         currentItem.setRequestOneConfirmed(false);
                     }
@@ -348,6 +349,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                     isRequest2 = true;
                     if (idOfConfirmedUser.equals(request2) && currentItem.requestTwoConfirmed) {
                         holder.confirmRequest_2.setBackgroundResource(R.drawable.ic_confirm_class);
+                        currentItem.setRequestTwoConfirmed(true);
                     } else {
                         currentItem.setRequestTwoConfirmed(false);
                     }
@@ -367,6 +369,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                     isRequest3 = true;
                     if (idOfConfirmedUser.equals(request3) && currentItem.requestThreeConfirmed) {
                         holder.confirmRequest_3.setBackgroundResource(R.drawable.ic_confirm_class);
+                        currentItem.setRequestThreeConfirmed(true);
                     } else {
                         currentItem.setRequestThreeConfirmed(false);
                     }
@@ -377,24 +380,29 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
 
                 } else {
                     holder.pendingRequest_3.setVisibility(View.GONE);
-                    currentItem.setRequestOneConfirmed(false);
+                    currentItem.setRequestThreeConfirmed(false);
                     holder.underlinePendingRequest_3.setVisibility(View.GONE);
 
                 }
 
                 //populates view if there is a request
                 if(isRequest1 || isRequest2 || isRequest3){
-                    pendingRequestLabel.setVisibility(View.VISIBLE);
-                }else{
-                    pendingRequestLabel.setVisibility(View.GONE);
-                }
+                    holder.pendingRequestLabel.setVisibility(View.VISIBLE);
+                    holder.noRequesterView.setVisibility(View.GONE);
 
+                }else{
+                    holder.pendingRequestLabel.setVisibility(View.GONE);
+                    holder.noRequesterView.setVisibility(View.VISIBLE);
+
+                }
                 //confirms or unconfirms requested view with color change indicator and db update
                 if (isRequest1) {
                     holder.confirmRequest_1.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             HostSessionData currentItem = mChavrutaSessionsAL.get(position);
+                            currentItem.getMchavrutaRequest1();
+
                             // sets and sends to db hosts specific request confirmation
                             setViewHolderConfirmations(currentItem, 1);
                         }
@@ -427,10 +435,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                         }
                     });
                 }
-                //if no requesters display
-                if (isRequest1 == false && isRequest2 == false && isRequest3 == false) {
-                    holder.noRequesterView.setVisibility(View.VISIBLE);
-                }
+
             }
 
             holder.hostFirstName.setText(currentItem.getmHostFirstName());
@@ -469,7 +474,6 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                     if (!currentItem.requestTwoConfirmed) {
                         currentItem.setRequestTwoConfirmed(true);
                         currentItem.setmConfirmed(currentItem.getMchavrutaRequest2());
-                        //confirmRequest_2.setBackgroundColor(Color.parseColor("#10ef2e"));
                         confirmRequest_2.setBackgroundResource(R.drawable.ic_confirm_class);
 
 
@@ -510,7 +514,8 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
             }
             String chavrutaId = currentItem.getmChavrutaId();
             sendConfirmationtoDb(chavrutaId, currentItem.getmConfirmed());
-            notifyDataSetChanged();
+            //todo: should this be removed?
+            //notifyDataSetChanged();
         }
     }
 

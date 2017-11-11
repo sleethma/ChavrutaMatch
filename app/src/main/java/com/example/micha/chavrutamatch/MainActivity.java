@@ -130,16 +130,16 @@ public class MainActivity extends AppCompatActivity {
 
 
         //receives intent from ServerConnect to display myChavruta list, else gets myChavruta info from db
-        if (getIntent().getExtras() != null) {
+        if (getIntent().getExtras().getString("myChavrutaKey") != null) {
             jsonString = getIntent().getExtras().getString("myChavrutaKey");
 
             myChavrutasArrayList = new ArrayList<>();
 
             //add and remove views to display myChavrutas
-            if (myChavrutasArrayList != null && !jsonString.isEmpty()) {
+            if (!jsonString.isEmpty()) {
                 //parses and adds data in JSON string from MyChavruta Server call
                 parseJSONMyChavrutas();
-                //todo
+                //todo inorder to resize mychavruta recyclerview
                 myChavrutaListView.requestLayout();
 
                 //sets a smaller view if less than
@@ -230,7 +230,6 @@ public class MainActivity extends AppCompatActivity {
             int count = 0;
             //todo: delete below line for testing
               while (count < jsonArray.length()) {
-//            while (count < 1){
                 JSONObject jo = jsonArray.getJSONObject(count);
                 chavrutaId = jo.getString("chavruta_id");
                 hostFirstName = jo.getString("hostFirstName");
@@ -288,7 +287,7 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.refresh_list) {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
-            mAdapter.notifyDataSetChanged();
+            //mAdapter.notifyDataSetChanged();
             return true;
         }
         //My Profile
