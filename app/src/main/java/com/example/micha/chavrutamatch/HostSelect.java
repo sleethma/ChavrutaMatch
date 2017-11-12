@@ -21,6 +21,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -54,6 +55,8 @@ public class HostSelect extends AppCompatActivity {
     // @BindView(R.id.b_host_chavruta) ImageButton hostChavruta;
     @BindView(R.id.all_hosts_list_view)
     RecyclerView allHostsList;
+    @BindView(R.id.ll_no_chavruta_hosts)
+    LinearLayout noHostLayout;
     @BindView(R.id.iv_scroll_open_host)
     ImageView scrollImg;
     ArrayList<HostSessionData> openChavrutaArrayList;
@@ -168,8 +171,15 @@ public class HostSelect extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        int testSize = openChavrutaArrayList.size();
-        Toast.makeText(mContext, "size = " + testSize, Toast.LENGTH_SHORT).show();
+        //changes view on host availiable
+        int hostArraySize = openChavrutaArrayList.size();
+        if(hostArraySize != 0) {
+            allHostsList.setVisibility(View.VISIBLE);
+            noHostLayout.setVisibility(View.GONE);
+        }else{
+            noHostLayout.setVisibility(View.VISIBLE);
+            allHostsList.setVisibility(View.GONE);
+        }
     }
 
     private void makeCircularRevealAnim(View v) {
@@ -185,6 +195,11 @@ public class HostSelect extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         Intent intent = new Intent(this, AddSelect.class);
+        startActivity(intent);
+    }
+
+    public void loadNewHost(View v){
+        Intent intent = new Intent(this, NewHost.class);
         startActivity(intent);
     }
 }

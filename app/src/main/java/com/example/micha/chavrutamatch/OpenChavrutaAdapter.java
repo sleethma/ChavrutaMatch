@@ -163,6 +163,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
         View underlinePendingRequest_2;
         View underlinePendingRequest_3;
         TextView pendingRequestLabel;
+        TextView hostUserName;
         ImageView confirmRequestAvatar_1;
         ImageView confirmRequestAvatar_2;
         ImageView confirmRequestAvatar_3;
@@ -190,6 +191,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
             underlinePendingRequest_2 = (View) listItemView.findViewById(R.id.v_underline_requester_2);
             underlinePendingRequest_3 = (View) listItemView.findViewById(R.id.v_underline_requester_3);
             pendingRequestLabel = (TextView) listItemView.findViewById(R.id.tv_requests_label);
+            hostUserName = listItemView.findViewById(R.id.host_user_name);
 
             confirmRequestName_1 = (TextView) listItemView.findViewById(R.id.tv_confirm_request_1);
             confirmRequestName_2 = (TextView) listItemView.findViewById(R.id.tv_confirm_request_2);
@@ -274,12 +276,13 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
             if (awaitingConfirmView) {
                 String learnerConfirmed = currentItem.getmConfirmed();
                 int currentHostAvatarNumberInt = Integer.parseInt(currentItem.getmHostAvatarNumber());
+                holder.hostUserName.setText(UserDetails.getmUserName());
                 holder.hostAvatar.setImageResource(avatarList.get(currentHostAvatarNumberInt));
                 holder.hostAvatar.setBackgroundResource(R.drawable.circle_background);
 
                 if (learnerConfirmed.equals(userId)) {
                     holder.chavrutaConfirmed.setBackgroundResource(R.drawable.confirmed_rounded_corners);
-                    holder.chavrutaConfirmed.setText("ChavrutaMatched!");
+                    holder.chavrutaConfirmed.setText("Matched!");
                 } else {
                     holder.chavrutaConfirmed.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
                     holder.chavrutaConfirmed.setText("Awaiting" + System.getProperty("line.separator") + "Match");

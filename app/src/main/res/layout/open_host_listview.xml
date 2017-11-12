@@ -66,10 +66,10 @@
             android:layout_width="90dp"
             android:layout_height="80dp"
             android:layout_gravity="center"
-            android:elevation="4dp"
             android:layout_marginTop="8dp"
-            android:paddingTop="10dp"
+            android:elevation="4dp"
             android:paddingBottom="10dp"
+            android:paddingTop="10dp"
             android:src="@drawable/scroll_blank" />
 
 
@@ -115,11 +115,54 @@
         android:id="@+id/all_hosts_list_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
+    <LinearLayout
+        android:id="@+id/ll_no_chavruta_hosts"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:gravity="center_vertical"
+        android:onClick="loadNewHost"
+        android:orientation="vertical"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
+        <TextView
+            android:id="@+id/no_chavruta_hosts"
+            style="@style/TextBackShadow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginEnd="12sp"
+            android:layout_marginLeft="12sp"
+            android:layout_marginRight="12sp"
+            android:layout_marginStart="12sp"
+            android:background="@drawable/rounded_corner"
+            android:text="BE THE 1st..... \n\n HOST A CHAVRUTA \n IN YOUR AREA!"
+            android:textAlignment="center"
+            android:textSize="30sp" />
+
+        <ImageView
+            android:id="@+id/chavrutamatch_logo"
+            android:layout_width="110dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center|center_horizontal"
+            android:layout_marginTop="90dp"
+            android:src="@drawable/chavruta_match_logo" />
+
+
+    </LinearLayout>
+
 
 </android.support.constraint.ConstraintLayout>
