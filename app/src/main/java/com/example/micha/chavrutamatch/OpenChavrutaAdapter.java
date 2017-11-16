@@ -534,7 +534,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
         confirmChavrutaRequest.execute("confirmChavrutaRequest", chavrutaId, requesterId);
     }
 
-    public void deleteArrayItemOnSwipe(int indexToDelete) {
+    public void deleteMyChavrutaArrayItemOnSwipe(int indexToDelete) {
         HostSessionData currentItem = mChavrutaSessionsAL.get(indexToDelete);
         //get either HostView or AwaitingConfirmView
         int itemViewType = getItemViewType(indexToDelete);
@@ -560,11 +560,14 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
             String chavrutaId = currentItem.getmChavrutaId();
             String awaitingConfirmKey = "chavruta request";
             ServerConnect dbAwaitingConfirmDelete = new ServerConnect(mainActivityContext);
-            dbAwaitingConfirmDelete.execute(awaitingConfirmKey, "0", chavrutaId, requesterNumber,
+            dbAwaitingConfirmDelete.execute(awaitingConfirmKey, userId, chavrutaId, requesterNumber,
                     requesterAvatarColumn, "0", requesterNameColumn, "0");
 
         } else {
-
+            String deleteChavrutaKey = "delete chavruta";
+            String chavrutaId = currentItem.getmChavrutaId();
+            ServerConnect deleteChavruta = new ServerConnect(mainActivityContext);
+            deleteChavruta.execute(deleteChavrutaKey, chavrutaId);
         }
         mChavrutaSessionsAL.remove(indexToDelete);
 //        this.notifyItemRemoved(indexToDelete);

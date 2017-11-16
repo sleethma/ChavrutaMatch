@@ -391,6 +391,38 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 e.printStackTrace();
             }
         }
+        if(chosenBkgdTaskCheck.equals("delete chavruta")){
+            String chavrutaId = params[1];
+            //delete chavruta from db
+            //establish connection
+            try {
+                URL confirmChavrutaRequest = new URL("http://brightlightproductions.online/" +
+                        "delete_chavruta.php");
+                HttpURLConnection httpURLConnection = (HttpURLConnection) confirmChavrutaRequest.openConnection();
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setDoOutput(true);
+                //make object of output stream
+                OutputStream os = httpURLConnection.getOutputStream();
+                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+
+                String data =
+                        URLEncoder.encode("chavruta_id", "UTF-8") + "=" + URLEncoder.encode(
+                                chavrutaId, "UTF-8");
+
+                bufferedWriter.write(data);
+                bufferedWriter.flush();
+                bufferedWriter.close();
+                os.close();
+                InputStream inputStream = httpURLConnection.getInputStream();
+                inputStream.close();
+                postExecuteResponse = 7;
+                return "chavruta ID: " + chavrutaId + "deleted!";
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         return null;
     }
 
@@ -439,6 +471,10 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 Intent intent = new Intent(this.mContextRegister, AddBio.class);
                 intent.putExtra("user_data_json_string", jsonString);
                 mContextRegister.startActivity(intent);
+                break;
+            case 7:
+                //chavruta id deleted
+                Toast.makeText(mContextRegister, result, Toast.LENGTH_LONG).show();
                 break;
         }
         postExecuteResponse = 0;

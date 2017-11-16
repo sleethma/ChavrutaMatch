@@ -228,25 +228,10 @@ public class MainActivity extends AppCompatActivity {
                 // Inside, get the viewHolder's itemView's tag and store in a long variable id
                 //get the id of the item being swiped
                 int id = (int) viewHolder.itemView.getTag();
-                mAdapter.deleteArrayItemOnSwipe(id);
+                mAdapter.deleteMyChavrutaArrayItemOnSwipe(id);
             }
         }).attachToRecyclerView(myChavrutaListView);
     }
-
-    //todo: delete below
-//    public void swap(ArrayList<HostSessionData> updatedChavrutaList) {
-//        if (updatedChavrutaList == null || updatedChavrutaList.size() == 0) {
-//            return;
-//        } else {
-//            if (updatedChavrutaList == null || updatedChavrutaList.size() == 0)
-//                return;
-//            if (myChavrutasArrayList != null && myChavrutasArrayList.size() > 0)
-//                myChavrutasArrayList.clear();
-//            myChavrutasArrayList.addAll(updatedChavrutaList);
-//            int testSize = updatedChavrutaList.size();
-//            mAdapter.notifyDataSetChanged();
-//        }
-//    }
 
     //parses JSON string data to form myChavrutas ListView
     public void parseJSONMyChavrutas() {
