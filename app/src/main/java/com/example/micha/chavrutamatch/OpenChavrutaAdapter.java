@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -63,7 +64,6 @@ import static com.example.micha.chavrutamatch.R.id.view;
 class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewHolder> {
 
     //number of views adapter will hold
-    private int mNumberOfViews;
     private int hostAvatarNumberInt;
     private Context mContext;
     String userId = UserDetails.getmUserId();
@@ -85,11 +85,10 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
      */
     public OpenChavrutaAdapter(Context context, ArrayList<HostSessionData> chavrutaSessionsArrayList) {
         this.mContext = context;
-        mNumberOfViews = chavrutaSessionsArrayList.size();
         mChavrutaSessionsAL = chavrutaSessionsArrayList;
         mainActivityContext = MainActivity.mContext;
         hostSelectContext = HostSelect.mContext;
-        hostAvatarNumberInt= UserDetails.getmUserAvatarNumberString() != null ?
+        hostAvatarNumberInt = UserDetails.getmUserAvatarNumberString() != null ?
                 Integer.parseInt(UserDetails.getmUserAvatarNumberString()) : 0;
         //calls so can access static user vars throughout adapter
 //        orderArrayByDate(mChavrutaSessionsAL);
@@ -100,12 +99,14 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
         //selects hostId or userId for inflation
         HostSessionData chavrutaData = mChavrutaSessionsAL.get(position);
         String hostId = chavrutaData.getmHostId();
+        // @return 1: hostview, else awaitingConfirmView
         if (hostId.equals(userId)) {
             return 1;
         } else {
             return 0;
         }
     }
+
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -143,13 +144,14 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
     @Override
     public void onBindViewHolder(OpenChavrutaAdapter.ViewHolder holder, int position) {
         holder.bind(holder, position);
+        holder.itemView.setTag(new Integer(position));
 
     }
 
 
     @Override
     public int getItemCount() {
-        return mNumberOfViews;
+        return mChavrutaSessionsAL.size();
     }
 
 
@@ -389,11 +391,11 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                 }
 
                 //populates view if there is a request
-                if(isRequest1 || isRequest2 || isRequest3){
+                if (isRequest1 || isRequest2 || isRequest3) {
                     holder.pendingRequestLabel.setVisibility(View.VISIBLE);
                     holder.noRequesterView.setVisibility(View.GONE);
 
-                }else{
+                } else {
                     holder.pendingRequestLabel.setVisibility(View.GONE);
                     holder.noRequesterView.setVisibility(View.VISIBLE);
 
@@ -447,6 +449,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
             holder.endTime.setText(currentItem.getmEndTime());
             holder.sefer.setText(currentItem.getmSefer());
             holder.location.setText(currentItem.getmLocation());
+            holder.itemView.setTag(position);
         }
 
         private void setViewHolderConfirmations(HostSessionData currentItem, int requestClicked) {
@@ -529,6 +532,50 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
     public void sendConfirmationtoDb(String chavrutaId, String requesterId) {
         ServerConnect confirmChavrutaRequest = new ServerConnect(mContext);
         confirmChavrutaRequest.execute("confirmChavrutaRequest", chavrutaId, requesterId);
+    }
+
+    public void deleteArrayItemOnSwipe(int indexToDelete) {
+        HostSessionData currentItem = mChavrutaSessionsAL.get(indexToDelete);
+        //get either HostView or AwaitingConfirmView
+        int itemViewType = getItemViewType(indexToDelete);
+        //awaiting confirm view db delete
+        if (itemViewType == 0) {
+            String requesterNumber;
+            String requesterAvatarColumn;
+            String requesterNameColumn;
+
+            if (userId.equals(currentItem.getMchavrutaRequest1())) {
+                requesterNumber = "chavruta_request_1";
+                requesterAvatarColumn = "chavruta_request_1_avatar";
+                requesterNameColumn = "chavruta_request_1_name";
+            } else if (userId.equals(currentItem.getMchavrutaRequest2())) {
+                requesterNumber = "chavruta_request_2";
+                requesterAvatarColumn = "chavruta_request_2_avatar";
+                requesterNameColumn = "chavruta_request_2_name";
+            } else {
+                requesterNumber = "chavruta_request_3";
+                requesterAvatarColumn = "chavruta_request_3_avatar";
+                requesterNameColumn = "chavruta_request_3_name";
+            }
+            String chavrutaId = currentItem.getmChavrutaId();
+            String awaitingConfirmKey = "chavruta request";
+            ServerConnect dbAwaitingConfirmDelete = new ServerConnect(mainActivityContext);
+            dbAwaitingConfirmDelete.execute(awaitingConfirmKey, "0", chavrutaId, requesterNumber,
+                    requesterAvatarColumn, "0", requesterNameColumn, "0");
+
+        } else {
+
+        }
+        mChavrutaSessionsAL.remove(indexToDelete);
+//        this.notifyItemRemoved(indexToDelete);
+        this.notifyDataSetChanged();
+
+
+        if (mChavrutaSessionsAL.size() == 0) {
+            Intent intent = new Intent(mContext, MainActivity.class);
+            mContext.startActivity(intent);
+        }
+
     }
 
 }

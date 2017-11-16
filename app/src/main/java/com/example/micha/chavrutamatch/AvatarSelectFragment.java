@@ -22,6 +22,7 @@ import java.util.List;
 public class AvatarSelectFragment extends Fragment {
     AvatarSelectAdapter mAdapter;
     OnAvatarClickListener mCallback;
+    Context mContext;
 
    public interface OnAvatarClickListener{
         void onAvatarClick(int position);
@@ -31,7 +32,7 @@ public class AvatarSelectFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-
+mContext = context;
         // makes sure that the host activity has implemented the callback interface
         try {
             mCallback = (OnAvatarClickListener) context;
@@ -44,10 +45,12 @@ public class AvatarSelectFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.avatar_select_frag, container, false);
 
-        GridView gridView = (GridView) rootView.findViewById(R.id.gv_avatar_list);
-
-        mAdapter = new AvatarSelectAdapter(getContext(), AvatarImgs.getAllAvatars());
-
+        GridView gridView = rootView.findViewById(R.id.gv_avatar_list);
+        if(android.os.Build.VERSION.SDK_INT >= 23) {
+            mAdapter = new AvatarSelectAdapter(getContext(), AvatarImgs.getAllAvatars());
+        }else{
+            mAdapter = new AvatarSelectAdapter(mContext, AvatarImgs.getAllAvatars());
+        }
         gridView.setAdapter(mAdapter);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

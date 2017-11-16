@@ -64,7 +64,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
         String new_user_url = "http://brightlightproductions.online/chavruta_user_profiles_add.php";
         String update_user_url = "http://brightlightproductions.online/chavruta_user_profiles_update.php";
 
-        String initial_chavruta_request_update_url =
+        String chavruta_request_update_url =
                 "http://brightlightproductions.online/initial_chavruta_request_update.php";
         //@ my_chavrutas_url is changed in line to send individual user id
         String my_chavrutas_url = "http://brightlightproductions.online/get_json_my_chavrutas.php";
@@ -315,7 +315,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
 
             //establish connection
             try {
-                URL chavrutaRequestUrl = new URL(initial_chavruta_request_update_url);
+                URL chavrutaRequestUrl = new URL(chavruta_request_update_url);
                 HttpURLConnection httpURLConnection = (HttpURLConnection) chavrutaRequestUrl.openConnection();
                 httpURLConnection.setRequestMethod("POST");
                 httpURLConnection.setDoOutput(true);

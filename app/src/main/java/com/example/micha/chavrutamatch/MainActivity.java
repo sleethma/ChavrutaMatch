@@ -10,8 +10,10 @@ import android.support.v7.view.menu.MenuAdapter;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.transition.Slide;
 import android.transition.TransitionManager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Menu;
@@ -59,6 +61,7 @@ import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
     //TODO add up nav arrow to each activity
+    String LOGTAG = MainActivity.class.getSimpleName();
     @BindView(R.id.iv_no_match_add_match)
     ImageView noMatchView;
     @BindView(R.id.lv_my_chavruta)
@@ -180,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
                 myChavrutaLabel.setVisibility(View.GONE);
             }
 
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            Toolbar toolbar = findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
         } else {
             //if db not yet accessed, gets all chavrutas that user has requested
@@ -200,7 +203,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -208,7 +211,42 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        // COMPLETED (3) Create a new ItemTouchHelper with a SimpleCallback that handles both LEFT and RIGHT swipe directions
+        // Create an item touch helper to handle swiping items off the list
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+
+            // COMPLETED (4) Override onMove and simply return false inside
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                //do nothing, we only swipe needed
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+                // Inside, get the viewHolder's itemView's tag and store in a long variable id
+                //get the id of the item being swiped
+                int id = (int) viewHolder.itemView.getTag();
+                mAdapter.deleteArrayItemOnSwipe(id);
+            }
+        }).attachToRecyclerView(myChavrutaListView);
     }
+
+    //todo: delete below
+//    public void swap(ArrayList<HostSessionData> updatedChavrutaList) {
+//        if (updatedChavrutaList == null || updatedChavrutaList.size() == 0) {
+//            return;
+//        } else {
+//            if (updatedChavrutaList == null || updatedChavrutaList.size() == 0)
+//                return;
+//            if (myChavrutasArrayList != null && myChavrutasArrayList.size() > 0)
+//                myChavrutasArrayList.clear();
+//            myChavrutasArrayList.addAll(updatedChavrutaList);
+//            int testSize = updatedChavrutaList.size();
+//            mAdapter.notifyDataSetChanged();
+//        }
+//    }
 
     //parses JSON string data to form myChavrutas ListView
     public void parseJSONMyChavrutas() {
