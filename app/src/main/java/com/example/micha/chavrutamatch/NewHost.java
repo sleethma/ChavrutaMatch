@@ -12,6 +12,7 @@ import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -34,10 +35,15 @@ import com.example.micha.chavrutamatch.Data.AvatarImgs;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.example.micha.chavrutamatch.Utils.ChavrutaTextValidation;
 import com.example.micha.chavrutamatch.Utils.ChavrutaUtils;
+import com.example.micha.chavrutamatch.Utils.TimeStampConverter;
 
 import org.w3c.dom.Text;
 
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -82,12 +88,12 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
     @BindView(R.id.tv_host_user_name)
     TextView tvAddHost;
     @BindView(R.id.ac_city_state)
-            AutoCompleteTextView acCityState;
+    AutoCompleteTextView acCityState;
 
 
     //host strings to db
     private String mHostFirstName, mHostLastName, mHostAvatarNumber, mSessionMessage, mSessionDate,
-    mStartTime, mEndTime, mSefer, mLocation, mHostId, mHostCityState;
+            mStartTime, mEndTime, mSefer, mLocation, mHostId, mHostCityState;
     private List<Integer> allAvatars;
 
     private String format;
@@ -109,7 +115,7 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
 
         //autopopulate location from SP
         sp = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE);
-        if(sp.getString(getString(R.string.user_city_state_key), null) != null) {
+        if (sp.getString(getString(R.string.user_city_state_key), null) != null) {
             acCityState.setText(sp.getString(getString(R.string.user_city_state_key), null));
         }
 
@@ -164,21 +170,36 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
             DatePickerDialog.OnDateSetListener() {
                 @Override
                 public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                    mMonth = month;
-                    mYear = year;
-                    mDay = dayOfMonth;
 
-                    // set selected date into textview
-                    tvDate.setText(new StringBuilder()
-                            // Month is 0 based, just add 1
-                            .append(mMonth + 1).append("-").append(mDay).append("-")
-                            .append(mYear).append(" "));
+                    String currentDateString = new SimpleDateFormat(
+                            "yyyy-MM-dd").format(new Date());
+
+                    String setTimeString = year + "-" + (month + 1) + "-" + dayOfMonth;
+
+                    //determine a class date is in future
+                    boolean classDatePassed = TimeStampConverter.classIsPassed(
+                            currentDateString, setTimeString);
+                    if (classDatePassed) {
+                        Snackbar.make(
+                                findViewById(android.R.id.content),
+                                "Please select a future date.",
+                                Snackbar.LENGTH_LONG)
+                                .show();
+                    } else {
+                        // set selected date into textview
+                        mMonth = month;
+                        mYear = year;
+                        mDay = dayOfMonth;
+                        tvDate.setText(new StringBuilder()
+                                .append(mMonth + 1).append("-").append(mDay).append("-")
+                                .append(mYear));
+                    }
                 }
             };
 
     public void onClick(View v) {
         //dismiss soft keyboard on button click
-        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         // show clock if time related view clicked, DatePicker if not
         if (v == ibStartTime || v == ibHostEndTime) {
             setTimeView();
@@ -197,11 +218,20 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         } else if (v == bTimeSet) { //when confirm time button click, set values
             confirmTime(v);
             setProfileView();
-        } else if (v == ibHostIt) { //when confirm host button click, set values
-            setProfileView();
-            //animate button
-            animateHostIt(v);
-            postNewHostSession();
+        } else if (v == ibHostIt) {
+            if (tvDate.getText().equals("Date?")) {
+                Snackbar.make(
+                        findViewById(android.R.id.content),
+                        "Please select a date.",
+                        Snackbar.LENGTH_LONG)
+                        .show();
+            } else {
+                //when confirm host button click, set values
+                setProfileView();
+                //animate button
+                animateHostIt(v);
+                postNewHostSession();
+            }
         } else {
             Log.e(NewHost.class.getSimpleName(), "View " + v + " has no match onClick");
         }
@@ -236,11 +266,9 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
             //if min = 0 add 00 to min
             if (min == 0) {
                 timeString = hour + ":" + "00 " + format;
-            } else if(min < 10) {
+            } else if (min < 10) {
                 timeString = hour + ":0" + min + " " + format;
-            }
-            else
-            {
+            } else {
                 timeString = hour + ":" + min + " " + format;
             }
 
@@ -305,7 +333,7 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
     public void postNewHostSession() {
         ChavrutaTextValidation textValidator = new ChavrutaTextValidation();
         //checks if all text validated and appropriate
-        Boolean  textValidationPass = true;
+        Boolean textValidationPass = true;
         mSessionMessage = tvHostClassMessage.getText().toString();
         mSessionDate = tvDate.getText().toString();
         mStartTime = tv_StartTime.getText().toString();
@@ -349,7 +377,7 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent intent =new Intent(this, AddSelect.class);
+        Intent intent = new Intent(this, AddSelect.class);
         startActivity(intent);
     }
 

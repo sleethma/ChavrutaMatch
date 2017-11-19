@@ -26,6 +26,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -391,8 +392,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 e.printStackTrace();
             }
         }
-        //delete chavruta from db
-
+        //delete chavruta from db on swipe in MA
         if(chosenBkgdTaskCheck.equals("delete chavruta")){
             String chavrutaId = params[1];
             //establish connection
@@ -426,6 +426,8 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
         }
         return null;
     }
+
+
 
 
     @Override

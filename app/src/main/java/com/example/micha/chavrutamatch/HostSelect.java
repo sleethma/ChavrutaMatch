@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -36,8 +37,11 @@ import org.json.JSONObject;
 
 import com.example.micha.chavrutamatch.Data.HostSessionData;
 import com.example.micha.chavrutamatch.Utils.RecyclerViewListDecor;
+import com.example.micha.chavrutamatch.Utils.TimeStampConverter;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -125,6 +129,8 @@ public class HostSelect extends AppCompatActivity {
 
             jsonObject = new JSONObject(jsonString);
             jsonArray = jsonObject.getJSONArray("server_response");
+            String currentDateString = new SimpleDateFormat(
+                    "yyyy-MM-dd").format(new Date());
 
             //loop through array and extract objects, adding them individually as setter objects,
             //and adding objects to list adapter.
@@ -154,17 +160,33 @@ public class HostSelect extends AppCompatActivity {
                 chavrutaRequest3Name = jo.getString("chavruta_request_1_name");
                 confirmed = jo.getString("confirmed");
 
+                boolean classPassed = false;
+                //format session date for outdated comparison and store chavrutaId for deletion
+                //todo: replace below block to fit flow
+                if(!sessionDate.contains("D")) {
+                    //determine a class date is in future
+                    classPassed = TimeStampConverter.classDatePassedAndDelete(mContext,
+                            currentDateString, sessionDate);
+                }else{
+                    classPassed = true;
+                }
             //only adds to array for adapter if user is not already requesting or hosting class
                 if (userId.equals(chavrutaRequest1) || userId.equals(chavrutaRequest2) ||
                         userId.equals(chavrutaRequest3) || userId.equals(hostId)) {
                 } else {
-                    //make user data object of UserDataSetter class
-                    HostSessionData hostClassData = new HostSessionData(chavrutaId, hostFirstName, hostLastName, hostAvatarNumber, sessionMessage, sessionDate,
-                            startTime, endTime, sefer, location, hostCityState, hostId, chavrutaRequest1, chavrutaRequest2, chavrutaRequest3,
-                            chavrutaRequest1Avatar, chavrutaRequest1Name, chavrutaRequest2Avatar, chavrutaRequest2Name,
-                            chavrutaRequest3Avatar, chavrutaRequest3Name, confirmed);
-                    openChavrutaArrayList
-                            .add(hostClassData);
+                    if(!classPassed) {
+                        //make user data object of UserDataSetter class
+                        HostSessionData hostClassData = new HostSessionData(chavrutaId, hostFirstName, hostLastName, hostAvatarNumber, sessionMessage, sessionDate,
+                                startTime, endTime, sefer, location, hostCityState, hostId, chavrutaRequest1, chavrutaRequest2, chavrutaRequest3,
+                                chavrutaRequest1Avatar, chavrutaRequest1Name, chavrutaRequest2Avatar, chavrutaRequest2Name,
+                                chavrutaRequest3Avatar, chavrutaRequest3Name, confirmed);
+                        openChavrutaArrayList
+                                .add(hostClassData);
+                    }else{
+                        //if class date passed, delete in db
+                            ServerConnect deletePassedClassFromDb = new ServerConnect(mContext);
+                            deletePassedClassFromDb.execute("delete chavruta", chavrutaId);
+                    }
                 }
                 count++;
             }

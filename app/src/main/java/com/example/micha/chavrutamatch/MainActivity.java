@@ -35,6 +35,7 @@ import org.json.JSONObject;
 import com.example.micha.chavrutamatch.Data.HostSessionData;
 
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import butterknife.BindView;
@@ -44,7 +45,9 @@ import com.example.micha.chavrutamatch.AcctLogin.LoginActivity;
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.Data.HostSessionData;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
+import com.example.micha.chavrutamatch.Utils.ChavrutaTextValidation;
 import com.example.micha.chavrutamatch.Utils.RecyclerViewListDecor;
+import com.example.micha.chavrutamatch.Utils.TimeStampConverter;
 import com.facebook.accountkit.Account;
 import com.facebook.accountkit.AccountKit;
 import com.facebook.accountkit.AccountKitCallback;
@@ -93,10 +96,12 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         mContext = this;
 
-        String testCurrentDateTimeString = DateFormat.getDateTimeInstance().format(new Date());
+//todo: delete from below if not needed
+        String testCurrentDateTimeString = DateFormat.getDateInstance().format(new Date());
+        Date testDateObject = TimeStampConverter.convertStringToTimeStamp(testCurrentDateTimeString);
+
         //Toast.makeText(mContext, testCurrentDateTimeString, Toast.LENGTH_SHORT).show();
         String testGetSimpleDateInstance = DateFormat.getDateInstance(SHORT).format(new Date());
-        Toast.makeText(mContext, testCurrentDateTimeString, Toast.LENGTH_SHORT).show();
 
         //sets up UserDetails
         UserDetails.setUserDetailsFromSP(mContext);
