@@ -391,9 +391,10 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 e.printStackTrace();
             }
         }
+        //delete chavruta from db
+
         if(chosenBkgdTaskCheck.equals("delete chavruta")){
             String chavrutaId = params[1];
-            //delete chavruta from db
             //establish connection
             try {
                 URL confirmChavrutaRequest = new URL("http://brightlightproductions.online/" +

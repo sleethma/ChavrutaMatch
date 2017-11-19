@@ -560,8 +560,9 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
             String chavrutaId = currentItem.getmChavrutaId();
             String awaitingConfirmKey = "chavruta request";
             ServerConnect dbAwaitingConfirmDelete = new ServerConnect(mainActivityContext);
-            dbAwaitingConfirmDelete.execute(awaitingConfirmKey, userId, chavrutaId, requesterNumber,
+            dbAwaitingConfirmDelete.execute(awaitingConfirmKey, "0", chavrutaId, requesterNumber,
                     requesterAvatarColumn, "0", requesterNameColumn, "0");
+
 
         } else {
             String deleteChavrutaKey = "delete chavruta";

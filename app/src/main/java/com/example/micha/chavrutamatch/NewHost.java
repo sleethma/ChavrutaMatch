@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -176,11 +177,22 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
             };
 
     public void onClick(View v) {
+        //dismiss soft keyboard on button click
+        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         // show clock if time related view clicked, DatePicker if not
         if (v == ibStartTime || v == ibHostEndTime) {
             setTimeView();
+            // Check if no view has focus:
+            View focusView = this.getCurrentFocus();
+            if (focusView != null) {
+                imm.hideSoftInputFromWindow(focusView.getWindowToken(), 0);
+            }
         } else if (v == ibDate) {
-            showDialog(DIALOG_ID);
+            View focusView = this.getCurrentFocus();
+            if (focusView != null) {
+                imm.hideSoftInputFromWindow(focusView.getWindowToken(), 0);
+                showDialog(DIALOG_ID);
+            }
 
         } else if (v == bTimeSet) { //when confirm time button click, set values
             confirmTime(v);
@@ -190,8 +202,6 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
             //animate button
             animateHostIt(v);
             postNewHostSession();
-            //TODO intent to MainActivity here
-
         } else {
             Log.e(NewHost.class.getSimpleName(), "View " + v + " has no match onClick");
         }

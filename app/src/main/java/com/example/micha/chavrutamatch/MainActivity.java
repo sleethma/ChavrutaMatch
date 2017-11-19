@@ -34,6 +34,7 @@ import org.json.JSONObject;
 
 import com.example.micha.chavrutamatch.Data.HostSessionData;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 
 import butterknife.BindView;
@@ -54,10 +55,13 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static java.text.DateFormat.SHORT;
 
 public class MainActivity extends AppCompatActivity {
     //TODO add up nav arrow to each activity
@@ -88,6 +92,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         mContext = this;
+
+        String testCurrentDateTimeString = DateFormat.getDateTimeInstance().format(new Date());
+        //Toast.makeText(mContext, testCurrentDateTimeString, Toast.LENGTH_SHORT).show();
+        String testGetSimpleDateInstance = DateFormat.getDateInstance(SHORT).format(new Date());
+        Toast.makeText(mContext, testCurrentDateTimeString, Toast.LENGTH_SHORT).show();
 
         //sets up UserDetails
         UserDetails.setUserDetailsFromSP(mContext);
