@@ -88,7 +88,6 @@ public class MainActivity extends AppCompatActivity {
     //adds spacing b/n listitems
     private final int VERTICAL_LIST_ITEM_SPACE = 40;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

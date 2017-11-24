@@ -12,7 +12,6 @@
         android:layout_weight="7"
         android:columnWidth="180dp"
         android:gravity="center"
-
         android:horizontalSpacing="8dp"
         android:numColumns="2"
         android:padding="8dp"

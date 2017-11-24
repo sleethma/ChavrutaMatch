@@ -1,6 +1,7 @@
 package com.example.micha.chavrutamatch;
 
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.support.v4.app.FragmentManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -63,12 +64,14 @@ public class AddBio extends AppCompatActivity {
     ImageView UserAvatarView;
     SharedPreferences prefs;
     @BindView(R.id.ac_city_state)
-            AutoCompleteTextView autoCompleteTextView;
+    AutoCompleteTextView autoCompleteTextView;
 
     //controls whether or not db update necessary
     Boolean bioDataChanged = false;
     //controls whether activity used to update or to create new account
     Boolean updateBio = false;
+    // checks if user img file sent from @AvatarSelectMasterList
+    Uri imgUri = null;
     //Holds list view of possible avatars
     List<Integer> mAvatarsList = AvatarImgs.getAllAvatars();
 
@@ -90,12 +93,18 @@ public class AddBio extends AppCompatActivity {
             Intent incomingIntent = getIntent();
 
             // check if data coming from avatar select frag & sets user selected avatar in addBio Activitiy
-            if (incomingIntent.getBooleanExtra("affirm update bio", false)){
+            if (incomingIntent.getBooleanExtra("affirm update bio", false)) {
                 Bundle bundle = incomingIntent.getExtras();
                 updateBio = bundle.getBoolean("affirm update bio");
                 int userAvatarSelected = bundle.getInt("avatar position", -1);
+                if (userAvatarSelected == 999) {
+                    String stringImgUri = bundle.getString("img_uri_string_key");
+                    imgUri = Uri.parse(stringImgUri);
+                    UserAvatarView.setImageURI(imgUri);
+                } else {
+                    UserAvatarView.setImageResource(mAvatarsList.get(userAvatarSelected));
+                }
                 UserDetails.setmUserAvatarNumberString("" + userAvatarSelected);
-                UserAvatarView.setImageResource(mAvatarsList.get(userAvatarSelected));
                 populateUserDataFromSP();
             }
             //intent sent from user selecting update bio w/o user editing avatar
@@ -223,6 +232,7 @@ public class AddBio extends AppCompatActivity {
             bioDataChanged = true;
         }
     }
+
     //posts saved user bio info to server
     public void postUserBio() {
         final String userPost = "user post";
@@ -289,9 +299,13 @@ public class AddBio extends AppCompatActivity {
         UserNameView.setText(mUserName);
         UserFirstNameView.setText(mUserFirstName);
         UserLastNameView.setText(mUserLastName);
-        if(UserDetails.getmUserAvatarNumberString() != null ){
-        UserAvatarView.setImageResource(mAvatarsList.get(Integer.parseInt(UserDetails.getmUserAvatarNumberString())));
-        }else {
+        String mUserAvatarNumberString =  UserDetails.getmUserAvatarNumberString();
+        //avatar is a sample image
+        if (mUserAvatarNumberString != null && !mUserAvatarNumberString.equals("999") ) {
+            UserAvatarView.setImageResource(mAvatarsList.get(Integer.parseInt(UserDetails.getmUserAvatarNumberString())));
+            //avatar is not yet selected
+        } else if(!
+                mUserAvatarNumberString.equals("999")) {
             UserAvatarView.setImageResource(R.drawable.ic_unknown_user);
         }
         UserBioView.setText(mUserBio);

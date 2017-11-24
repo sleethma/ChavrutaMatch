@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -65,8 +66,8 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
     ImageButton ibStartTime;
     @BindView(R.id.et_host_topic)
     EditText etHostTopic;
-    @BindView(R.id.fl_host_pic)
-    android.widget.FrameLayout flHostPic;
+//    @BindView(R.id.fl_host_pic)
+//    android.widget.FrameLayout flHostPic;
     @BindView(R.id.iv_host_avatar)
     ImageView ivHostAvatar;
     @BindView(R.id.host_address)
@@ -85,11 +86,16 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
     EditText tvHostClassMessage;
     @BindView(R.id.host_it)
     ImageButton ibHostIt;
-    @BindView(R.id.tv_host_user_name)
-    TextView tvAddHost;
+//    @BindView(R.id.tv_host_user_name)
+//    TextView tvAddHost;
     @BindView(R.id.ac_city_state)
     AutoCompleteTextView acCityState;
+    @BindView(R.id.til_city_state)
+    TextInputLayout tilCityState;
+    @BindView(R.id.til_chavruta_address)
+    TextInputLayout tilChavrutaAddress;
 
+//todo:delete all commented out flhostpic & tvaddhost references
 
     //host strings to db
     private String mHostFirstName, mHostLastName, mHostAvatarNumber, mSessionMessage, mSessionDate,
@@ -125,8 +131,8 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         allAvatars = AvatarImgs.getAllAvatars();
         int mHostAvatarNumberInt = Integer.parseInt(mHostAvatarNumber);
         ivHostAvatar.setImageResource(allAvatars.get(mHostAvatarNumberInt));
-        tvAddHost.setText(UserDetails.getmUserName());
-        tvAddHost.setTypeface(Typeface.DEFAULT_BOLD);
+//        tvAddHost.setText(UserDetails.getmUserName());
+//        tvAddHost.setTypeface(Typeface.DEFAULT_BOLD);
 
         ibStartTime.setOnClickListener(this);
         ibHostEndTime.setOnClickListener(this);
@@ -141,12 +147,13 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         this.getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
-        flHostPic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                makeCircularRevealAnim(v);
-            }
-        });
+        //todo: delete and reapply if necessary elsewhere makeCircularRevealAnim method
+//        flHostPic.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                makeCircularRevealAnim(v);
+//            }
+//        });
 
         //set auto-complete for closest US city
         ChavrutaUtils cu = new ChavrutaUtils();
@@ -203,6 +210,9 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         // show clock if time related view clicked, DatePicker if not
         if (v == ibStartTime || v == ibHostEndTime) {
             setTimeView();
+            tilCityState.setVisibility(View.GONE);
+            tilChavrutaAddress.setVisibility(View.GONE);
+
             // Check if no view has focus:
             View focusView = this.getCurrentFocus();
             if (focusView != null) {
@@ -290,7 +300,7 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         ibStartTime.setVisibility(View.GONE);
         etHostAddress.setVisibility(View.GONE);
         ivHostAvatar.setVisibility(View.GONE);
-        flHostPic.setVisibility(View.GONE);
+//        flHostPic.setVisibility(View.GONE);
         etHostTopic.setVisibility(View.GONE);
         tv_StartTime.setVisibility(View.GONE);
         tvEndTime.setVisibility(View.GONE);
@@ -309,7 +319,7 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         ibStartTime.setVisibility(View.VISIBLE);
         etHostAddress.setVisibility(View.VISIBLE);
         ivHostAvatar.setVisibility(View.VISIBLE);
-        flHostPic.setVisibility(View.VISIBLE);
+//        flHostPic.setVisibility(View.VISIBLE);
         etHostTopic.setVisibility(View.VISIBLE);
         tv_StartTime.setVisibility(View.VISIBLE);
         tvEndTime.setVisibility(View.VISIBLE);
@@ -318,6 +328,8 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         tvHostMessageLabel.setVisibility(View.VISIBLE);
         tvHostClassMessage.setVisibility(View.VISIBLE);
         ibHostIt.setVisibility(View.VISIBLE);
+        tilCityState.setVisibility(View.VISIBLE);
+        tilChavrutaAddress.setVisibility(View.VISIBLE);
 
     }
 
@@ -365,14 +377,14 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
                 .start();
     }
 
-    private void makeCircularRevealAnim(View v) {
-        int finalRadius = (int) Math.hypot(v.getWidth() / 2, v.getHeight() / 2);
-
-        Animator anim = ViewAnimationUtils.createCircularReveal(
-                v, (int) v.getWidth() / 2, (int) v.getHeight() / 2, 0, finalRadius);
-        v.setBackgroundColor(Color.GREEN);
-        anim.start();
-    }
+//    private void makeCircularRevealAnim(View v) {
+//        int finalRadius = (int) Math.hypot(v.getWidth() / 2, v.getHeight() / 2);
+//
+//        Animator anim = ViewAnimationUtils.createCircularReveal(
+//                v, (int) v.getWidth() / 2, (int) v.getHeight() / 2, 0, finalRadius);
+//        v.setBackgroundColor(Color.GREEN);
+//        anim.start();
+//    }
 
     @Override
     public void onBackPressed() {

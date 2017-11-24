@@ -16,8 +16,6 @@ public class AvatarImgs {
         {
             add(R.drawable.ic_unknown_user);
 
-            add(R.drawable.doggie_avatar_128);
-
             add(R.drawable.david_star_avatar);
 
             add(R.drawable.chai_avatar);
@@ -33,9 +31,44 @@ public class AvatarImgs {
             add(R.drawable.learn_tefillin_avatar);
 
             add(R.drawable.luchos_avatar);
+
+            add(R.drawable.doggie_avatar_128);
         }
     };
 
+    private static List<Integer> avatarImgListFramed = new ArrayList<Integer>() {
+        {
+            add(R.drawable.photo_upload_128_frame);
+
+            add(R.drawable.upload_from_camera_128_frame);
+
+            add(R.drawable.ic_unknown_user_128_frame);
+
+            add(R.drawable.david_star_avatar_128_frame);
+
+            add(R.drawable.chai_avatar_128_frame);
+
+            add(R.drawable.israeli_flag_avatar_128_frame);
+
+            add(R.drawable.shalom_avatar_128_frame);
+
+            add(R.drawable.love_avatar_128_frame);
+
+            add(R.drawable.rainbow_heart_avatar_128_frame);
+
+            add(R.drawable.learn_tefillin_avatar_128_frame);
+
+            add(R.drawable.luchos_avatar_128_frame);
+
+            add(R.drawable.doggie_avatar_128_frame);
+        }
+    };
+
+
+
+    public static List<Integer> getAllFramedAvatars() {
+        return avatarImgListFramed;
+    }
 
     public static List<Integer> getAllAvatars() {
         return avatarImgList;

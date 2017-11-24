@@ -47,7 +47,7 @@ mContext = context;
 
         GridView gridView = rootView.findViewById(R.id.gv_avatar_list);
         if(android.os.Build.VERSION.SDK_INT >= 23) {
-            mAdapter = new AvatarSelectAdapter(getContext(), AvatarImgs.getAllAvatars());
+            mAdapter = new AvatarSelectAdapter(getContext(), AvatarImgs.getAllFramedAvatars());
         }else{
             mAdapter = new AvatarSelectAdapter(mContext, AvatarImgs.getAllAvatars());
         }
