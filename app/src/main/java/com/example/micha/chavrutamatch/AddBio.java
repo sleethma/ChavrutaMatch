@@ -30,6 +30,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.List;
 
 import butterknife.BindView;
@@ -71,7 +78,7 @@ public class AddBio extends AppCompatActivity {
     //controls whether activity used to update or to create new account
     Boolean updateBio = false;
     // checks if user img file sent from @AvatarSelectMasterList
-    Uri imgUri = null;
+    Uri mNewProfImgUri = null;
     //Holds list view of possible avatars
     List<Integer> mAvatarsList = AvatarImgs.getAllAvatars();
 
@@ -99,8 +106,8 @@ public class AddBio extends AppCompatActivity {
                 int userAvatarSelected = bundle.getInt("avatar position", -1);
                 if (userAvatarSelected == 999) {
                     String stringImgUri = bundle.getString("img_uri_string_key");
-                    imgUri = Uri.parse(stringImgUri);
-                    UserAvatarView.setImageURI(imgUri);
+                    mNewProfImgUri = Uri.parse(stringImgUri);
+                    UserAvatarView.setImageURI(mNewProfImgUri);
                 } else {
                     UserAvatarView.setImageResource(mAvatarsList.get(userAvatarSelected));
                 }
@@ -169,11 +176,13 @@ public class AddBio extends AppCompatActivity {
         String newUserBio = UserBioView.getText().toString();
         String newUserAvatarNumberString = UserDetails.getmUserAvatarNumberString();
         String newUserCityState = autoCompleteTextView.getText().toString();
+        Uri newProfImgUser = mNewProfImgUri;
 
         //check for changes before queing db
         dataChangeCheck(newUserBio, newUserFirstName, newUserLastName,
-                newUserName, newUserPhoneNumber, newUserEmail, newUserAvatarNumberString, newUserCityState);
+                newUserName, newUserPhoneNumber, newUserEmail, newUserAvatarNumberString, newProfImgUser, newUserCityState);
 
+        //todo: complete check that ProfImgURI !new
         if (bioDataChanged) {
             UserDetails.setAllUserDataFromAddBio(mUserId, newUserName, newUserAvatarNumberString,
                     newUserFirstName, newUserLastName, newUserPhoneNumber, newUserEmail, newUserCityState);
@@ -197,7 +206,7 @@ public class AddBio extends AppCompatActivity {
     //checks to see if user changed data before saving in SP and DB
     public void dataChangeCheck(String newUserBio, String newUserFirstName, String newUserLastName,
                                 String newUserName, String newUserPhoneNumber, String newUserEmail,
-                                String newUserAvatarNumberString, String newUserCityState) {
+                                String newUserAvatarNumberString, Uri newProfImgUri, String newUserCityState) {
         bioDataChanged = false;
         if (mUserBio == null || !mUserBio.equals(newUserBio)) {
             mUserBio = newUserBio;
@@ -227,6 +236,12 @@ public class AddBio extends AppCompatActivity {
             mUserAvatarNumberString = newUserAvatarNumberString;
             bioDataChanged = true;
         }
+        //todo: update check below to check if !=
+        if (newProfImgUri != null ) {
+            bioDataChanged = true;
+            convertProfUriToByteArray(newProfImgUri);
+        }
+
         if (mUserCityState == null || !mUserCityState.equals(newUserCityState)) {
             mUserCityState = newUserCityState;
             bioDataChanged = true;
@@ -333,4 +348,56 @@ public class AddBio extends AppCompatActivity {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
+
+    private byte[] convertProfUriToByteArray(Uri mNewProfImgUri) {
+
+        InputStream iStream = null;
+        try {
+            iStream = getContentResolver().openInputStream(mNewProfImgUri);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        byte[] inputData = new byte[0];
+        try {
+            inputData = getBytes(iStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return inputData;
+    }
+
+    public byte[] getBytes(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+        int bufferSize = 1024;
+        byte[] buffer = new byte[bufferSize];
+
+        int len = 0;
+        while ((len = inputStream.read(buffer)) != -1) {
+            byteBuffer.write(buffer, 0, len);
+        }
+        return byteBuffer.toByteArray();
+    }
+
+    //todo: delete below if works w/o
+//    private byte[] convertProfUriToByteArray2(Uri mNewProfImgUri){
+//
+//        try {
+//            URL imageUrl = new URL(mNewProfImgUri);
+//            URLConnection ucon = imageUrl.openConnection();
+//
+//            InputStream is = ucon.getInputStream();
+//            BufferedInputStream bis = new BufferedInputStream(is);
+//
+//            ByteArrayBuffer baf = new ByteArrayBuffer(500);
+//            int current = 0;
+//            while ((current = bis.read()) != -1) {
+//                baf.append((byte) current);
+//            }
+//
+//            return baf.toByteArray();
+//        } catch (Exception e) {
+//            Log.d("ImageManager", "Error: " + e.toString());
+//        }
+//        return null;
+//    }
 }

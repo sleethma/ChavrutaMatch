@@ -104,9 +104,14 @@ public class MainActivity extends AppCompatActivity {
 
         //sets up UserDetails
         UserDetails.setUserDetailsFromSP(mContext);
-        if(UserDetails.getmUserAvatarNumberString() != null)
-        userAvatar.setImageResource(AvatarImgs.getAvatarNumberResId(
-                Integer.parseInt(UserDetails.getmUserAvatarNumberString())));
+        //sets user avatar. @UserAvatarNumberString = "999" indicates avatar is user photo
+        if(UserDetails.getmUserAvatarNumberString() != null &&
+                !UserDetails.getmUserAvatarNumberString().equals("999")) {
+            userAvatar.setImageResource(AvatarImgs.getAvatarNumberResId(
+                    Integer.parseInt(UserDetails.getmUserAvatarNumberString())));
+        }else{
+            userAvatar.setImageResource(AvatarImgs.getAvatarNumberResId(0));
+        }
 
         //check if already logged in
         //get current account and create new anonymous inner class

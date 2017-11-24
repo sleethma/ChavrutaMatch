@@ -225,7 +225,12 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
             if (holder.getItemViewType() == 1 && mContext == mainActivityContext) {
                 hostListItemView = true;
                 awaitingConfirmView = false;
-                holder.hostAvatar.setImageResource(avatarList.get(hostAvatarNumberInt));
+
+                if(hostAvatarNumberInt != 999) {
+                    holder.hostAvatar.setImageResource(avatarList.get(hostAvatarNumberInt));
+                }else{
+                    holder.hostAvatar.setImageResource(avatarList.get(0));
+                }
                 requestSlotOpen = "0";
                 requesterAvatar = null;
                 requesterName = null;
