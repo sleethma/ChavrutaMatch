@@ -101,7 +101,7 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
     private String mHostFirstName, mHostLastName, mHostAvatarNumber, mSessionMessage, mSessionDate,
             mStartTime, mEndTime, mSefer, mLocation, mHostId, mHostCityState;
     private List<Integer> allAvatars;
-
+    boolean avatarIsUserImage = false;
     private String format;
     private View.OnClickListener listener;
     private View mTimeDateViewClicked;
@@ -130,7 +130,13 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         mHostAvatarNumber = UserDetails.getmUserAvatarNumberString();
         allAvatars = AvatarImgs.getAllAvatars();
         int mHostAvatarNumberInt = Integer.parseInt(mHostAvatarNumber);
-        ivHostAvatar.setImageResource(allAvatars.get(mHostAvatarNumberInt));
+        final int IS_USER_AVATAR_IMG = 999;
+        if (mHostAvatarNumberInt == IS_USER_AVATAR_IMG) {
+            ivHostAvatar.setImageResource(allAvatars.get(0));
+        } else {
+            ivHostAvatar.setImageResource(allAvatars.get(mHostAvatarNumberInt));
+
+        }
 //        tvAddHost.setText(UserDetails.getmUserName());
 //        tvAddHost.setTypeface(Typeface.DEFAULT_BOLD);
 

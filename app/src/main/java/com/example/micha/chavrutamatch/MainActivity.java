@@ -269,7 +269,6 @@ public class MainActivity extends AppCompatActivity {
             //loop through array and extract objects, adding them individually as setter objects,
             //and adding objects to list adapter.
             int count = 0;
-            //todo: delete below line for testing
               while (count < jsonArray.length()) {
                 JSONObject jo = jsonArray.getJSONObject(count);
                 chavrutaId = jo.getString("chavruta_id");

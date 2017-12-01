@@ -65,6 +65,8 @@ public class HostSelect extends AppCompatActivity {
     ImageView scrollImg;
     ArrayList<HostSessionData> openChavrutaArrayList;
     static Context mContext;
+    //true if user non-stock image used for avatar
+    final private int USER_IMG_AVATAR = 999;
 
     public String jsonString;
     JSONObject jsonObject;
@@ -84,8 +86,10 @@ public class HostSelect extends AppCompatActivity {
         mContext = this;
 
         //sets HostImage in title bar
-        int hostAvatarNumberInt = UserDetails.getmUserAvatarNumberString() !=null ?
-                Integer.parseInt(UserDetails.getmUserAvatarNumberString()) : 0;
+        int hostAvatarNumberInt = Integer.parseInt(UserDetails.getmUserAvatarNumberString());
+        if(hostAvatarNumberInt == USER_IMG_AVATAR) {
+            hostAvatarNumberInt = 0;
+        }
         userPic.setImageResource(AvatarImgs.getAvatarNumberResId(hostAvatarNumberInt));
 
         //constructs the data source

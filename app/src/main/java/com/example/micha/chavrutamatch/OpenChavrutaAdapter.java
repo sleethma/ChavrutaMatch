@@ -70,10 +70,13 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
     Context mainActivityContext;
     Context hostSelectContext;
 
+
+
     //holds viewType for relevant listItem
     Boolean hostListItemView;
     Boolean awaitingConfirmView;
     Boolean hostSelectView;
+    final private int USER_IMG_AVATAR = 999;
     ArrayList<HostSessionData> mChavrutaSessionsAL;
     List<Integer> avatarList = AvatarImgs.getAllAvatars();
     private static final String LOG_TAG = OpenChavrutaAdapter.class.getSimpleName();
@@ -226,10 +229,10 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                 hostListItemView = true;
                 awaitingConfirmView = false;
 
-                if(hostAvatarNumberInt != 999) {
-                    holder.hostAvatar.setImageResource(avatarList.get(hostAvatarNumberInt));
-                }else{
+                if (hostAvatarNumberInt == USER_IMG_AVATAR) {
                     holder.hostAvatar.setImageResource(avatarList.get(0));
+                } else {
+                    holder.hostAvatar.setImageResource(avatarList.get(hostAvatarNumberInt));
                 }
                 requestSlotOpen = "0";
                 requesterAvatar = null;
@@ -255,7 +258,11 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                         userFirstName, userLastName);
                 requesterAvatar = UserDetails.getmUserAvatarNumberString();
                 //todo: add host avatar number
-                holder.hostAvatar.setImageResource(avatarList.get(hostAvatarNumberInt));
+                if (hostAvatarNumberInt == USER_IMG_AVATAR) {
+                    holder.hostAvatar.setImageResource(avatarList.get(0));
+                } else {
+                    holder.hostAvatar.setImageResource(avatarList.get(hostAvatarNumberInt));
+                }
                 //check which request slot is availiable and pass name of db column to server for insert
                 if (currentItem.getMchavrutaRequest1().length() < 5) {
                     requestSlotOpen = "chavruta_request_1";
@@ -284,7 +291,11 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                 String learnerConfirmed = currentItem.getmConfirmed();
                 int currentHostAvatarNumberInt = Integer.parseInt(currentItem.getmHostAvatarNumber());
                 holder.hostUserName.setText(UserDetails.getmUserName());
-                holder.hostAvatar.setImageResource(avatarList.get(currentHostAvatarNumberInt));
+                if (hostAvatarNumberInt == USER_IMG_AVATAR) {
+                    holder.hostAvatar.setImageResource(avatarList.get(0));
+                } else {
+                    holder.hostAvatar.setImageResource(avatarList.get(currentHostAvatarNumberInt));
+                }
                 holder.hostAvatar.setBackgroundResource(R.drawable.circle_background);
 
                 if (learnerConfirmed.equals(userId)) {
@@ -299,7 +310,11 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
             }
             if (hostSelectView) {
                 int hostAvatarOfViewInt = Integer.parseInt(currentItem.getmHostAvatarNumber());
-                holder.hostAvatar.setImageResource(avatarList.get(hostAvatarOfViewInt));
+                if(hostAvatarOfViewInt == USER_IMG_AVATAR) {
+                    holder.hostAvatar.setImageResource(avatarList.get(0));
+                }else{
+                    holder.hostAvatar.setImageResource(avatarList.get(hostAvatarOfViewInt));
+                }
                 holder.addHost.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -347,7 +362,11 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                     holder.confirmRequestName_1.setText(
                             chavrutaRequestName1);
                     int request1AvatarNumber = Integer.parseInt(currentItem.getmChavrutaRequest1Avatar());
-                    holder.confirmRequestAvatar_1.setImageResource(avatarList.get(request1AvatarNumber));
+                    if(hostAvatarNumberInt != USER_IMG_AVATAR) {
+                        holder.confirmRequestAvatar_1.setImageResource(avatarList.get(0));
+                    }else{
+                        holder.confirmRequestAvatar_1.setImageResource(avatarList.get(request1AvatarNumber));
+                    }
                 } else {
                     holder.pendingRequest_1.setVisibility(View.GONE);
                     holder.underlinePendingRequest_1.setVisibility(View.GONE);
@@ -366,7 +385,11 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                     holder.confirmRequestName_2.setText(
                             chavrutaRequestName2);
                     int request2AvatarNumber = Integer.parseInt(currentItem.getmChavrutaRequest2Avatar());
-                    holder.confirmRequestAvatar_2.setImageResource(avatarList.get(request2AvatarNumber));
+                    if(hostAvatarNumberInt == USER_IMG_AVATAR) {
+                        holder.confirmRequestAvatar_2.setImageResource(avatarList.get(0));
+                    }else{
+                        holder.confirmRequestAvatar_2.setImageResource(avatarList.get(request2AvatarNumber));
+                    }
 
                 } else {
                     holder.pendingRequest_2.setVisibility(View.GONE);
@@ -386,8 +409,11 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                     holder.confirmRequestName_3.setText(
                             chavrutaRequestName3);
                     int request3AvatarNumber = Integer.parseInt(currentItem.getmChavrutaRequest2Avatar());
-                    holder.confirmRequestAvatar_3.setImageResource(avatarList.get(request3AvatarNumber));
-
+                    if(hostAvatarNumberInt == USER_IMG_AVATAR) {
+                        holder.confirmRequestAvatar_3.setImageResource(avatarList.get(0));
+                    }else{
+                        holder.confirmRequestAvatar_3.setImageResource(avatarList.get(request3AvatarNumber));
+                    }
                 } else {
                     holder.pendingRequest_3.setVisibility(View.GONE);
                     currentItem.setRequestThreeConfirmed(false);

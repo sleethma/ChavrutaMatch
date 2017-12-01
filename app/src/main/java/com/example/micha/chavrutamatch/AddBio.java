@@ -1,13 +1,16 @@
 package com.example.micha.chavrutamatch;
 
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.v4.app.FragmentManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +28,7 @@ import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.Data.AvatarImgs;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.example.micha.chavrutamatch.Utils.ChavrutaUtils;
+import com.example.micha.chavrutamatch.Utils.ImgUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -81,6 +85,10 @@ public class AddBio extends AppCompatActivity {
     Uri mNewProfImgUri = null;
     //Holds list view of possible avatars
     List<Integer> mAvatarsList = AvatarImgs.getAllAvatars();
+    //holds byte array if user chose own Avatar image
+    //todo: delete?
+    //byte[] mUserProvidedAvatarByteArray = null;
+    String mCustomUserAvatarString= "";
 
 
 //TODO: Add input validation using: https://www.androidhive.info/2015/09/android-material-design-floating-labels-for-edittext/
@@ -236,10 +244,11 @@ public class AddBio extends AppCompatActivity {
             mUserAvatarNumberString = newUserAvatarNumberString;
             bioDataChanged = true;
         }
-        //todo: update check below to check if !=
+
         if (newProfImgUri != null ) {
             bioDataChanged = true;
-            convertProfUriToByteArray(newProfImgUri);
+            mCustomUserAvatarString = ImgUtils.uriToCompressedString(mContext, newProfImgUri);
+            //mUserProvidedAvatarByteArray = convertProfUriToByteArray(newProfImgUri);
         }
 
         if (mUserCityState == null || !mUserCityState.equals(newUserCityState)) {
@@ -250,6 +259,7 @@ public class AddBio extends AppCompatActivity {
 
     //posts saved user bio info to server
     public void postUserBio() {
+        String customUserAvatar = "";
         final String userPost = "user post";
         String userPostType;
         if (updateBio) {
@@ -258,9 +268,21 @@ public class AddBio extends AppCompatActivity {
             userPostType = "new user post";
         }
 
+//        if(mUserProvidedAvatarByteArray != null)
+            //todo: uncomment below or delete
+            // customUserAvatar = new String(mUserProvidedAvatarByteArray);
+            //convert to Base64 for db insert
+            //customUserAvatar = Base64.encodeToString(mUserProvidedAvatarByteArray, Base64.DEFAULT);
+//            String testString = customUserAvatar;
+
+
         ServerConnect postUserToServer = new ServerConnect(this);
         postUserToServer.execute(userPost, mUserId, mUserName, mUserAvatarNumberString, mUserFirstName, mUserLastName,
-                mUserPhoneNumber, mUserEmail, mUserBio, mUserCityState, userPostType);
+                mUserPhoneNumber, mUserEmail, mUserBio, mUserCityState, userPostType, mCustomUserAvatarString);
+
+//        CustomAvatarToDb customAvatarToDb = new CustomAvatarToDb(this);
+//        customAvatarToDb.execute();
+
     }
 
     //populates activity data from SP
@@ -348,7 +370,7 @@ public class AddBio extends AppCompatActivity {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
-
+    //todo: close inputstream
     private byte[] convertProfUriToByteArray(Uri mNewProfImgUri) {
 
         InputStream iStream = null;
@@ -365,7 +387,7 @@ public class AddBio extends AppCompatActivity {
         }
         return inputData;
     }
-
+      //todo: close bytebuffer and inputStream
     public byte[] getBytes(InputStream inputStream) throws IOException {
         ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
         int bufferSize = 1024;

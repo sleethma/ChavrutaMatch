@@ -247,6 +247,8 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
             String userCityState = params[9];
             //@var postType: either "update user post" or "new user post"
             String postType = params[10];
+            //string of user avatar byte[]
+            String customAvatarString = "";
 
             //establish connection
             try {
@@ -255,6 +257,8 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                     userPostUrl = new URL(new_user_url);
                 }else{
                     userPostUrl = new URL(update_user_url);
+                    //todo: delete if not necessary
+                    customAvatarString = params[11];
                 }
                 HttpURLConnection httpURLConnection = (HttpURLConnection) userPostUrl.openConnection();
 
@@ -283,7 +287,11 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                                 URLEncoder.encode("user_city_state", "UTF-8") + "=" + URLEncoder.encode(
                                 userCityState, "UTF-8") + "&" +
                                 URLEncoder.encode("user_bio", "UTF-8") + "=" + URLEncoder.encode(
-                                userBio, "UTF-8");
+                                userBio, "UTF-8")+ "&" +
+                                URLEncoder.encode("custom_avatar_string", "UTF-8") + "=" + URLEncoder.encode(
+                                customAvatarString, "UTF-8");
+
+
 
                 bufferedWriter.write(data);
                 bufferedWriter.flush();
@@ -299,6 +307,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 e.printStackTrace();
             }
         }
+
         //stores in db class request by user in hosts chavruta
         //requesterSlotOpen is the first open availiable slot open in db out of 3
         //chavrutaId is the auto_inc column of db
