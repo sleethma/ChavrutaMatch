@@ -95,22 +95,15 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         mContext = this;
 
-//todo: delete from below if not needed
-        String testCurrentDateTimeString = DateFormat.getDateInstance().format(new Date());
-        Date testDateObject = TimeStampConverter.convertStringToTimeStamp(testCurrentDateTimeString);
-
-        //Toast.makeText(mContext, testCurrentDateTimeString, Toast.LENGTH_SHORT).show();
-        String testGetSimpleDateInstance = DateFormat.getDateInstance(SHORT).format(new Date());
-
         //sets up UserDetails
-        UserDetails.setUserDetailsFromSP(mContext);
+       UserDetails.setUserDetailsFromSP(mContext);
         //sets user avatar. @UserAvatarNumberString = "999" indicates avatar is user photo
         if(UserDetails.getmUserAvatarNumberString() != null &&
                 !UserDetails.getmUserAvatarNumberString().equals("999")) {
             userAvatar.setImageResource(AvatarImgs.getAvatarNumberResId(
-                    Integer.parseInt(UserDetails.getmUserAvatarNumberString())));
+                   Integer.parseInt(UserDetails.getmUserAvatarNumberString())));
         }else{
-            userAvatar.setImageResource(AvatarImgs.getAvatarNumberResId(0));
+            userAvatar.setImageURI(UserDetails.getHostAvatarUri());
         }
 
         //check if already logged in
@@ -125,6 +118,8 @@ public class MainActivity extends AppCompatActivity {
                 SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE).edit();
                 editor.putString(getString(R.string.user_account_id_key), accountKitId);
                 editor.putBoolean("new_user_key", false);
+                //todo: delete below
+//                editor.putString(getString(R.string.user_avatar_number_key), "0");
                 PhoneNumber phoneNumber = account.getPhoneNumber();
 
                 if (account.getPhoneNumber() != null) {

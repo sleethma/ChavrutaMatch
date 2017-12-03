@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -43,6 +44,8 @@ public class UserDetails extends AppCompatActivity{
     private static String mUserCityState;
     private static  SharedPreferences mPreferences;
     private static Context mContext;
+    private static String mUserCustomAvatarUriString;
+    private static Uri mUserCustomAvatarUri;
 
 
 
@@ -70,6 +73,7 @@ public class UserDetails extends AppCompatActivity{
         mUserPhoneNumber=param[5];
         mUserEmail=param[6];
         mUserCityState = param[7];
+        mUserCustomAvatarUriString = param[8];
     }
 
     public static String[]  getUserDataFromSP(){
@@ -96,6 +100,12 @@ public class UserDetails extends AppCompatActivity{
         mUserAvatarNumberString = prefs.getString("user avatar number key", null);
         mUserBio = prefs.getString("user bio key", null);
         mUserId = prefs.getString("user account id key", null);
+        mUserCustomAvatarUriString = prefs.getString("user custom avatar key", null);
+        String testUriString = mUserCustomAvatarUriString;
+        //convert String to Uri and save in @this
+        if(mUserCustomAvatarUriString != null) {
+            mUserCustomAvatarUri = Uri.parse(mUserCustomAvatarUriString);
+        }
     }
 
     //gets application context
@@ -137,6 +147,10 @@ public class UserDetails extends AppCompatActivity{
 
     public static void setmUserPhoneNumber(String mUserPhoneNumber) {
         UserDetails.mUserPhoneNumber = mUserPhoneNumber;
+    }
+
+    public static Uri getHostAvatarUri(){
+        return mUserCustomAvatarUri;
     }
 
     public static String getmUserEmail() {

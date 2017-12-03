@@ -132,7 +132,7 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         int mHostAvatarNumberInt = Integer.parseInt(mHostAvatarNumber);
         final int IS_USER_AVATAR_IMG = 999;
         if (mHostAvatarNumberInt == IS_USER_AVATAR_IMG) {
-            ivHostAvatar.setImageResource(allAvatars.get(0));
+            ivHostAvatar.setImageURI(UserDetails.getHostAvatarUri());
         } else {
             ivHostAvatar.setImageResource(allAvatars.get(mHostAvatarNumberInt));
 

@@ -64,7 +64,7 @@ import static com.example.micha.chavrutamatch.R.id.view;
 class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewHolder> {
 
     //number of views adapter will hold
-    private int hostAvatarNumberInt;
+    private int userAvatarNumberInt;
     private Context mContext;
     String userId = UserDetails.getmUserId();
     Context mainActivityContext;
@@ -91,7 +91,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
         mChavrutaSessionsAL = chavrutaSessionsArrayList;
         mainActivityContext = MainActivity.mContext;
         hostSelectContext = HostSelect.mContext;
-        hostAvatarNumberInt = UserDetails.getmUserAvatarNumberString() != null ?
+        userAvatarNumberInt = UserDetails.getmUserAvatarNumberString() != null ?
                 Integer.parseInt(UserDetails.getmUserAvatarNumberString()) : 0;
         //calls so can access static user vars throughout adapter
 //        orderArrayByDate(mChavrutaSessionsAL);
@@ -229,10 +229,10 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                 hostListItemView = true;
                 awaitingConfirmView = false;
 
-                if (hostAvatarNumberInt == USER_IMG_AVATAR) {
+                if (userAvatarNumberInt == USER_IMG_AVATAR) {
                     holder.hostAvatar.setImageResource(avatarList.get(0));
                 } else {
-                    holder.hostAvatar.setImageResource(avatarList.get(hostAvatarNumberInt));
+                    holder.hostAvatar.setImageResource(avatarList.get(userAvatarNumberInt));
                 }
                 requestSlotOpen = "0";
                 requesterAvatar = null;
@@ -258,10 +258,10 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                         userFirstName, userLastName);
                 requesterAvatar = UserDetails.getmUserAvatarNumberString();
                 //todo: add host avatar number
-                if (hostAvatarNumberInt == USER_IMG_AVATAR) {
+                if (userAvatarNumberInt == USER_IMG_AVATAR) {
                     holder.hostAvatar.setImageResource(avatarList.get(0));
                 } else {
-                    holder.hostAvatar.setImageResource(avatarList.get(hostAvatarNumberInt));
+                    holder.hostAvatar.setImageResource(avatarList.get(userAvatarNumberInt));
                 }
                 //check which request slot is availiable and pass name of db column to server for insert
                 if (currentItem.getMchavrutaRequest1().length() < 5) {
@@ -291,7 +291,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                 String learnerConfirmed = currentItem.getmConfirmed();
                 int currentHostAvatarNumberInt = Integer.parseInt(currentItem.getmHostAvatarNumber());
                 holder.hostUserName.setText(UserDetails.getmUserName());
-                if (hostAvatarNumberInt == USER_IMG_AVATAR) {
+                if (currentHostAvatarNumberInt == USER_IMG_AVATAR) {
                     holder.hostAvatar.setImageResource(avatarList.get(0));
                 } else {
                     holder.hostAvatar.setImageResource(avatarList.get(currentHostAvatarNumberInt));
@@ -362,7 +362,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                     holder.confirmRequestName_1.setText(
                             chavrutaRequestName1);
                     int request1AvatarNumber = Integer.parseInt(currentItem.getmChavrutaRequest1Avatar());
-                    if(hostAvatarNumberInt != USER_IMG_AVATAR) {
+                    if(userAvatarNumberInt != USER_IMG_AVATAR) {
                         holder.confirmRequestAvatar_1.setImageResource(avatarList.get(0));
                     }else{
                         holder.confirmRequestAvatar_1.setImageResource(avatarList.get(request1AvatarNumber));
@@ -385,7 +385,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                     holder.confirmRequestName_2.setText(
                             chavrutaRequestName2);
                     int request2AvatarNumber = Integer.parseInt(currentItem.getmChavrutaRequest2Avatar());
-                    if(hostAvatarNumberInt == USER_IMG_AVATAR) {
+                    if(userAvatarNumberInt == USER_IMG_AVATAR) {
                         holder.confirmRequestAvatar_2.setImageResource(avatarList.get(0));
                     }else{
                         holder.confirmRequestAvatar_2.setImageResource(avatarList.get(request2AvatarNumber));
@@ -409,7 +409,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                     holder.confirmRequestName_3.setText(
                             chavrutaRequestName3);
                     int request3AvatarNumber = Integer.parseInt(currentItem.getmChavrutaRequest2Avatar());
-                    if(hostAvatarNumberInt == USER_IMG_AVATAR) {
+                    if(userAvatarNumberInt == USER_IMG_AVATAR) {
                         holder.confirmRequestAvatar_3.setImageResource(avatarList.get(0));
                     }else{
                         holder.confirmRequestAvatar_3.setImageResource(avatarList.get(request3AvatarNumber));

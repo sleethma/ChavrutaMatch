@@ -55,7 +55,10 @@ import static com.example.micha.chavrutamatch.MainActivity.mContext;
 
 public class AddBio extends AppCompatActivity {
 
-    private static String LOG_TAG = AddBio.class.getSimpleName();
+    private final static String LOG_TAG = AddBio.class.getSimpleName();
+    private final static String CUSTOM_AVATAR_NUMBER_STRING = "999";
+    private final static int CUSTOM_AVATAR_NUMBER_INT = 999;
+
     private final int REQUEST_CODE = 100;
     static String mUserId, mUserEmail, mUserPhoneNumber, mUserName, mUserFirstName, mUserLastName,
             mUserBio, mUserAvatarNumberString, mUserCityState, jsonString;
@@ -88,7 +91,8 @@ public class AddBio extends AppCompatActivity {
     //holds byte array if user chose own Avatar image
     //todo: delete?
     //byte[] mUserProvidedAvatarByteArray = null;
-    String mCustomUserAvatarString= "";
+    String mCustomUserAvatarUriString;
+    String mCustomUserAvatarBase64String;
 
 
 //TODO: Add input validation using: https://www.androidhive.info/2015/09/android-material-design-floating-labels-for-edittext/
@@ -112,20 +116,20 @@ public class AddBio extends AppCompatActivity {
                 Bundle bundle = incomingIntent.getExtras();
                 updateBio = bundle.getBoolean("affirm update bio");
                 int userAvatarSelected = bundle.getInt("avatar position", -1);
-                if (userAvatarSelected == 999) {
-                    String stringImgUri = bundle.getString("img_uri_string_key");
-                    mNewProfImgUri = Uri.parse(stringImgUri);
+                if (userAvatarSelected == CUSTOM_AVATAR_NUMBER_INT) {
+                    mCustomUserAvatarUriString = bundle.getString("img_uri_string_key");
+                    mNewProfImgUri = Uri.parse(mCustomUserAvatarUriString);
                     UserAvatarView.setImageURI(mNewProfImgUri);
                 } else {
                     UserAvatarView.setImageResource(mAvatarsList.get(userAvatarSelected));
                 }
-                UserDetails.setmUserAvatarNumberString("" + userAvatarSelected);
-                populateUserDataFromSP();
+                mUserAvatarNumberString = "" + userAvatarSelected;
+                populateUserDataFromSP("pick chooser return");
             }
             //intent sent from user selecting update bio w/o user editing avatar
             if (incomingIntent.getExtras().getBoolean("update_bio")) {
                 updateBio = incomingIntent.getExtras().getBoolean("update_bio");
-                populateUserDataFromSP();
+                populateUserDataFromSP("no new custom avatar selected");
             }
             //if first login on a new device, db call is returned with user acct data
             else if (incomingIntent.getExtras().getString("user_data_json_string") != null) {
@@ -133,12 +137,12 @@ public class AddBio extends AppCompatActivity {
                 parseUserDetailsFromDB(jsonString);
             }
         } else {
-
-            //if userFirstName in SP = null then user has not used current device,
+            //if userFirstName in SP == null then user has not used current device,
             // then check db for user details, else load from Shared Preferences
             if (prefs.getString(getString(R.string.user_first_name_key), null) != null) {
-                populateUserDataFromSP();
+                populateUserDataFromSP("no new custom avatar selected");
             } else {
+                //todo:implement db call anyway to see if user changed info on another device
                 getUserBioDatafromDb();
             }
         }
@@ -157,11 +161,11 @@ public class AddBio extends AppCompatActivity {
         //set auto-complete for closest US city
         ChavrutaUtils cu = new ChavrutaUtils();
         String jsonFileString = cu.getJsonFileFromResource(this);
-        List<String> testList = cu.parseCityName(jsonFileString);
+        List<String> cityList = cu.parseCityName(jsonFileString);
 
 // Create the adapter and set it to the AutoCompleteTextView
         ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, testList);
+                new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, cityList);
         autoCompleteTextView.setAdapter(adapter);
     }
 
@@ -182,7 +186,10 @@ public class AddBio extends AppCompatActivity {
         String newUserFirstName = UserFirstNameView.getText().toString();
         String newUserLastName = UserLastNameView.getText().toString();
         String newUserBio = UserBioView.getText().toString();
-        String newUserAvatarNumberString = UserDetails.getmUserAvatarNumberString();
+        String newUserAvatarNumberString = mUserAvatarNumberString;
+        Log.d(LOG_TAG, newUserAvatarNumberString);
+        //mCustomUserAvatarString != null means is newly set
+        String newCustomUserAvatarString = mCustomUserAvatarUriString;
         String newUserCityState = autoCompleteTextView.getText().toString();
         Uri newProfImgUser = mNewProfImgUri;
 
@@ -193,7 +200,8 @@ public class AddBio extends AppCompatActivity {
         //todo: complete check that ProfImgURI !new
         if (bioDataChanged) {
             UserDetails.setAllUserDataFromAddBio(mUserId, newUserName, newUserAvatarNumberString,
-                    newUserFirstName, newUserLastName, newUserPhoneNumber, newUserEmail, newUserCityState);
+                    newUserFirstName, newUserLastName, newUserPhoneNumber, newUserEmail, newUserCityState,
+                    newCustomUserAvatarString);
             saveAddBioDataToSP();
             postUserBio();
         } else {
@@ -240,15 +248,17 @@ public class AddBio extends AppCompatActivity {
             mUserEmail = newUserEmail;
             bioDataChanged = true;
         }
-        if (mUserAvatarNumberString == null || !mUserAvatarNumberString.equals(newUserAvatarNumberString)) {
+        if (mUserAvatarNumberString == null || !UserDetails.getmUserAvatarNumberString().equals(newUserAvatarNumberString)) {
             mUserAvatarNumberString = newUserAvatarNumberString;
             bioDataChanged = true;
         }
 
-        if (newProfImgUri != null ) {
+        if (mCustomUserAvatarUriString != null && newUserAvatarNumberString.equals(CUSTOM_AVATAR_NUMBER_STRING) ) {
             bioDataChanged = true;
-            mCustomUserAvatarString = ImgUtils.uriToCompressedString(mContext, newProfImgUri);
+            mCustomUserAvatarBase64String = ImgUtils.uriToCompressedBase64String(mContext, newProfImgUri);
             //mUserProvidedAvatarByteArray = convertProfUriToByteArray(newProfImgUri);
+        }else{
+            mCustomUserAvatarBase64String = "none";
         }
 
         if (mUserCityState == null || !mUserCityState.equals(newUserCityState)) {
@@ -259,7 +269,6 @@ public class AddBio extends AppCompatActivity {
 
     //posts saved user bio info to server
     public void postUserBio() {
-        String customUserAvatar = "";
         final String userPost = "user post";
         String userPostType;
         if (updateBio) {
@@ -278,26 +287,33 @@ public class AddBio extends AppCompatActivity {
 
         ServerConnect postUserToServer = new ServerConnect(this);
         postUserToServer.execute(userPost, mUserId, mUserName, mUserAvatarNumberString, mUserFirstName, mUserLastName,
-                mUserPhoneNumber, mUserEmail, mUserBio, mUserCityState, userPostType, mCustomUserAvatarString);
+                mUserPhoneNumber, mUserEmail, mUserBio, mUserCityState, userPostType, mCustomUserAvatarBase64String);
 
 //        CustomAvatarToDb customAvatarToDb = new CustomAvatarToDb(this);
 //        customAvatarToDb.execute();
 
     }
 
-    //populates activity data from SP
-    public void populateUserDataFromSP() {
+    //populates activity data from SP based on if started from media chooser or not
+    public void populateUserDataFromSP(String activityOnCreateType) {
         //get info from newUserLogin if exists on device
         mUserPhoneNumber = prefs.getString(getString(R.string.user_phone_key), null);
         mUserEmail = prefs.getString(getString(R.string.user_email_key), null);
         mUserName = prefs.getString(getString(R.string.user_name_key), null);
         mUserFirstName = prefs.getString(getString(R.string.user_first_name_key), null);
         mUserLastName = prefs.getString(getString(R.string.user_last_name_key), null);
-        mUserAvatarNumberString = prefs.getString(getString(R.string.user_avatar_number_key), "0");
         mUserBio = prefs.getString(getString(R.string.user_bio_key), null);
         mUserId = prefs.getString(getString(R.string.user_account_id_key), null);
         mUserCityState = prefs.getString(getString(R.string.user_city_state), null);
-        populateEditTextData();
+        String userAvatarNumberString = UserDetails.getmUserAvatarNumberString();
+        // if user selected a new custom avatar, don't populate from SP
+        if(activityOnCreateType.equals("no new custom avatar selected")){
+            mCustomUserAvatarUriString = prefs.getString(
+                    getString(R.string.custom_user_avatar_string_uri_key), null);
+            mUserAvatarNumberString = prefs.getString(getString(R.string.user_avatar_number_key), userAvatarNumberString);
+        }
+
+        populateEditTextData(activityOnCreateType);
         //todo: delete below if functional w/o
         if (mUserId == null) mUserId = UserDetails.getmUserId();
     }
@@ -324,27 +340,34 @@ public class AddBio extends AppCompatActivity {
             mUserEmail = jo.getString("userEmail");
             mUserBio = jo.getString("userBio");
             mUserCityState = jo.getString("userCityState");
-            populateEditTextData();
+            populateEditTextData("no new custom avatar selected");
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
-    public void populateEditTextData() {
+    public void populateEditTextData(String activityOnCreateType) {
         UserPhoneView.setText(mUserPhoneNumber);
         UserEmailView.setText(mUserEmail);
         UserNameView.setText(mUserName);
         UserFirstNameView.setText(mUserFirstName);
         UserLastNameView.setText(mUserLastName);
-        String mUserAvatarNumberString =  UserDetails.getmUserAvatarNumberString();
-        //avatar is a sample image
-        if (mUserAvatarNumberString != null && !mUserAvatarNumberString.equals("999") ) {
-            UserAvatarView.setImageResource(mAvatarsList.get(Integer.parseInt(UserDetails.getmUserAvatarNumberString())));
-            //avatar is not yet selected
-        } else if(!
-                mUserAvatarNumberString.equals("999")) {
-            UserAvatarView.setImageResource(R.drawable.ic_unknown_user);
-        }
+        //set avatar image if not just chosen
+       if(activityOnCreateType.equals("no new custom avatar selected")) {
+           String userAvatarNumberString =  UserDetails.getmUserAvatarNumberString();
+           Uri userAvatarUri = UserDetails.getHostAvatarUri();
+
+           mUserAvatarNumberString = userAvatarNumberString;
+           mNewProfImgUri = userAvatarUri;
+
+           //custom avatar was previously chosen
+           if(mUserAvatarNumberString.equals(CUSTOM_AVATAR_NUMBER_STRING)) {
+               UserAvatarView.setImageURI(mNewProfImgUri);
+               //template avatar previously chosen
+           }else{
+               UserAvatarView.setImageResource(mAvatarsList.get(Integer.parseInt(mUserAvatarNumberString)));
+           }
+       }
         UserBioView.setText(mUserBio);
         autoCompleteTextView.setText(mUserCityState);
     }
@@ -361,6 +384,7 @@ public class AddBio extends AppCompatActivity {
         editor.putString(getString(R.string.user_avatar_number_key), mUserAvatarNumberString);
         editor.putString(getString(R.string.user_bio_key), mUserBio);
         editor.putString(getString(R.string.user_city_state_key), mUserCityState);
+        editor.putString(getString(R.string.custom_user_avatar_string_uri_key),mCustomUserAvatarUriString);
         editor.apply();
     }
 
@@ -381,23 +405,11 @@ public class AddBio extends AppCompatActivity {
         }
         byte[] inputData = new byte[0];
         try {
-            inputData = getBytes(iStream);
+            inputData = ImgUtils.getBytes(iStream);
         } catch (IOException e) {
             e.printStackTrace();
         }
         return inputData;
-    }
-      //todo: close bytebuffer and inputStream
-    public byte[] getBytes(InputStream inputStream) throws IOException {
-        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
-        int bufferSize = 1024;
-        byte[] buffer = new byte[bufferSize];
-
-        int len = 0;
-        while ((len = inputStream.read(buffer)) != -1) {
-            byteBuffer.write(buffer, 0, len);
-        }
-        return byteBuffer.toByteArray();
     }
 
     //todo: delete below if works w/o
