@@ -46,6 +46,7 @@ public class UserDetails extends AppCompatActivity{
     private static Context mContext;
     private static String mUserCustomAvatarUriString;
     private static Uri mUserCustomAvatarUri;
+    private static String mUserImagePathString;
 
 
 
@@ -101,7 +102,6 @@ public class UserDetails extends AppCompatActivity{
         mUserBio = prefs.getString("user bio key", null);
         mUserId = prefs.getString("user account id key", null);
         mUserCustomAvatarUriString = prefs.getString("user custom avatar key", null);
-        String testUriString = mUserCustomAvatarUriString;
         //convert String to Uri and save in @this
         if(mUserCustomAvatarUriString != null) {
             mUserCustomAvatarUri = Uri.parse(mUserCustomAvatarUriString);
@@ -116,7 +116,9 @@ public class UserDetails extends AppCompatActivity{
     public static void setmUserAvatarNumberString(String mUserAvatarNumberString) {
         UserDetails.mUserAvatarNumberString = mUserAvatarNumberString;
     }
-
+    public static void setmUserCustomAvatarUriString(String UserCustomAvatarUriString){
+        mUserCustomAvatarUriString = UserCustomAvatarUriString;
+    }
 
     public static String getmUserId() {
         return mUserId;
@@ -151,6 +153,17 @@ public class UserDetails extends AppCompatActivity{
 
     public static Uri getHostAvatarUri(){
         return mUserCustomAvatarUri;
+    }
+
+    public static void setHostAvatarUri(Uri userImgUri){
+        mUserCustomAvatarUri = userImgUri;
+    }
+    public static  void setUserImgPathString(String userImagePathString){
+        mUserImagePathString = userImagePathString;
+    }
+
+    public static String getUserImgPathString(){
+        return mUserImagePathString;
     }
 
     public static String getmUserEmail() {

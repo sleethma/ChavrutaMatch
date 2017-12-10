@@ -1,52 +1,46 @@
 package com.example.micha.chavrutamatch;
 
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.provider.MediaStore;
-import android.support.v4.app.FragmentManager;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Base64;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.Toast;
+
 
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.Data.AvatarImgs;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.example.micha.chavrutamatch.Utils.ChavrutaUtils;
+import com.example.micha.chavrutamatch.Utils.GlideApp;
 import com.example.micha.chavrutamatch.Utils.ImgUtils;
+import com.example.micha.chavrutamatch.Utils.TestImgClass;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
+
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import static com.example.micha.chavrutamatch.MainActivity.mContext;
 
 
 /**
@@ -58,6 +52,7 @@ public class AddBio extends AppCompatActivity {
     private final static String LOG_TAG = AddBio.class.getSimpleName();
     private final static String CUSTOM_AVATAR_NUMBER_STRING = "999";
     private final static int CUSTOM_AVATAR_NUMBER_INT = 999;
+    private final int PERMISSION_REQUEST_READ_EXTERNAL_STORAGE= 0;
 
     private final int REQUEST_CODE = 100;
     static String mUserId, mUserEmail, mUserPhoneNumber, mUserName, mUserFirstName, mUserLastName,
@@ -79,6 +74,8 @@ public class AddBio extends AppCompatActivity {
     SharedPreferences prefs;
     @BindView(R.id.ac_city_state)
     AutoCompleteTextView autoCompleteTextView;
+    @BindView(R.id.sv_add_bio)
+             ScrollView scrollView;
 
     //controls whether or not db update necessary
     Boolean bioDataChanged = false;
@@ -94,9 +91,7 @@ public class AddBio extends AppCompatActivity {
     String mCustomUserAvatarUriString;
     String mCustomUserAvatarBase64String;
 
-
 //TODO: Add input validation using: https://www.androidhive.info/2015/09/android-material-design-floating-labels-for-edittext/
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,10 +111,43 @@ public class AddBio extends AppCompatActivity {
                 Bundle bundle = incomingIntent.getExtras();
                 updateBio = bundle.getBoolean("affirm update bio");
                 int userAvatarSelected = bundle.getInt("avatar position", -1);
+
                 if (userAvatarSelected == CUSTOM_AVATAR_NUMBER_INT) {
-                    mCustomUserAvatarUriString = bundle.getString("img_uri_string_key");
-                    mNewProfImgUri = Uri.parse(mCustomUserAvatarUriString);
-                    UserAvatarView.setImageURI(mNewProfImgUri);
+                    requestExternalStoragePermission();
+                    String userPicFilePath;
+                    File file;
+
+                    //image selected from user storage
+                    if(bundle.getBoolean("imageIsFromUserStorage")) {
+                        mCustomUserAvatarUriString = bundle.getString("img_uri_string_key");
+                        mNewProfImgUri = Uri.parse(mCustomUserAvatarUriString);
+                        userPicFilePath = TestImgClass.getPath(this, mNewProfImgUri);
+                        file = new File(userPicFilePath);
+                        //image from user's camera
+                    }else{
+                        //todo: refactor all this to make uri/files processed the same whether from camera or external storage
+                        mCustomUserAvatarUriString = bundle.getString("img_uri_string_key");
+                        userPicFilePath = bundle.getString("img_file_path_string_key");
+                        Log.e(LOG_TAG, mCustomUserAvatarUriString);
+                        mNewProfImgUri = Uri.parse(mCustomUserAvatarUriString);
+                        //userPicFilePath = TestImgClass.getPath(this, mNewProfImgUri);
+                        file = new File(userPicFilePath);
+                    }
+
+                    //TODO: WRAP BOTTOM TWO IN A SINGLE CLASS ALONG WITH VERSION CHECKING IN (ImgUtils class) MAKING A FILE AND PASS IN GLIDE BELOW
+//                    String testFilePath2 = TestAbsUriPathUtil.getRealPathFromURI_API19(this, mNewProfImgUri);
+
+                    //todo:  testBelow
+//                    Bitmap testBitmap = ImgUtils.base64StringToBitmap(ImgUtils.uriToCompressedBase64String(this, mNewProfImgUri));
+//                    UserAvatarView.setImageBitmap(testBitmap);
+                    if(mNewProfImgUri != null){
+
+                    GlideApp
+                            .with(this)
+                            .load(mNewProfImgUri)
+                            .into(UserAvatarView);
+                    }
+//                    UserAvatarView.setImageURI(mNewProfImgUri);
                 } else {
                     UserAvatarView.setImageResource(mAvatarsList.get(userAvatarSelected));
                 }
@@ -197,12 +225,12 @@ public class AddBio extends AppCompatActivity {
         dataChangeCheck(newUserBio, newUserFirstName, newUserLastName,
                 newUserName, newUserPhoneNumber, newUserEmail, newUserAvatarNumberString, newProfImgUser, newUserCityState);
 
-        //todo: complete check that ProfImgURI !new
         if (bioDataChanged) {
             UserDetails.setAllUserDataFromAddBio(mUserId, newUserName, newUserAvatarNumberString,
                     newUserFirstName, newUserLastName, newUserPhoneNumber, newUserEmail, newUserCityState,
                     newCustomUserAvatarString);
             saveAddBioDataToSP();
+            //todo: check for permissions and then run post user bio. Consult notebook for operations
             postUserBio();
         } else {
             Toast.makeText(this, "No Changes Made", Toast.LENGTH_SHORT).show();
@@ -255,7 +283,7 @@ public class AddBio extends AppCompatActivity {
 
         if (mCustomUserAvatarUriString != null && newUserAvatarNumberString.equals(CUSTOM_AVATAR_NUMBER_STRING) ) {
             bioDataChanged = true;
-            mCustomUserAvatarBase64String = ImgUtils.uriToCompressedBase64String(mContext, newProfImgUri);
+            mCustomUserAvatarBase64String = ImgUtils.uriToCompressedBase64String(this, newProfImgUri);
             //mUserProvidedAvatarByteArray = convertProfUriToByteArray(newProfImgUri);
         }else{
             mCustomUserAvatarBase64String = "none";
@@ -362,7 +390,11 @@ public class AddBio extends AppCompatActivity {
 
            //custom avatar was previously chosen
            if(mUserAvatarNumberString.equals(CUSTOM_AVATAR_NUMBER_STRING)) {
-               UserAvatarView.setImageURI(mNewProfImgUri);
+               GlideApp
+                       .with(this)
+                       .load(mNewProfImgUri)
+                       .into(UserAvatarView);
+
                //template avatar previously chosen
            }else{
                UserAvatarView.setImageResource(mAvatarsList.get(Integer.parseInt(mUserAvatarNumberString)));
@@ -412,26 +444,53 @@ public class AddBio extends AppCompatActivity {
         return inputData;
     }
 
-    //todo: delete below if works w/o
-//    private byte[] convertProfUriToByteArray2(Uri mNewProfImgUri){
-//
-//        try {
-//            URL imageUrl = new URL(mNewProfImgUri);
-//            URLConnection ucon = imageUrl.openConnection();
-//
-//            InputStream is = ucon.getInputStream();
-//            BufferedInputStream bis = new BufferedInputStream(is);
-//
-//            ByteArrayBuffer baf = new ByteArrayBuffer(500);
-//            int current = 0;
-//            while ((current = bis.read()) != -1) {
-//                baf.append((byte) current);
-//            }
-//
-//            return baf.toByteArray();
-//        } catch (Exception e) {
-//            Log.d("ImageManager", "Error: " + e.toString());
-//        }
-//        return null;
-//    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                           int[] grantResults) {
+        // BEGIN_INCLUDE(onRequestPermissionsResult)
+        if (requestCode == PERMISSION_REQUEST_READ_EXTERNAL_STORAGE) {
+            // Request for read permission.
+            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission has been granted.
+                Snackbar.make(scrollView, "Read permission was granted.",
+                        Snackbar.LENGTH_SHORT)
+                        .show();
+
+            } else {
+                // Permission request was denied.
+                Snackbar.make(scrollView, "Read file permission request was denied.",
+                        Snackbar.LENGTH_SHORT)
+                        .show();
+            }
+        }
+    }
+
+    private void requestExternalStoragePermission() {
+        // Permission has not been granted and must be requested.
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            // Provide an additional rationale to the user if the permission was not granted
+            // and the user would benefit from additional context for the use of the permission.
+            // Display a SnackBar with a button to request the missing permission.
+            Snackbar.make(scrollView, "Read permissions requested to get avatar from your image files.",
+                    Snackbar.LENGTH_INDEFINITE).setAction("OK", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // Request the permission
+                    ActivityCompat.requestPermissions(AddBio.this,
+                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                            PERMISSION_REQUEST_READ_EXTERNAL_STORAGE);
+                }
+            }).show();
+
+        } else {
+            Snackbar.make(scrollView,
+                    "Permission is not available. Requesting read storage permission.",
+                    Snackbar.LENGTH_SHORT).show();
+            // Request the permission. The result will be received in onRequestPermissionResult().
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    PERMISSION_REQUEST_READ_EXTERNAL_STORAGE);
+        }
+    }
 }

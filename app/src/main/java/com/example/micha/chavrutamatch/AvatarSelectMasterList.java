@@ -4,14 +4,25 @@ import android.app.FragmentManager;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
+import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
+import com.example.micha.chavrutamatch.Utils.ImgUtils;
+
+import java.io.File;
+import java.io.IOException;
 import java.net.URI;
+
 
 /**
  * Created by micha on 10/21/2017.
@@ -19,8 +30,12 @@ import java.net.URI;
 
 public class AvatarSelectMasterList extends Activity implements AvatarSelectFragment.OnAvatarClickListener {
     Boolean updateBio = false;
+    final int REQUEST_IMAGE_CAPTURE = 111;
+    private static final String FILE_PROVIDER_AUTHORITY = "com.example.android.fileprovider";
     String LOG_TAG = AvatarSelectMasterList.class.getSimpleName();
-    private String mImgUriString;
+    private String mImgUriString, mTempPhotoPath;
+    Uri testImgUri;
+
     Bundle b;
     Intent intent;
 
@@ -34,7 +49,6 @@ public class AvatarSelectMasterList extends Activity implements AvatarSelectFrag
         if (getIntent().getExtras().getBoolean("update_bio")) {
             updateBio = getIntent().getExtras().getBoolean("update_bio");
             b.putBoolean("affirm update bio", updateBio);
-
         }
     }
 
@@ -48,10 +62,11 @@ public class AvatarSelectMasterList extends Activity implements AvatarSelectFrag
                 uploadImgFile();
                 break;
             case 1:
-                b.putInt("avatar position", 2);
-                intent.putExtras(b);
-                startActivity(intent);
-                finish();
+                startCamera();
+//                b.putInt("avatar position", 2);
+//                intent.putExtras(b);
+//                startActivity(intent);
+//                finish();
                 break;
             default:
                 b.putInt("avatar position", position - 2);
@@ -77,6 +92,43 @@ public class AvatarSelectMasterList extends Activity implements AvatarSelectFrag
         startActivityForResult(Intent.createChooser(imgIntent, "Select Picture"), 1);
     }
 
+    private void startCamera() {
+
+        // Create the capture image intent
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // Create the temporary File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = ImgUtils.createTempImageFile(this);
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+                ex.printStackTrace();
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+
+                // Get the path of the temporary file
+                mTempPhotoPath = photoFile.getAbsolutePath();
+                // Get the content URI for the image file
+                testImgUri = FileProvider.getUriForFile(this,
+                        FILE_PROVIDER_AUTHORITY,
+                        photoFile);
+                mImgUriString = testImgUri.toString();
+
+
+
+                // Add the URI so the camera can store the image
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, testImgUri);
+
+                // Launch the camera activity
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            }
+        }
+    }
+
     /**
      * manage the returned path after selecting the picture
      *
@@ -86,20 +138,41 @@ public class AvatarSelectMasterList extends Activity implements AvatarSelectFrag
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        boolean isFromUserFiles = false;
         if (resultCode == RESULT_CANCELED) {
             // action cancelled
             Log.e(LOG_TAG, "onActivityResult() was canceled");
         }
-        if (resultCode == RESULT_OK) {
+
+        //image from user internal data
+        if (requestCode != REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Uri uploadedImg = data.getData();
             mImgUriString = uploadedImg.toString();
             Log.i(LOG_TAG, "file path from OnActivityResult imgUri: " + mImgUriString);
             intent.putExtra("img_uri_string_key", mImgUriString);
-            intent.putExtra("avatar position", 999);
-            intent.putExtra("affirm update bio", true);
-            startActivity(intent);
-            finish();
+            isFromUserFiles = true;
 
+        } else if (resultCode == RESULT_OK ) {
+            //image is from camera and successful
+            //todo: take the photopath and covert to bitmap
+            isFromUserFiles = false;
+            String userImgPathString = mTempPhotoPath.toString();
+            intent.putExtra("img_uri_string_key", mImgUriString);
+            intent.putExtra("img_file_path_string_key", userImgPathString);
+
+//            Bitmap imageBitmap = (Bitmap) extras.get("data");
+////            intent.putExtra(imageBitmap, null);
+            //image is null
+        }else{
+            // Otherwise, delete the temporary image file
+            ImgUtils.deleteImageFile(this, mTempPhotoPath);
         }
+        intent.putExtra("imageIsFromUserStorage", isFromUserFiles);
+        intent.putExtra("avatar position", 999);
+        intent.putExtra("affirm update bio", true);
+        startActivity(intent);
+        finish();
+
     }
 }
+

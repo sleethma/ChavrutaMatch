@@ -141,6 +141,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
         View view = layoutInflater.inflate(layoutIdForListItem, parent, false);
         ViewHolder viewHolder = new ViewHolder(view);
 
+
         return viewHolder;
     }
 
@@ -551,8 +552,6 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
             }
             String chavrutaId = currentItem.getmChavrutaId();
             sendConfirmationtoDb(chavrutaId, currentItem.getmConfirmed());
-            //todo: should this be removed?
-            //notifyDataSetChanged();
         }
     }
 

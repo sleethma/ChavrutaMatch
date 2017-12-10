@@ -7,6 +7,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
@@ -36,6 +37,7 @@ import com.example.micha.chavrutamatch.Data.AvatarImgs;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.example.micha.chavrutamatch.Utils.ChavrutaTextValidation;
 import com.example.micha.chavrutamatch.Utils.ChavrutaUtils;
+import com.example.micha.chavrutamatch.Utils.ImgUtils;
 import com.example.micha.chavrutamatch.Utils.TimeStampConverter;
 
 import org.w3c.dom.Text;
@@ -132,7 +134,10 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         int mHostAvatarNumberInt = Integer.parseInt(mHostAvatarNumber);
         final int IS_USER_AVATAR_IMG = 999;
         if (mHostAvatarNumberInt == IS_USER_AVATAR_IMG) {
-            ivHostAvatar.setImageURI(UserDetails.getHostAvatarUri());
+            //todo: test
+            Bitmap testBitmap = ImgUtils.base64StringToBitmap(ImgUtils.uriToCompressedBase64String(this, UserDetails.getHostAvatarUri()));
+            ivHostAvatar.setImageBitmap(testBitmap);
+//            ivHostAvatar.setImageURI(UserDetails.getHostAvatarUri());
         } else {
             ivHostAvatar.setImageResource(allAvatars.get(mHostAvatarNumberInt));
 

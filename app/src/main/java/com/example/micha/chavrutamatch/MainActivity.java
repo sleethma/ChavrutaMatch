@@ -6,24 +6,19 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.menu.MenuAdapter;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.transition.Slide;
 import android.transition.TransitionManager;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.micha.chavrutamatch.Data.AvatarImgs;
 import com.example.micha.chavrutamatch.Data.HostSessionData;
@@ -32,10 +27,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.example.micha.chavrutamatch.Data.HostSessionData;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import butterknife.BindView;
@@ -43,11 +34,9 @@ import butterknife.ButterKnife;
 
 import com.example.micha.chavrutamatch.AcctLogin.LoginActivity;
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
-import com.example.micha.chavrutamatch.Data.HostSessionData;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
-import com.example.micha.chavrutamatch.Utils.ChavrutaTextValidation;
+import com.example.micha.chavrutamatch.Utils.GlideApp;
 import com.example.micha.chavrutamatch.Utils.RecyclerViewListDecor;
-import com.example.micha.chavrutamatch.Utils.TimeStampConverter;
 import com.facebook.accountkit.Account;
 import com.facebook.accountkit.AccountKit;
 import com.facebook.accountkit.AccountKitCallback;
@@ -57,14 +46,7 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.Locale;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
-import static java.text.DateFormat.SHORT;
 
 public class MainActivity extends AppCompatActivity {
     //TODO add up nav arrow to each activity
@@ -96,14 +78,33 @@ public class MainActivity extends AppCompatActivity {
         mContext = this;
 
         //sets up UserDetails
-       UserDetails.setUserDetailsFromSP(mContext);
+        UserDetails.setUserDetailsFromSP(mContext);
         //sets user avatar. @UserAvatarNumberString = "999" indicates avatar is user photo
-        if(UserDetails.getmUserAvatarNumberString() != null &&
+        if (UserDetails.getmUserAvatarNumberString() != null &&
                 !UserDetails.getmUserAvatarNumberString().equals("999")) {
             userAvatar.setImageResource(AvatarImgs.getAvatarNumberResId(
-                   Integer.parseInt(UserDetails.getmUserAvatarNumberString())));
-        }else{
-            userAvatar.setImageURI(UserDetails.getHostAvatarUri());
+                    Integer.parseInt(UserDetails.getmUserAvatarNumberString())));
+        } else {
+            //todo: below 2 are tests
+//            Bitmap testBitmap = ImgUtils.base64StringToBitmap(ImgUtils.uriToCompressedBase64String(this, UserDetails.getHostAvatarUri()));
+//            userAvatar.setImageBitmap(testBitmap);
+
+            String testFilePath = UserDetails.getHostAvatarUri().getPath();
+            String testFilePath2 = null;
+//                testFilePath2 = TestAbsUriPathUtil.getRealPathFromURI_API19(this, UserDetails.getHostAvatarUri());
+            try {
+                GlideApp
+                        .with(mContext)
+                        .load(UserDetails.getHostAvatarUri())
+//                        .load(ImgUtils.uriToByteArray(this, UserDetails.getHostAvatarUri(), testFilePath))
+                        .placeholder(R.drawable.ic_unknown_user)
+                        .centerCrop()
+                        .into(userAvatar);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            //userAvatar.setImageURI(UserDetails.getHostAvatarUri());
         }
 
         //check if already logged in
@@ -190,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
             //checks to ensure db has data after parsing
-            if(myChavrutasArrayList.size() < 1){
+            if (myChavrutasArrayList.size() < 1) {
                 myChavrutaListView.setVisibility(View.GONE);
                 noMatchView.setVisibility(View.VISIBLE);
                 myChavrutaLabel.setVisibility(View.GONE);
@@ -264,7 +265,7 @@ public class MainActivity extends AppCompatActivity {
             //loop through array and extract objects, adding them individually as setter objects,
             //and adding objects to list adapter.
             int count = 0;
-              while (count < jsonArray.length()) {
+            while (count < jsonArray.length()) {
                 JSONObject jo = jsonArray.getJSONObject(count);
                 chavrutaId = jo.getString("chavruta_id");
                 hostFirstName = jo.getString("hostFirstName");
@@ -374,11 +375,12 @@ public class MainActivity extends AppCompatActivity {
         return phoneNumber;
     }
 
-    public void loadProfile(View view){
+    public void loadProfile(View view) {
         Intent intent = new Intent(this, AddBio.class);
         Boolean updateBio = true;
         intent.putExtra("update_bio", updateBio);
         startActivity(intent);
     }
+
 }
 
