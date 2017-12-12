@@ -52,7 +52,7 @@ public class AddBio extends AppCompatActivity {
     private final static String LOG_TAG = AddBio.class.getSimpleName();
     private final static String CUSTOM_AVATAR_NUMBER_STRING = "999";
     private final static int CUSTOM_AVATAR_NUMBER_INT = 999;
-    private final int PERMISSION_REQUEST_READ_EXTERNAL_STORAGE= 0;
+    private final int PERMISSION_REQUEST_READ_EXTERNAL_STORAGE = 0;
 
     private final int REQUEST_CODE = 100;
     static String mUserId, mUserEmail, mUserPhoneNumber, mUserName, mUserFirstName, mUserLastName,
@@ -75,7 +75,7 @@ public class AddBio extends AppCompatActivity {
     @BindView(R.id.ac_city_state)
     AutoCompleteTextView autoCompleteTextView;
     @BindView(R.id.sv_add_bio)
-             ScrollView scrollView;
+    ScrollView scrollView;
 
     //controls whether or not db update necessary
     Boolean bioDataChanged = false;
@@ -91,7 +91,7 @@ public class AddBio extends AppCompatActivity {
     String mCustomUserAvatarUriString;
     String mCustomUserAvatarBase64String;
 
-//TODO: Add input validation using: https://www.androidhive.info/2015/09/android-material-design-floating-labels-for-edittext/
+    //TODO: Add input validation using: https://www.androidhive.info/2015/09/android-material-design-floating-labels-for-edittext/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,40 +114,16 @@ public class AddBio extends AppCompatActivity {
 
                 if (userAvatarSelected == CUSTOM_AVATAR_NUMBER_INT) {
                     requestExternalStoragePermission();
-                    String userPicFilePath;
-                    File file;
+                    mCustomUserAvatarUriString = bundle.getString("img_uri_string_key");
+                    mNewProfImgUri = Uri.parse(mCustomUserAvatarUriString);
 
-                    //image selected from user storage
-                    if(bundle.getBoolean("imageIsFromUserStorage")) {
-                        mCustomUserAvatarUriString = bundle.getString("img_uri_string_key");
-                        mNewProfImgUri = Uri.parse(mCustomUserAvatarUriString);
-                        userPicFilePath = TestImgClass.getPath(this, mNewProfImgUri);
-                        file = new File(userPicFilePath);
-                        //image from user's camera
-                    }else{
-                        //todo: refactor all this to make uri/files processed the same whether from camera or external storage
-                        mCustomUserAvatarUriString = bundle.getString("img_uri_string_key");
-                        userPicFilePath = bundle.getString("img_file_path_string_key");
-                        Log.e(LOG_TAG, mCustomUserAvatarUriString);
-                        mNewProfImgUri = Uri.parse(mCustomUserAvatarUriString);
-                        //userPicFilePath = TestImgClass.getPath(this, mNewProfImgUri);
-                        file = new File(userPicFilePath);
+                    if (mNewProfImgUri != null) {
+
+                        GlideApp
+                                .with(this)
+                                .load(mNewProfImgUri)
+                                .into(UserAvatarView);
                     }
-
-                    //TODO: WRAP BOTTOM TWO IN A SINGLE CLASS ALONG WITH VERSION CHECKING IN (ImgUtils class) MAKING A FILE AND PASS IN GLIDE BELOW
-//                    String testFilePath2 = TestAbsUriPathUtil.getRealPathFromURI_API19(this, mNewProfImgUri);
-
-                    //todo:  testBelow
-//                    Bitmap testBitmap = ImgUtils.base64StringToBitmap(ImgUtils.uriToCompressedBase64String(this, mNewProfImgUri));
-//                    UserAvatarView.setImageBitmap(testBitmap);
-                    if(mNewProfImgUri != null){
-
-                    GlideApp
-                            .with(this)
-                            .load(mNewProfImgUri)
-                            .into(UserAvatarView);
-                    }
-//                    UserAvatarView.setImageURI(mNewProfImgUri);
                 } else {
                     UserAvatarView.setImageResource(mAvatarsList.get(userAvatarSelected));
                 }
@@ -281,11 +257,11 @@ public class AddBio extends AppCompatActivity {
             bioDataChanged = true;
         }
 
-        if (mCustomUserAvatarUriString != null && newUserAvatarNumberString.equals(CUSTOM_AVATAR_NUMBER_STRING) ) {
+        if (mCustomUserAvatarUriString != null && newUserAvatarNumberString.equals(CUSTOM_AVATAR_NUMBER_STRING)) {
             bioDataChanged = true;
             mCustomUserAvatarBase64String = ImgUtils.uriToCompressedBase64String(this, newProfImgUri);
             //mUserProvidedAvatarByteArray = convertProfUriToByteArray(newProfImgUri);
-        }else{
+        } else {
             mCustomUserAvatarBase64String = "none";
         }
 
@@ -306,10 +282,10 @@ public class AddBio extends AppCompatActivity {
         }
 
 //        if(mUserProvidedAvatarByteArray != null)
-            //todo: uncomment below or delete
-            // customUserAvatar = new String(mUserProvidedAvatarByteArray);
-            //convert to Base64 for db insert
-            //customUserAvatar = Base64.encodeToString(mUserProvidedAvatarByteArray, Base64.DEFAULT);
+        //todo: uncomment below or delete
+        // customUserAvatar = new String(mUserProvidedAvatarByteArray);
+        //convert to Base64 for db insert
+        //customUserAvatar = Base64.encodeToString(mUserProvidedAvatarByteArray, Base64.DEFAULT);
 //            String testString = customUserAvatar;
 
 
@@ -335,7 +311,7 @@ public class AddBio extends AppCompatActivity {
         mUserCityState = prefs.getString(getString(R.string.user_city_state), null);
         String userAvatarNumberString = UserDetails.getmUserAvatarNumberString();
         // if user selected a new custom avatar, don't populate from SP
-        if(activityOnCreateType.equals("no new custom avatar selected")){
+        if (activityOnCreateType.equals("no new custom avatar selected")) {
             mCustomUserAvatarUriString = prefs.getString(
                     getString(R.string.custom_user_avatar_string_uri_key), null);
             mUserAvatarNumberString = prefs.getString(getString(R.string.user_avatar_number_key), userAvatarNumberString);
@@ -381,25 +357,25 @@ public class AddBio extends AppCompatActivity {
         UserFirstNameView.setText(mUserFirstName);
         UserLastNameView.setText(mUserLastName);
         //set avatar image if not just chosen
-       if(activityOnCreateType.equals("no new custom avatar selected")) {
-           String userAvatarNumberString =  UserDetails.getmUserAvatarNumberString();
-           Uri userAvatarUri = UserDetails.getHostAvatarUri();
+        if (activityOnCreateType.equals("no new custom avatar selected")) {
+            String userAvatarNumberString = UserDetails.getmUserAvatarNumberString();
+            Uri userAvatarUri = UserDetails.getHostAvatarUri();
 
-           mUserAvatarNumberString = userAvatarNumberString;
-           mNewProfImgUri = userAvatarUri;
+            mUserAvatarNumberString = userAvatarNumberString;
+            mNewProfImgUri = userAvatarUri;
 
-           //custom avatar was previously chosen
-           if(mUserAvatarNumberString.equals(CUSTOM_AVATAR_NUMBER_STRING)) {
-               GlideApp
-                       .with(this)
-                       .load(mNewProfImgUri)
-                       .into(UserAvatarView);
+            //custom avatar was previously chosen
+            if (mUserAvatarNumberString.equals(CUSTOM_AVATAR_NUMBER_STRING)) {
+                GlideApp
+                        .with(this)
+                        .load(mNewProfImgUri)
+                        .into(UserAvatarView);
 
-               //template avatar previously chosen
-           }else{
-               UserAvatarView.setImageResource(mAvatarsList.get(Integer.parseInt(mUserAvatarNumberString)));
-           }
-       }
+                //template avatar previously chosen
+            } else {
+                UserAvatarView.setImageResource(mAvatarsList.get(Integer.parseInt(mUserAvatarNumberString)));
+            }
+        }
         UserBioView.setText(mUserBio);
         autoCompleteTextView.setText(mUserCityState);
     }
@@ -416,7 +392,7 @@ public class AddBio extends AppCompatActivity {
         editor.putString(getString(R.string.user_avatar_number_key), mUserAvatarNumberString);
         editor.putString(getString(R.string.user_bio_key), mUserBio);
         editor.putString(getString(R.string.user_city_state_key), mUserCityState);
-        editor.putString(getString(R.string.custom_user_avatar_string_uri_key),mCustomUserAvatarUriString);
+        editor.putString(getString(R.string.custom_user_avatar_string_uri_key), mCustomUserAvatarUriString);
         editor.apply();
     }
 
@@ -426,6 +402,7 @@ public class AddBio extends AppCompatActivity {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
+
     //todo: close inputstream
     private byte[] convertProfUriToByteArray(Uri mNewProfImgUri) {
 
