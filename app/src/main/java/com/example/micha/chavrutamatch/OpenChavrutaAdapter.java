@@ -7,6 +7,7 @@ import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.util.Base64;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
@@ -38,6 +39,8 @@ import com.example.micha.chavrutamatch.Data.ChavrutaContract;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.example.micha.chavrutamatch.OpenChavrutaAdapter;
 import com.example.micha.chavrutamatch.Utils.ChavrutaUtils;
+import com.example.micha.chavrutamatch.Utils.GlideApp;
+import com.example.micha.chavrutamatch.Utils.ImgUtils;
 
 import org.w3c.dom.Text;
 
@@ -65,6 +68,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
 
     //number of views adapter will hold
     private int userAvatarNumberInt;
+    private String userAvatarNumberString;
     private Context mContext;
     String userId = UserDetails.getmUserId();
     Context mainActivityContext;
@@ -77,6 +81,8 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
     Boolean awaitingConfirmView;
     Boolean hostSelectView;
     final private int USER_IMG_AVATAR = 999;
+    final private String USER_IMG_AVATAR_STRING = "999";
+
     ArrayList<HostSessionData> mChavrutaSessionsAL;
     List<Integer> avatarList = AvatarImgs.getAllAvatars();
     private static final String LOG_TAG = OpenChavrutaAdapter.class.getSimpleName();
@@ -91,6 +97,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
         mChavrutaSessionsAL = chavrutaSessionsArrayList;
         mainActivityContext = MainActivity.mContext;
         hostSelectContext = HostSelect.mContext;
+        userAvatarNumberString = UserDetails.getmUserAvatarNumberString();
         userAvatarNumberInt = UserDetails.getmUserAvatarNumberString() != null ?
                 Integer.parseInt(UserDetails.getmUserAvatarNumberString()) : 0;
         //calls so can access static user vars throughout adapter
@@ -140,8 +147,6 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         View view = layoutInflater.inflate(layoutIdForListItem, parent, false);
         ViewHolder viewHolder = new ViewHolder(view);
-
-
         return viewHolder;
     }
 
@@ -231,7 +236,12 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                 awaitingConfirmView = false;
 
                 if (userAvatarNumberInt == USER_IMG_AVATAR) {
-                    holder.hostAvatar.setImageResource(avatarList.get(0));
+                    GlideApp
+                            .with(mContext)
+                            .load(UserDetails.getHostAvatarUri())
+                            .placeholder(R.drawable.ic_unknown_user)
+                            .centerCrop()
+                            .into(hostAvatar);
                 } else {
                     holder.hostAvatar.setImageResource(avatarList.get(userAvatarNumberInt));
                 }
@@ -257,12 +267,19 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                 String userLastName = UserDetails.getmUserLastName();
                 requesterName = ChavrutaUtils.createUserFirstLastName(
                         userFirstName, userLastName);
-                requesterAvatar = UserDetails.getmUserAvatarNumberString();
-                //todo: add host avatar number
+
                 if (userAvatarNumberInt == USER_IMG_AVATAR) {
-                    holder.hostAvatar.setImageResource(avatarList.get(0));
+                    requesterAvatar = UserDetails.getUserAvatarBase64String();
+                    GlideApp
+                            .with(mContext)
+                            .load(UserDetails.getHostAvatarUri())
+                            .placeholder(R.drawable.ic_unknown_user)
+                            .centerCrop()
+                            .into(hostAvatar);
                 } else {
                     holder.hostAvatar.setImageResource(avatarList.get(userAvatarNumberInt));
+                    requesterAvatar = UserDetails.getmUserAvatarNumberString();
+
                 }
                 //check which request slot is availiable and pass name of db column to server for insert
                 if (currentItem.getMchavrutaRequest1().length() < 5) {
@@ -305,8 +322,6 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                 } else {
                     holder.chavrutaConfirmed.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
                     holder.chavrutaConfirmed.setText("Awaiting" + System.getProperty("line.separator") + "Match");
-
-
                 }
             }
             if (hostSelectView) {
@@ -324,6 +339,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                             return;
                         }
                         String chavrutaId = currentItem.getmChavrutaId();
+
                         ServerConnect addHost = new ServerConnect(mContext);
                         addHost.execute("chavruta request", userId, chavrutaId, requestSlotOpen,
                                 requesterAvatarColumn, requesterAvatar, requesterNameColumn, requesterName);
@@ -362,11 +378,20 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                     }
                     holder.confirmRequestName_1.setText(
                             chavrutaRequestName1);
-                    int request1AvatarNumber = Integer.parseInt(currentItem.getmChavrutaRequest1Avatar());
-                    if(userAvatarNumberInt != USER_IMG_AVATAR) {
-                        holder.confirmRequestAvatar_1.setImageResource(avatarList.get(0));
+                    String request1AvatarNumber = currentItem.getmChavrutaRequest1Avatar();
+                    if(request1AvatarNumber.length() > 3 ) {
+                        byte[] decodeRequesterAvatar = Base64.decode(
+                                request1AvatarNumber, Base64.DEFAULT);
+
+
+                        GlideApp
+                                .with(mContext)
+                                .asBitmap()
+                                .load(decodeRequesterAvatar)
+                                .into(holder.confirmRequestAvatar_1);
                     }else{
-                        holder.confirmRequestAvatar_1.setImageResource(avatarList.get(request1AvatarNumber));
+                        holder.confirmRequestAvatar_1.setImageResource(avatarList.get(
+                                Integer.parseInt(request1AvatarNumber)));
                     }
                 } else {
                     holder.pendingRequest_1.setVisibility(View.GONE);
@@ -385,11 +410,19 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                     }
                     holder.confirmRequestName_2.setText(
                             chavrutaRequestName2);
-                    int request2AvatarNumber = Integer.parseInt(currentItem.getmChavrutaRequest2Avatar());
-                    if(userAvatarNumberInt == USER_IMG_AVATAR) {
-                        holder.confirmRequestAvatar_2.setImageResource(avatarList.get(0));
+                    String request2AvatarNumber = currentItem.getmChavrutaRequest2Avatar();
+                    if(request2AvatarNumber.length() > 3 ) {
+                        byte[] decodeRequesterAvatar = Base64.decode(
+                                request2AvatarNumber, Base64.DEFAULT);
+
+                        GlideApp
+                                .with(mContext)
+                                .asBitmap()
+                                .load(decodeRequesterAvatar)
+                                .into(holder.confirmRequestAvatar_2);
                     }else{
-                        holder.confirmRequestAvatar_2.setImageResource(avatarList.get(request2AvatarNumber));
+                        holder.confirmRequestAvatar_2.setImageResource(avatarList.get(
+                                Integer.parseInt(request2AvatarNumber)));
                     }
 
                 } else {
@@ -409,11 +442,22 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                     }
                     holder.confirmRequestName_3.setText(
                             chavrutaRequestName3);
-                    int request3AvatarNumber = Integer.parseInt(currentItem.getmChavrutaRequest2Avatar());
-                    if(userAvatarNumberInt == USER_IMG_AVATAR) {
-                        holder.confirmRequestAvatar_3.setImageResource(avatarList.get(0));
+
+                    String request3AvatarNumber = currentItem.getmChavrutaRequest3Avatar();
+                    if(request3AvatarNumber.length() > 3 ) {
+                        byte[] decodeRequesterAvatar = Base64.decode(
+                                request3AvatarNumber, Base64.DEFAULT);
+
+
+                        GlideApp
+                                .with(mContext)
+                                .asBitmap()
+                                .load(decodeRequesterAvatar)
+//                                .load(request1AvatarNumber)
+                                .into(holder.confirmRequestAvatar_3);
                     }else{
-                        holder.confirmRequestAvatar_3.setImageResource(avatarList.get(request3AvatarNumber));
+                        holder.confirmRequestAvatar_3.setImageResource(avatarList.get(
+                                Integer.parseInt(request3AvatarNumber)));
                     }
                 } else {
                     holder.pendingRequest_3.setVisibility(View.GONE);

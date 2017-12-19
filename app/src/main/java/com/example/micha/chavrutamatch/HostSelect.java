@@ -36,6 +36,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.example.micha.chavrutamatch.Data.HostSessionData;
+import com.example.micha.chavrutamatch.Utils.GlideApp;
 import com.example.micha.chavrutamatch.Utils.RecyclerViewListDecor;
 import com.example.micha.chavrutamatch.Utils.TimeStampConverter;
 
@@ -66,7 +67,7 @@ public class HostSelect extends AppCompatActivity {
     ArrayList<HostSessionData> openChavrutaArrayList;
     static Context mContext;
     //true if user non-stock image used for avatar
-    final private int USER_IMG_AVATAR = 999;
+    final private String USER_IMG_AVATAR = "999";
 
     public String jsonString;
     JSONObject jsonObject;
@@ -86,11 +87,24 @@ public class HostSelect extends AppCompatActivity {
         mContext = this;
 
         //sets HostImage in title bar
-        int hostAvatarNumberInt = Integer.parseInt(UserDetails.getmUserAvatarNumberString());
-        if(hostAvatarNumberInt == USER_IMG_AVATAR) {
-            hostAvatarNumberInt = 0;
+        if (UserDetails.getmUserAvatarNumberString() != null &&
+                !UserDetails.getmUserAvatarNumberString().equals(USER_IMG_AVATAR)) {
+            userPic.setImageResource(AvatarImgs.getAvatarNumberResId(
+                    Integer.parseInt(UserDetails.getmUserAvatarNumberString())));
+        } else {
+
+            try {
+                GlideApp
+                        .with(mContext)
+                        .load(UserDetails.getHostAvatarUri())
+                        .placeholder(R.drawable.ic_unknown_user)
+                        .centerCrop()
+                        .into(userPic);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
         }
-        userPic.setImageResource(AvatarImgs.getAvatarNumberResId(hostAvatarNumberInt));
 
         //constructs the data source
         openChavrutaArrayList = new ArrayList<>();
@@ -197,7 +211,7 @@ public class HostSelect extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        //changes view on host availiable
+        //changes view on host classes availiable
         int hostArraySize = openChavrutaArrayList.size();
         if(hostArraySize != 0) {
             allHostsList.setVisibility(View.VISIBLE);

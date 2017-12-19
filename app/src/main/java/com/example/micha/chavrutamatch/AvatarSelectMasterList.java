@@ -63,10 +63,6 @@ public class AvatarSelectMasterList extends Activity implements AvatarSelectFrag
                 break;
             case 1:
                 startCamera();
-//                b.putInt("avatar position", 2);
-//                intent.putExtras(b);
-//                startActivity(intent);
-//                finish();
                 break;
             default:
                 b.putInt("avatar position", position - 2);
@@ -75,9 +71,7 @@ public class AvatarSelectMasterList extends Activity implements AvatarSelectFrag
                 finish();
                 break;
         }
-
     }
-
 
     private void uploadImgFile() {
         Intent imgIntent;
@@ -118,8 +112,6 @@ public class AvatarSelectMasterList extends Activity implements AvatarSelectFrag
                         photoFile);
                 mImgUriString = testImgUri.toString();
 
-
-
                 // Add the URI so the camera can store the image
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, testImgUri);
 
@@ -138,7 +130,6 @@ public class AvatarSelectMasterList extends Activity implements AvatarSelectFrag
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        boolean isFromUserFiles = false;
         if (resultCode == RESULT_CANCELED) {
             // action cancelled
             Log.e(LOG_TAG, "onActivityResult() was canceled");
@@ -148,26 +139,17 @@ public class AvatarSelectMasterList extends Activity implements AvatarSelectFrag
         if (requestCode != REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Uri uploadedImg = data.getData();
             mImgUriString = uploadedImg.toString();
-            Log.i(LOG_TAG, "file path from OnActivityResult imgUri: " + mImgUriString);
             intent.putExtra("img_uri_string_key", mImgUriString);
-            isFromUserFiles = true;
 
         } else if (resultCode == RESULT_OK ) {
             //image is from camera and successful
-            //todo: take the photopath and covert to bitmap
-            isFromUserFiles = false;
             String userImgPathString = mTempPhotoPath.toString();
             intent.putExtra("img_uri_string_key", mImgUriString);
             intent.putExtra("img_file_path_string_key", userImgPathString);
-
-//            Bitmap imageBitmap = (Bitmap) extras.get("data");
-////            intent.putExtra(imageBitmap, null);
-            //image is null
         }else{
             // Otherwise, delete the temporary image file
             ImgUtils.deleteImageFile(this, mTempPhotoPath);
         }
-        intent.putExtra("imageIsFromUserStorage", isFromUserFiles);
         intent.putExtra("avatar position", 999);
         intent.putExtra("affirm update bio", true);
         startActivity(intent);

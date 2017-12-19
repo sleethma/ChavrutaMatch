@@ -37,6 +37,7 @@ import com.example.micha.chavrutamatch.Data.AvatarImgs;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.example.micha.chavrutamatch.Utils.ChavrutaTextValidation;
 import com.example.micha.chavrutamatch.Utils.ChavrutaUtils;
+import com.example.micha.chavrutamatch.Utils.GlideApp;
 import com.example.micha.chavrutamatch.Utils.ImgUtils;
 import com.example.micha.chavrutamatch.Utils.TimeStampConverter;
 
@@ -126,24 +127,24 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         if (sp.getString(getString(R.string.user_city_state_key), null) != null) {
             acCityState.setText(sp.getString(getString(R.string.user_city_state_key), null));
         }
+        if (UserDetails.getmUserAvatarNumberString() != null &&
+                    !UserDetails.getmUserAvatarNumberString().equals("999")) {
+                ivHostAvatar.setImageResource(AvatarImgs.getAvatarNumberResId(
+                        Integer.parseInt(UserDetails.getmUserAvatarNumberString())));
+            } else {
 
-        //set up host avatar
-        UserDetails.setUserDetailsFromSP(this);
-        mHostAvatarNumber = UserDetails.getmUserAvatarNumberString();
-        allAvatars = AvatarImgs.getAllAvatars();
-        int mHostAvatarNumberInt = Integer.parseInt(mHostAvatarNumber);
-        final int IS_USER_AVATAR_IMG = 999;
-        if (mHostAvatarNumberInt == IS_USER_AVATAR_IMG) {
-            //todo: test
-            Bitmap testBitmap = ImgUtils.base64StringToBitmap(ImgUtils.uriToCompressedBase64String(this, UserDetails.getHostAvatarUri()));
-            ivHostAvatar.setImageBitmap(testBitmap);
-//            ivHostAvatar.setImageURI(UserDetails.getHostAvatarUri());
-        } else {
-            ivHostAvatar.setImageResource(allAvatars.get(mHostAvatarNumberInt));
+                try {
+                    GlideApp
+                            .with(this)
+                            .load(UserDetails.getHostAvatarUri())
+                            .placeholder(R.drawable.ic_unknown_user)
+                            .centerCrop()
+                            .into(ivHostAvatar);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
-        }
-//        tvAddHost.setText(UserDetails.getmUserName());
-//        tvAddHost.setTypeface(Typeface.DEFAULT_BOLD);
+            }
 
         ibStartTime.setOnClickListener(this);
         ibHostEndTime.setOnClickListener(this);

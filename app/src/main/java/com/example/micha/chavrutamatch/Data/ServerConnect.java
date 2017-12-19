@@ -40,11 +40,6 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
 
     public static String jsonString;
 
-    //creates textview constructor for thread access
-    //TODO create object to hold db info for activity delivery
-    TextView jsonTextView = null;
-
-
     //postExecuteResponse: 0= no click/error; 1=registration; 2=get JSON
     int postExecuteResponse = 0;
 
@@ -257,7 +252,6 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                     userPostUrl = new URL(new_user_url);
                 }else{
                     userPostUrl = new URL(update_user_url);
-                    //todo: delete if not necessary
                     customAvatarString = params[11];
                 }
                 HttpURLConnection httpURLConnection = (HttpURLConnection) userPostUrl.openConnection();
@@ -455,7 +449,6 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 break;
             case 2:
                 //return jsonString to HostSelect.class if it is caller, else return it to MA
-                //TODO: CHECK IF THE ELSE NECESSARY?
                 if (myChavruta) {
                     Intent intent = new Intent(this.mContextRegister, MainActivity.class);
                     intent.putExtra("myChavrutaKey", jsonString);

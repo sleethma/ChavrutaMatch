@@ -47,6 +47,7 @@ public class UserDetails extends AppCompatActivity{
     private static String mUserCustomAvatarUriString;
     private static Uri mUserCustomAvatarUri;
     private static String mUserImagePathString;
+    private static String mUserCustomAvatarBase64String;
 
 
 
@@ -102,10 +103,21 @@ public class UserDetails extends AppCompatActivity{
         mUserBio = prefs.getString("user bio key", null);
         mUserId = prefs.getString("user account id key", null);
         mUserCustomAvatarUriString = prefs.getString("user custom avatar key", null);
+            mUserCustomAvatarBase64String = prefs.getString("user avatar base 64 key", "none");
+            Log.i(LOG_TAG, getUserAvatarBase64String());
+
         //convert String to Uri and save in @this
         if(mUserCustomAvatarUriString != null) {
             mUserCustomAvatarUri = Uri.parse(mUserCustomAvatarUriString);
         }
+    }
+    public static void setUserAvatarBase64String(String base64String){
+        mUserCustomAvatarBase64String = base64String;
+        String test = mUserCustomAvatarBase64String;
+    }
+
+    public static String getUserAvatarBase64String(){
+        return mUserCustomAvatarBase64String;
     }
 
     //gets application context

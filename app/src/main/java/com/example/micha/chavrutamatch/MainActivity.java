@@ -3,7 +3,10 @@ package com.example.micha.chavrutamatch;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,6 +15,8 @@ import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.transition.Slide;
 import android.transition.TransitionManager;
+import android.util.Base64;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Menu;
@@ -19,7 +24,10 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.data.FileDescriptorAssetPathFetcher;
 import com.example.micha.chavrutamatch.Data.AvatarImgs;
 import com.example.micha.chavrutamatch.Data.HostSessionData;
 
@@ -27,6 +35,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import butterknife.BindView;
@@ -36,6 +46,7 @@ import com.example.micha.chavrutamatch.AcctLogin.LoginActivity;
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.example.micha.chavrutamatch.Utils.GlideApp;
+import com.example.micha.chavrutamatch.Utils.ImgUtils;
 import com.example.micha.chavrutamatch.Utils.RecyclerViewListDecor;
 import com.facebook.accountkit.Account;
 import com.facebook.accountkit.AccountKit;
@@ -69,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
 
     //adds spacing b/n listitems
     private final int VERTICAL_LIST_ITEM_SPACE = 40;
+    // indicates user custom avatar used
+    private final String CUSTOM_AVATAR = "999";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,111 +90,113 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         mContext = this;
 
-        //sets up UserDetails
-        UserDetails.setUserDetailsFromSP(mContext);
-        //sets user avatar. @UserAvatarNumberString = "999" indicates avatar is user photo
-        if (UserDetails.getmUserAvatarNumberString() != null &&
-                !UserDetails.getmUserAvatarNumberString().equals("999")) {
-            userAvatar.setImageResource(AvatarImgs.getAvatarNumberResId(
-                    Integer.parseInt(UserDetails.getmUserAvatarNumberString())));
-        } else {
-            //todo: below 2 are tests
-//            Bitmap testBitmap = ImgUtils.base64StringToBitmap(ImgUtils.uriToCompressedBase64String(this, UserDetails.getHostAvatarUri()));
-//            userAvatar.setImageBitmap(testBitmap);
+            //sets up UserDetails
+            UserDetails.setUserDetailsFromSP(mContext);
+            //sets user avatar. @UserAvatarNumberString = "999" indicates avatar is user photo
+            if (UserDetails.getmUserAvatarNumberString() != null &&
+                    !UserDetails.getmUserAvatarNumberString().equals("999")) {
+                userAvatar.setImageResource(AvatarImgs.getAvatarNumberResId(
+                        Integer.parseInt(UserDetails.getmUserAvatarNumberString())));
+            } else {
+                //using custom avatar
+                byte[] hostAvatarByteArray;
+                //check to see if custom avatar is in UserDetails
+                if (UserDetails.getUserAvatarBase64String() != null ) {
+                    hostAvatarByteArray = Base64.decode(UserDetails.getUserAvatarBase64String(), Base64.DEFAULT);
 
-            String testFilePath = UserDetails.getHostAvatarUri().getPath();
-            String testFilePath2 = null;
-//                testFilePath2 = TestAbsUriPathUtil.getRealPathFromURI_API19(this, UserDetails.getHostAvatarUri());
-            try {
-                GlideApp
-                        .with(mContext)
-                        .load(UserDetails.getHostAvatarUri())
-//                        .load(ImgUtils.uriToByteArray(this, UserDetails.getHostAvatarUri(), testFilePath))
-                        .placeholder(R.drawable.ic_unknown_user)
-                        .centerCrop()
-                        .into(userAvatar);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            //userAvatar.setImageURI(UserDetails.getHostAvatarUri());
-        }
-
-        //check if already logged in
-        //get current account and create new anonymous inner class
-        AccountKit.getCurrentAccount(new AccountKitCallback<Account>() {
-            @Override
-            public void onSuccess(final com.facebook.accountkit.Account account) {
-                // Get Account Kit ID
-                String accountKitId = account.getId();
-                UserDetails.setmUserId(accountKitId);
-                //stores user id, email, or phone in SP
-                SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE).edit();
-                editor.putString(getString(R.string.user_account_id_key), accountKitId);
-                editor.putBoolean("new_user_key", false);
-                //todo: delete below
-//                editor.putString(getString(R.string.user_avatar_number_key), "0");
-                PhoneNumber phoneNumber = account.getPhoneNumber();
-
-                if (account.getPhoneNumber() != null) {
-                    // if the phone number is available, display it
-                    String formattedPhoneNumber = formatPhoneNumber(phoneNumber.toString());
-                    UserDetails.setmUserPhoneNumber(formattedPhoneNumber);
-                    editor.putString(getString(R.string.user_phone_key), formattedPhoneNumber);
+                    GlideApp
+                            .with(mContext)
+                            .asBitmap()
+                            .load(hostAvatarByteArray)
+                            .placeholder(R.drawable.ic_unknown_user)
+                            .centerCrop()
+                            .into(userAvatar);
 
                 } else {
-                    // if the email address is available, store it
-                    String emailString = account.getEmail();
-                    UserDetails.setmUserEmail(emailString);
-                    editor.putString(getString(R.string.user_email_key), emailString);
+                    Uri hostAvatarUri = null;
+                    if(UserDetails.getHostAvatarUri() != null){
+                        hostAvatarUri = UserDetails.getHostAvatarUri();
+                    }
+                        GlideApp
+                                .with(mContext)
+                                .load(hostAvatarUri)
+                                .centerCrop()
+                                .into(userAvatar);
+                        Toast.makeText(mContext, "unable to import user avatar from SP", Toast.LENGTH_SHORT).show();
+                    }
                 }
-                editor.apply();
-            }
 
-            @Override
-            public void onError(final AccountKitError error) {
-                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                startActivity(intent);
-            }
-        });
+            //check if already logged in
+            //get current account and create new anonymous inner class
+            AccountKit.getCurrentAccount(new AccountKitCallback<Account>() {
+                @Override
+                public void onSuccess(final com.facebook.accountkit.Account account) {
+                    // Get Account Kit ID
+                    String accountKitId = account.getId();
+                    UserDetails.setmUserId(accountKitId);
+                    //stores user id, email, or phone in SP
+                    SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE).edit();
+                    editor.putString(getString(R.string.user_account_id_key), accountKitId);
+                    editor.putBoolean("new_user_key", false);
+                    PhoneNumber phoneNumber = account.getPhoneNumber();
+
+                    if (account.getPhoneNumber() != null) {
+                        // if the phone number is available, display it
+                        String formattedPhoneNumber = formatPhoneNumber(phoneNumber.toString());
+                        UserDetails.setmUserPhoneNumber(formattedPhoneNumber);
+                        editor.putString(getString(R.string.user_phone_key), formattedPhoneNumber);
+
+                    } else {
+                        // if the email address is available, store it
+                        String emailString = account.getEmail();
+                        UserDetails.setmUserEmail(emailString);
+                        editor.putString(getString(R.string.user_email_key), emailString);
+                    }
+                    editor.apply();
+                }
+
+                @Override
+                public void onError(final AccountKitError error) {
+                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                }
+            });
 
 
-        //receives intent from ServerConnect to display myChavruta list, else gets myChavruta info from db
-        if (getIntent().getExtras().getString("myChavrutaKey") != null) {
-            jsonString = getIntent().getExtras().getString("myChavrutaKey");
+            //receives intent from ServerConnect to display myChavruta list, else gets myChavruta info from db
+            if (getIntent().getExtras().getString("myChavrutaKey") != null) {
+                jsonString = getIntent().getExtras().getString("myChavrutaKey");
 
-            myChavrutasArrayList = new ArrayList<>();
+                myChavrutasArrayList = new ArrayList<>();
 
-            //add and remove views to display myChavrutas
-            if (!jsonString.isEmpty()) {
-                //parses and adds data in JSON string from MyChavruta Server call
-                parseJSONMyChavrutas();
-                //todo inorder to resize mychavruta recyclerview
-                myChavrutaListView.requestLayout();
+                //add and remove views to display myChavrutas
+                if (!jsonString.isEmpty()) {
+                    //parses and adds data in JSON string from MyChavruta Server call
+                    parseJSONMyChavrutas();
+                    //todo inorder to resize mychavruta recyclerview
+                    myChavrutaListView.requestLayout();
 
-                //sets a smaller view if less than
-//                if(myChavrutasArrayList.size() <=2) myChavrutaListView.getLayoutParams().height = 900;
-                //attaches data source to adapter and displays list
-                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-                myChavrutaListView.setLayoutManager(linearLayoutManager);
+                    //attaches data source to adapter and displays list
+                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+                    myChavrutaListView.setLayoutManager(linearLayoutManager);
 
-                //add ItemDecoration
-                myChavrutaListView.addItemDecoration(new RecyclerViewListDecor(VERTICAL_LIST_ITEM_SPACE));
+                    //add ItemDecoration
+                    myChavrutaListView.addItemDecoration(new RecyclerViewListDecor(VERTICAL_LIST_ITEM_SPACE));
 
-                //todo: uncomment below to optimize UI if works with multiple listitem layout types
+                    //todo: uncomment below to optimize UI if works with multiple listitem layout types
 //                myChavrutaListView.setHasFixedSize(true);
-                mAdapter = new OpenChavrutaAdapter(this, myChavrutasArrayList);
-                myChavrutaListView.setAdapter(mAdapter);
-                noMatchView.setVisibility(View.GONE);
-                myChavrutaLabel.setVisibility(View.VISIBLE);
-                myChavrutaListView.setVisibility(View.VISIBLE);
-            } else {
-                //sets empty array list view
-                myChavrutaListView.setVisibility(View.GONE);
-                noMatchView.setVisibility(View.VISIBLE);
-                myChavrutaLabel.setVisibility(View.GONE);
+                    mAdapter = new OpenChavrutaAdapter(this, myChavrutasArrayList);
+                    myChavrutaListView.setAdapter(mAdapter);
+                    noMatchView.setVisibility(View.GONE);
+                    myChavrutaLabel.setVisibility(View.VISIBLE);
+                    myChavrutaListView.setVisibility(View.VISIBLE);
+                } else {
+                    //sets empty array list view
+                    myChavrutaListView.setVisibility(View.GONE);
+                    noMatchView.setVisibility(View.VISIBLE);
+                    myChavrutaLabel.setVisibility(View.GONE);
 
-                //Todo: delete this and reapply to another element more revelant
+                    //Todo: delete this and reapply to another element more revelant
 //                noMatchView.setOnClickListener(new View.OnClickListener() {
 //                    @Override
 //                    public void onClick(View v) {
@@ -189,65 +204,68 @@ public class MainActivity extends AppCompatActivity {
 //                    }
 //                });
 
-            }
-            //checks to ensure db has data after parsing
-            if (myChavrutasArrayList.size() < 1) {
-                myChavrutaListView.setVisibility(View.GONE);
-                noMatchView.setVisibility(View.VISIBLE);
-                myChavrutaLabel.setVisibility(View.GONE);
+                }
+                //checks to ensure db has data after parsing
+                if (myChavrutasArrayList.size() < 1) {
+                    myChavrutaListView.setVisibility(View.GONE);
+                    noMatchView.setVisibility(View.VISIBLE);
+                    myChavrutaLabel.setVisibility(View.GONE);
+                }
+
+                Toolbar toolbar = findViewById(R.id.toolbar);
+                setSupportActionBar(toolbar);
+            } else {
+                //if db not yet accessed, gets all chavrutas that user has requested
+                //@var sp: sets userId to UserDetails for server calls
+                SharedPreferences sp = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE);
+                accountId = sp.getString(getString(R.string.user_account_id_key), null);
+                UserDetails.setmUserId(accountId);
+                //check user has a stored accountkit id on device and fetch their chavruta data from db
+                if (accountId != null) {
+                    String getMyChavrutasKey = "my chavrutas";
+                    ServerConnect getMyChavrutas = new ServerConnect(this);
+                    getMyChavrutas.execute(getMyChavrutasKey);
+                } else {
+                    //device is not logged in
+                    AccountKit.logOut();
+                    launchLoginActivity();
+                }
             }
 
-            Toolbar toolbar = findViewById(R.id.toolbar);
-            setSupportActionBar(toolbar);
-        } else {
-            //if db not yet accessed, gets all chavrutas that user has requested
-            //@var sp: sets userId to UserDetails for server calls
-            SharedPreferences sp = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE);
-            accountId = sp.getString(getString(R.string.user_account_id_key), null);
-            UserDetails.setmUserId(accountId);
-            //check user has a stored accountkit id on device and fetch their chavruta data from db
-            if (accountId != null) {
-                String getMyChavrutasKey = "my chavrutas";
-                ServerConnect getMyChavrutas = new ServerConnect(this);
-                getMyChavrutas.execute(getMyChavrutasKey);
-            } else {
-                //device is not logged in
-                AccountKit.logOut();
-                launchLoginActivity();
-            }
+            FloatingActionButton fab = findViewById(R.id.fab);
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(MainActivity.this, AddSelect.class);
+                    startActivity(intent);
+                }
+            });
+
+            // COMPLETED (3) Create a new ItemTouchHelper with a SimpleCallback that handles both LEFT and RIGHT swipe directions
+            // Create an item touch helper to handle swiping items off the list
+            new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+
+                // COMPLETED (4) Override onMove and simply return false inside
+                @Override
+                public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                    //do nothing, we only swipe needed
+                    return false;
+                }
+
+                @Override
+                public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+                    // Inside, get the viewHolder's itemView's tag and store in a long variable id
+                    //get the id of the item being swiped
+                    int id = (int) viewHolder.itemView.getTag();
+                    mAdapter.deleteMyChavrutaArrayItemOnSwipe(id);
+                }
+            }).attachToRecyclerView(myChavrutaListView);
         }
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, AddSelect.class);
-                startActivity(intent);
-            }
-        });
 
-        // COMPLETED (3) Create a new ItemTouchHelper with a SimpleCallback that handles both LEFT and RIGHT swipe directions
-        // Create an item touch helper to handle swiping items off the list
-        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
 
-            // COMPLETED (4) Override onMove and simply return false inside
-            @Override
-            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-                //do nothing, we only swipe needed
-                return false;
-            }
+        //parses JSON string data to form myChavrutas ListView
 
-            @Override
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
-                // Inside, get the viewHolder's itemView's tag and store in a long variable id
-                //get the id of the item being swiped
-                int id = (int) viewHolder.itemView.getTag();
-                mAdapter.deleteMyChavrutaArrayItemOnSwipe(id);
-            }
-        }).attachToRecyclerView(myChavrutaListView);
-    }
-
-    //parses JSON string data to form myChavrutas ListView
     public void parseJSONMyChavrutas() {
         String chavrutaId;
 

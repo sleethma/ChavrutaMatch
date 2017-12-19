@@ -124,11 +124,7 @@ public class LoginActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
-    //TODO: delete this method and button in xml
-    public void newUser(View view) {
-        Intent intent = new Intent(this, AddBio.class);
-        startActivity(intent);
-    }
+
 
     private void launchAddBioActivity() {
         Intent intent = new Intent(this, AddBio.class);

@@ -43,6 +43,7 @@ public class HostSessionData {
     @Nullable
     private String mChavrutaRequest1Avatar, mChavrutaRequest1Name,mChavrutaRequest2Avatar,mChavrutaRequest2Name,
     mChavrutaRequest3Avatar, mChavrutaRequest3Name;
+
 @Nullable
     private String mConfirmed;
 
@@ -91,6 +92,13 @@ public class HostSessionData {
     public String getmChavrutaRequest1Avatar() {
         return mChavrutaRequest1Avatar;
     }
+    public String getmChavrutaRequest2Avatar() {
+        return mChavrutaRequest2Avatar;
+    }
+    public String getmChavrutaRequest3Avatar() {
+        return mChavrutaRequest3Avatar;
+    }
+
 
     public void setmChavrutaRequest1Avatar(String mChavrutaRequest1Avatar) {
         this.mChavrutaRequest1Avatar = mChavrutaRequest1Avatar;
@@ -104,9 +112,6 @@ public class HostSessionData {
         this.mChavrutaRequest1Name = mChavrutaRequest1Name;
     }
 
-    public String getmChavrutaRequest2Avatar() {
-        return mChavrutaRequest2Avatar;
-    }
 
     public void setmChavrutaRequest2Avatar(String mChavrutaRequest2Avatar) {
         this.mChavrutaRequest2Avatar = mChavrutaRequest2Avatar;
@@ -120,9 +125,6 @@ public class HostSessionData {
         this.mChavrutaRequest2Name = mChavrutaRequest2Name;
     }
 
-    public String getmChavrutaRequest3Avatar() {
-        return mChavrutaRequest3Avatar;
-    }
 
     public void setmChavrutaRequest3Avatar(String mChavrutaRequest3Avatar) {
         this.mChavrutaRequest3Avatar = mChavrutaRequest3Avatar;

@@ -38,18 +38,69 @@ import java.util.Locale;
 
 public class ImgUtils {
 
-    public static void compressImageBitmap(Context context, Uri uriIn) {
-//            Take in uri
+    public static int rotateImgNeededCk(Context context, Uri uri) throws IOException {
+        InputStream in = context.getContentResolver().openInputStream(uri);
 
-//    compress image based on type
-        ContentResolver cR = context.getContentResolver();
-        MimeTypeMap mime = MimeTypeMap.getSingleton();
-        String type = mime.getExtensionFromMimeType(cR.getType(uriIn));
-        Toast.makeText(context, type, Toast.LENGTH_LONG).show();
-//    store image in cache?
-        //get ImageView dementions (pass in as params?)
-        //call createScaledBitmap( pass in dimensions here from imageview)
-//            return image
+        int rotation = 0;
+        try {
+            ExifInterface exifInterface = new ExifInterface(in);
+
+            int orientation = exifInterface.getAttributeInt(
+                    ExifInterface.TAG_ORIENTATION,
+                    ExifInterface.ORIENTATION_NORMAL);
+            switch (orientation) {
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                    rotation = 90;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                    rotation = 180;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                    rotation = 270;
+                    break;
+            }
+            // Now you can extract any Exif tag you want
+            // Assuming the image is a JPEG or supported raw format
+        } catch (IOException e) {
+            e.printStackTrace();
+
+            // Handle any errors
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException ignored) {
+                }
+            }
+        }
+        return rotation;
+    }
+
+//    public static byte[] getByteArrayFromString(String stringToDecode) {
+//        byte[] decoded;
+//        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+//            decoded = org.apache.commons.codec.binary.Base64.decodeBase64(stringToDecode);
+//        }else {
+//            decoded = java.util.Base64.getDecoder().decode(stringToDecode);
+//        }
+//        return decoded;
+//    }
+
+    public static Bitmap rotateImg(Bitmap bitmapToRotate, int degreesToRotate) {
+
+        Matrix matrix = new Matrix();
+        matrix.postRotate(degreesToRotate);
+        Bitmap rotatedBitmap = Bitmap.createBitmap(bitmapToRotate, 0, 0, bitmapToRotate.getWidth(),
+                bitmapToRotate.getHeight(), matrix, true);
+        return rotatedBitmap;
+    }
+
+    public static String bitmapToCompressedBase64String(Context context, Bitmap bitmapToBase64) {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            bitmapToBase64.compress(Bitmap.CompressFormat.JPEG, 20, bos);
+
+        byte[] data = bos.toByteArray();
+        return new String(Base64.encodeToString(data, Base64.DEFAULT));
     }
 
     public static String uriToCompressedBase64String(Context context, Uri imgUriIn) {
@@ -66,58 +117,6 @@ public class ImgUtils {
         return new String(Base64.encodeToString(data, Base64.DEFAULT));
     }
 
-    //todo:delete below
-    public static byte[] uriToByteArray(Context context, Uri imgUriIn, String filePath) throws URISyntaxException {
-        Bitmap bitmap = null;
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
-        try {
-            bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), imgUriIn);
-            Bitmap rotatedBitmap = rotateImgIfNeeded(filePath, bitmap);
-
-            rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 20, bos);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        byte[] data = bos.toByteArray();
-        return Base64.encode(data, Base64.DEFAULT);
-    }
-
-    //todo:delete if no need
-    public static Bitmap rotateImgIfNeeded(String fileName, Bitmap bitmapToRotate) {
-        ExifInterface exif = null;
-        try {
-            exif = new ExifInterface(fileName);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1);
-
-        Matrix matrix = new Matrix();
-        matrix.postRotate(90);
-        Bitmap rotatedBitmap = Bitmap.createBitmap(bitmapToRotate, 0, 0, bitmapToRotate.getWidth(),
-                bitmapToRotate.getHeight(), matrix, true);
-        return rotatedBitmap;
-    }
-
-    //todo: delete if no need
-    //method returns real fully qual fileName for use in ExifInterface
-    public static String getFilePath(Context context, Uri uri) {
-        Cursor cursor = null;
-        try {
-            String[] proj = { MediaStore.Images.Media.DATA };
-            cursor = context.getContentResolver().query(uri,  proj, null, null, null);
-            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            cursor.moveToFirst();
-            return cursor.getString(column_index);
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-    }
 
     public static Bitmap base64StringToBitmap(String encodedString) {
         byte[] decodedString = Base64.decode(encodedString, Base64.DEFAULT);
@@ -137,6 +136,7 @@ public class ImgUtils {
         }
         return byteBuffer.toByteArray();
     }
+
 
     /**
      * Creates the temporary image file in the cache directory.
@@ -158,32 +158,7 @@ public class ImgUtils {
     }
 
 
-    static Bitmap resamplePic(Context context, String imagePath) {
 
-        // Get device screen size information
-        DisplayMetrics metrics = new DisplayMetrics();
-        WindowManager manager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        manager.getDefaultDisplay().getMetrics(metrics);
-
-        int targetH = metrics.heightPixels;
-        int targetW = metrics.widthPixels;
-
-        // Get the dimensions of the original bitmap
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(imagePath, bmOptions);
-        int photoW = bmOptions.outWidth;
-        int photoH = bmOptions.outHeight;
-
-        // Determine how much to scale down the image
-        int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
-
-        // Decode the image file into a Bitmap sized to fill the View
-        bmOptions.inJustDecodeBounds = false;
-        bmOptions.inSampleSize = scaleFactor;
-
-        return BitmapFactory.decodeFile(imagePath);
-    }
 
     /**
      * Deletes image file for a given path.

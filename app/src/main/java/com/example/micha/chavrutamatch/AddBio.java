@@ -2,7 +2,9 @@ package com.example.micha.chavrutamatch;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.content.Intent;
@@ -85,9 +87,6 @@ public class AddBio extends AppCompatActivity {
     Uri mNewProfImgUri = null;
     //Holds list view of possible avatars
     List<Integer> mAvatarsList = AvatarImgs.getAllAvatars();
-    //holds byte array if user chose own Avatar image
-    //todo: delete?
-    //byte[] mUserProvidedAvatarByteArray = null;
     String mCustomUserAvatarUriString;
     String mCustomUserAvatarBase64String;
 
@@ -97,9 +96,7 @@ public class AddBio extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_bio);
         ButterKnife.bind(this);
-        //todo: delete below init
         mUserAvatarNumberString = "0";
-        mUserBio = "fake data";
 
         prefs = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE);
         //incoming intents
@@ -146,7 +143,6 @@ public class AddBio extends AppCompatActivity {
             if (prefs.getString(getString(R.string.user_first_name_key), null) != null) {
                 populateUserDataFromSP("no new custom avatar selected");
             } else {
-                //todo:implement db call anyway to see if user changed info on another device
                 getUserBioDatafromDb();
             }
         }
@@ -173,15 +169,6 @@ public class AddBio extends AppCompatActivity {
         autoCompleteTextView.setAdapter(adapter);
     }
 
-    //sole purpose of method is to send notification check and remind user to
-    // come back and fill out bio later!
-
-    public void skipBio(View view) {
-        //TODO: send notification to confirm user not setting up bio
-        //Stores any biodata entered into SP
-        storeUserBioDataInDb(view);
-    }
-
     //stores user Biodata in db and sp
     public void storeUserBioDataInDb(View view) {
         String newUserEmail = UserEmailView.getText().toString();
@@ -191,7 +178,6 @@ public class AddBio extends AppCompatActivity {
         String newUserLastName = UserLastNameView.getText().toString();
         String newUserBio = UserBioView.getText().toString();
         String newUserAvatarNumberString = mUserAvatarNumberString;
-        Log.d(LOG_TAG, newUserAvatarNumberString);
         //mCustomUserAvatarString != null means is newly set
         String newCustomUserAvatarString = mCustomUserAvatarUriString;
         String newUserCityState = autoCompleteTextView.getText().toString();
@@ -206,7 +192,6 @@ public class AddBio extends AppCompatActivity {
                     newUserFirstName, newUserLastName, newUserPhoneNumber, newUserEmail, newUserCityState,
                     newCustomUserAvatarString);
             saveAddBioDataToSP();
-            //todo: check for permissions and then run post user bio. Consult notebook for operations
             postUserBio();
         } else {
             Toast.makeText(this, "No Changes Made", Toast.LENGTH_SHORT).show();
@@ -257,10 +242,29 @@ public class AddBio extends AppCompatActivity {
             bioDataChanged = true;
         }
 
+        //todo: must check rotation differently if API< 24, check with emulators!
         if (mCustomUserAvatarUriString != null && newUserAvatarNumberString.equals(CUSTOM_AVATAR_NUMBER_STRING)) {
             bioDataChanged = true;
-            mCustomUserAvatarBase64String = ImgUtils.uriToCompressedBase64String(this, newProfImgUri);
-            //mUserProvidedAvatarByteArray = convertProfUriToByteArray(newProfImgUri);
+            //check to see if image needs rotating b4 saving to db
+            int rotation = 0;
+            try {
+                rotation =  ImgUtils.rotateImgNeededCk(this, newProfImgUri);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Bitmap bitmap = null;
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), newProfImgUri);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            //if image is not upright
+            if(rotation != 0) {
+                bitmap = ImgUtils.rotateImg(bitmap, rotation);
+                mCustomUserAvatarBase64String = ImgUtils.bitmapToCompressedBase64String(this, bitmap);
+            }else {
+                mCustomUserAvatarBase64String = ImgUtils.uriToCompressedBase64String(this, newProfImgUri);
+            }
         } else {
             mCustomUserAvatarBase64String = "none";
         }
@@ -281,21 +285,10 @@ public class AddBio extends AppCompatActivity {
             userPostType = "new user post";
         }
 
-//        if(mUserProvidedAvatarByteArray != null)
-        //todo: uncomment below or delete
-        // customUserAvatar = new String(mUserProvidedAvatarByteArray);
-        //convert to Base64 for db insert
-        //customUserAvatar = Base64.encodeToString(mUserProvidedAvatarByteArray, Base64.DEFAULT);
-//            String testString = customUserAvatar;
-
 
         ServerConnect postUserToServer = new ServerConnect(this);
         postUserToServer.execute(userPost, mUserId, mUserName, mUserAvatarNumberString, mUserFirstName, mUserLastName,
                 mUserPhoneNumber, mUserEmail, mUserBio, mUserCityState, userPostType, mCustomUserAvatarBase64String);
-
-//        CustomAvatarToDb customAvatarToDb = new CustomAvatarToDb(this);
-//        customAvatarToDb.execute();
-
     }
 
     //populates activity data from SP based on if started from media chooser or not
@@ -316,9 +309,8 @@ public class AddBio extends AppCompatActivity {
                     getString(R.string.custom_user_avatar_string_uri_key), null);
             mUserAvatarNumberString = prefs.getString(getString(R.string.user_avatar_number_key), userAvatarNumberString);
         }
-
         populateEditTextData(activityOnCreateType);
-        //todo: delete below if functional w/o
+        //get user id if not in SP
         if (mUserId == null) mUserId = UserDetails.getmUserId();
     }
 
@@ -326,7 +318,6 @@ public class AddBio extends AppCompatActivity {
     public void parseUserDetailsFromDB(String jsonString) {
         JSONObject jsonObject;
         JSONArray jsonArray;
-
 
         try {
             jsonObject = new JSONObject(jsonString);
@@ -393,6 +384,7 @@ public class AddBio extends AppCompatActivity {
         editor.putString(getString(R.string.user_bio_key), mUserBio);
         editor.putString(getString(R.string.user_city_state_key), mUserCityState);
         editor.putString(getString(R.string.custom_user_avatar_string_uri_key), mCustomUserAvatarUriString);
+        editor.putString(getString(R.string.user_avatar_base_64_key), mCustomUserAvatarBase64String);
         editor.apply();
     }
 
