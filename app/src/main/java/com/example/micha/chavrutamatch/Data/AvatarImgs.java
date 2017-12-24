@@ -12,7 +12,7 @@ import java.util.List;
 
 public class AvatarImgs {
 
-    private static List<Integer> avatarImgList = new ArrayList<Integer>() {
+    public static List<Integer> avatarImgList = new ArrayList<Integer>() {
         {
             add(R.drawable.ic_unknown_user);
 

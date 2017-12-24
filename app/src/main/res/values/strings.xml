@@ -28,10 +28,6 @@
     <string name="custom_user_avatar_string_uri_key">user custom avatar key</string>
 
 
-
-
-
-
     //add a bio activity
     <string name="add_a_bio">Other Users Want to Know About Your Learning!</string>
 <string name="hint_user_name">User Name</string>
@@ -44,15 +40,14 @@
         and background</string>
     <string name="skip_bio">Skip for Now</string>
     <string name="user_data_file">user_data</string>
-    <string name="user_city_state">user city state</string>
     <string name="reset">reset</string>
 
 
     //Main Activity
     <string name="awaiting_match">Awaiting" + System.getProperty("line.separator") +  "Match"</string>
     <string name="underline_your_hosting"><u>You\'re Hosting</u></string>
-    <string name="alphanumeric_input">ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890 .?,:/</string>
-    <string name="alphanumeric_address_input">ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890?.! ,:/</string>
+    <string name="alphanumeric_input">ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890 .?,:/ </string>
+    <string name="alphanumeric_address_input">ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890?.! ,:/ </string>
     <string name="user_avatar_base_64_key">user avatar base 64 key</string>
 
 

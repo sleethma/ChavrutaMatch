@@ -1,19 +1,13 @@
 package com.example.micha.chavrutamatch;
 
-import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.ViewPropertyAnimatorCompatSet;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
@@ -62,7 +56,7 @@ public class AddSelect extends AppCompatActivity {
                 });
         //sets user city and state for ServerConnect call
         sp = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE);
-        String userCityState = sp.getString(getString(R.string.user_city_state), null);
+        String userCityState = sp.getString(getString(R.string.user_city_state_key), null);
         UserDetails.setUserCityState(userCityState);
 
         String getJSONKey = "getJSONKey";

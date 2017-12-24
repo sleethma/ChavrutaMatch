@@ -1,17 +1,16 @@
 package com.example.micha.chavrutamatch;
 
 import android.Manifest;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
@@ -21,24 +20,20 @@ import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
-
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.Data.AvatarImgs;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.example.micha.chavrutamatch.Utils.ChavrutaUtils;
 import com.example.micha.chavrutamatch.Utils.GlideApp;
 import com.example.micha.chavrutamatch.Utils.ImgUtils;
-import com.example.micha.chavrutamatch.Utils.TestImgClass;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-
 import java.util.List;
 
 import butterknife.BindView;
@@ -89,6 +84,9 @@ public class AddBio extends AppCompatActivity {
     List<Integer> mAvatarsList = AvatarImgs.getAllAvatars();
     String mCustomUserAvatarUriString;
     String mCustomUserAvatarBase64String;
+    //checks if avatar chosen from AvatarSelectFragment
+    boolean newCustomAvatarChosen = false;
+
 
     //TODO: Add input validation using: https://www.androidhive.info/2015/09/android-material-design-floating-labels-for-edittext/
     @Override
@@ -113,6 +111,7 @@ public class AddBio extends AppCompatActivity {
                     requestExternalStoragePermission();
                     mCustomUserAvatarUriString = bundle.getString("img_uri_string_key");
                     mNewProfImgUri = Uri.parse(mCustomUserAvatarUriString);
+                    newCustomAvatarChosen = true;
 
                     if (mNewProfImgUri != null) {
 
@@ -178,7 +177,6 @@ public class AddBio extends AppCompatActivity {
         String newUserLastName = UserLastNameView.getText().toString();
         String newUserBio = UserBioView.getText().toString();
         String newUserAvatarNumberString = mUserAvatarNumberString;
-        //mCustomUserAvatarString != null means is newly set
         String newCustomUserAvatarString = mCustomUserAvatarUriString;
         String newUserCityState = autoCompleteTextView.getText().toString();
         Uri newProfImgUser = mNewProfImgUri;
@@ -191,6 +189,8 @@ public class AddBio extends AppCompatActivity {
             UserDetails.setAllUserDataFromAddBio(mUserId, newUserName, newUserAvatarNumberString,
                     newUserFirstName, newUserLastName, newUserPhoneNumber, newUserEmail, newUserCityState,
                     newCustomUserAvatarString);
+
+            UserDetails.setByteArrayFromString(mCustomUserAvatarBase64String);
             saveAddBioDataToSP();
             postUserBio();
         } else {
@@ -243,7 +243,8 @@ public class AddBio extends AppCompatActivity {
         }
 
         //todo: must check rotation differently if API< 24, check with emulators!
-        if (mCustomUserAvatarUriString != null && newUserAvatarNumberString.equals(CUSTOM_AVATAR_NUMBER_STRING)) {
+        if (mCustomUserAvatarUriString != null &&
+                newUserAvatarNumberString.equals(CUSTOM_AVATAR_NUMBER_STRING) && newCustomAvatarChosen) {
             bioDataChanged = true;
             //check to see if image needs rotating b4 saving to db
             int rotation = 0;
@@ -263,10 +264,12 @@ public class AddBio extends AppCompatActivity {
                 bitmap = ImgUtils.rotateImg(bitmap, rotation);
                 mCustomUserAvatarBase64String = ImgUtils.bitmapToCompressedBase64String(this, bitmap);
             }else {
+                //todo: ensure that this uses same resizing and compression as bitmapToCompressedBase64String above
                 mCustomUserAvatarBase64String = ImgUtils.uriToCompressedBase64String(this, newProfImgUri);
             }
         } else {
-            mCustomUserAvatarBase64String = "none";
+            //todo: the same below is done in 'else' above...refactor!
+            mCustomUserAvatarBase64String = ImgUtils.uriToCompressedBase64String(this, newProfImgUri);
         }
 
         if (mUserCityState == null || !mUserCityState.equals(newUserCityState)) {
@@ -301,7 +304,7 @@ public class AddBio extends AppCompatActivity {
         mUserLastName = prefs.getString(getString(R.string.user_last_name_key), null);
         mUserBio = prefs.getString(getString(R.string.user_bio_key), null);
         mUserId = prefs.getString(getString(R.string.user_account_id_key), null);
-        mUserCityState = prefs.getString(getString(R.string.user_city_state), null);
+        mUserCityState = prefs.getString(getString(R.string.user_city_state_key), null);
         String userAvatarNumberString = UserDetails.getmUserAvatarNumberString();
         // if user selected a new custom avatar, don't populate from SP
         if (activityOnCreateType.equals("no new custom avatar selected")) {
@@ -347,6 +350,7 @@ public class AddBio extends AppCompatActivity {
         UserNameView.setText(mUserName);
         UserFirstNameView.setText(mUserFirstName);
         UserLastNameView.setText(mUserLastName);
+        autoCompleteTextView.setText(mUserCityState);
         //set avatar image if not just chosen
         if (activityOnCreateType.equals("no new custom avatar selected")) {
             String userAvatarNumberString = UserDetails.getmUserAvatarNumberString();

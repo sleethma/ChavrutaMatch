@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
 import android.content.SharedPreferences;
@@ -48,6 +49,7 @@ public class UserDetails extends AppCompatActivity{
     private static Uri mUserCustomAvatarUri;
     private static String mUserImagePathString;
     private static String mUserCustomAvatarBase64String;
+    private  static byte[] mUserCustomAvatarBase64ByteArray;
 
 
 
@@ -103,17 +105,18 @@ public class UserDetails extends AppCompatActivity{
         mUserBio = prefs.getString("user bio key", null);
         mUserId = prefs.getString("user account id key", null);
         mUserCustomAvatarUriString = prefs.getString("user custom avatar key", null);
-            mUserCustomAvatarBase64String = prefs.getString("user avatar base 64 key", "none");
-            Log.i(LOG_TAG, getUserAvatarBase64String());
+        mUserCustomAvatarBase64String = prefs.getString("user avatar base 64 key", "none");
+        mUserCityState = prefs.getString("user city state key", null);
+
 
         //convert String to Uri and save in @this
         if(mUserCustomAvatarUriString != null) {
             mUserCustomAvatarUri = Uri.parse(mUserCustomAvatarUriString);
+            setByteArrayFromString(mUserCustomAvatarBase64String);
         }
     }
     public static void setUserAvatarBase64String(String base64String){
         mUserCustomAvatarBase64String = base64String;
-        String test = mUserCustomAvatarBase64String;
     }
 
     public static String getUserAvatarBase64String(){
@@ -130,6 +133,20 @@ public class UserDetails extends AppCompatActivity{
     }
     public static void setmUserCustomAvatarUriString(String UserCustomAvatarUriString){
         mUserCustomAvatarUriString = UserCustomAvatarUriString;
+    }
+
+    public static byte[] getUserCustomAvatarBase64ByteArray(){
+        return mUserCustomAvatarBase64ByteArray;
+    }
+
+    public static void setByteArrayFromString(String stringToDecode){
+        mUserCustomAvatarBase64ByteArray = Base64.decode(stringToDecode, Base64.DEFAULT);
+    }
+
+
+
+    public static String convertUserAvatarByteArrayToString(){
+        return mUserCustomAvatarBase64String.toString();
     }
 
     public static String getmUserId() {

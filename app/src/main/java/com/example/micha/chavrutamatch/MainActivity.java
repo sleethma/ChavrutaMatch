@@ -3,10 +3,7 @@ package com.example.micha.chavrutamatch;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,38 +12,20 @@ import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.transition.Slide;
 import android.transition.TransitionManager;
-import android.util.Base64;
-import android.util.Log;
 import android.view.Gravity;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.data.FileDescriptorAssetPathFetcher;
-import com.example.micha.chavrutamatch.Data.AvatarImgs;
-import com.example.micha.chavrutamatch.Data.HostSessionData;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 import com.example.micha.chavrutamatch.AcctLogin.LoginActivity;
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
+import com.example.micha.chavrutamatch.Data.AvatarImgs;
+import com.example.micha.chavrutamatch.Data.HostSessionData;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.example.micha.chavrutamatch.Utils.GlideApp;
-import com.example.micha.chavrutamatch.Utils.ImgUtils;
 import com.example.micha.chavrutamatch.Utils.RecyclerViewListDecor;
 import com.facebook.accountkit.Account;
 import com.facebook.accountkit.AccountKit;
@@ -57,7 +36,17 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.Locale;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+import static com.example.micha.chavrutamatch.AcctLogin.UserDetails.getUserCustomAvatarBase64ByteArray;
 
 public class MainActivity extends AppCompatActivity {
     //TODO add up nav arrow to each activity
@@ -93,38 +82,30 @@ public class MainActivity extends AppCompatActivity {
             //sets up UserDetails
             UserDetails.setUserDetailsFromSP(mContext);
             //sets user avatar. @UserAvatarNumberString = "999" indicates avatar is user photo
-            if (UserDetails.getmUserAvatarNumberString() != null &&
+        if (UserDetails.getmUserAvatarNumberString() != null &&
                     !UserDetails.getmUserAvatarNumberString().equals("999")) {
                 userAvatar.setImageResource(AvatarImgs.getAvatarNumberResId(
                         Integer.parseInt(UserDetails.getmUserAvatarNumberString())));
             } else {
-                //using custom avatar
-                byte[] hostAvatarByteArray;
-                //check to see if custom avatar is in UserDetails
-                if (UserDetails.getUserAvatarBase64String() != null ) {
-                    hostAvatarByteArray = Base64.decode(UserDetails.getUserAvatarBase64String(), Base64.DEFAULT);
-
-                    GlideApp
-                            .with(mContext)
-                            .asBitmap()
-                            .load(hostAvatarByteArray)
-                            .placeholder(R.drawable.ic_unknown_user)
-                            .centerCrop()
-                            .into(userAvatar);
-
-                } else {
-                    Uri hostAvatarUri = null;
-                    if(UserDetails.getHostAvatarUri() != null){
-                        hostAvatarUri = UserDetails.getHostAvatarUri();
-                    }
-                        GlideApp
-                                .with(mContext)
-                                .load(hostAvatarUri)
-                                .centerCrop()
-                                .into(userAvatar);
-                        Toast.makeText(mContext, "unable to import user avatar from SP", Toast.LENGTH_SHORT).show();
-                    }
-                }
+            //using custom avatar
+            //check to see if custom avatar is in UserDetails
+            if (UserDetails.getHostAvatarUri() != null) {
+                GlideApp
+                        .with(mContext)
+                        .load(UserDetails.getHostAvatarUri())
+                        .centerCrop()
+                        .into(userAvatar);
+            } else if (getUserCustomAvatarBase64ByteArray() != null) {
+                GlideApp
+                        .with(mContext)
+                        .asBitmap()
+                        .load(getUserCustomAvatarBase64ByteArray())
+                        .placeholder(R.drawable.ic_unknown_user)
+                        .centerCrop()
+                        .into(userAvatar);
+                //otherwise use xml unknown profile image
+            }
+        }
 
             //check if already logged in
             //get current account and create new anonymous inner class

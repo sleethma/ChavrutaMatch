@@ -67,7 +67,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
 
         //checks which ServerConnect instance was sent
         String chosenBkgdTaskCheck = params[0];
-
+//todo: change all HttpURLConnection(s) --> HttpsUrlConnection(s)
         //retrieves user details from db if user exists
         if (chosenBkgdTaskCheck.equals("get UserDetails")){
             try {

@@ -1,6 +1,7 @@
 package com.example.micha.chavrutamatch.Data;
 
 import android.support.annotation.Nullable;
+import android.util.Base64;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ public class HostSessionData {
     private String mHostLastName;
 
     private String mHostAvatarNumber;
+    private byte[] mHostCustomAvatarByteArray;
     @Nullable
     private String mSessionMessage;
     @Nullable
@@ -64,6 +66,12 @@ public class HostSessionData {
         setmChavrutaId(chavrutaId);
         setmHostFirstName(hostFirstName);
         setmHostLastName(hostLastName);
+
+        //stores custom avatar as byte array for arraylist
+        if(hostAvatarNumber.length() > AvatarImgs.avatarImgList.size() &&
+                !hostAvatarNumber.equals("999"))
+            setmHostCustomAvatarByteArray(hostAvatarNumber);
+
         setmHostAvatarNumber(hostAvatarNumber);
         setmSessionMessage(sessionMessage);
         setmSessionDate(sessionDate);
@@ -83,6 +91,14 @@ public class HostSessionData {
         setmChavrutaRequest1Name(chavrutaRequest1Name);
         setmChavrutaRequest2Name(chavrutaRequest2Name);
         setmChavrutaRequest3Name(chavrutaRequest3Name);
+    }
+
+    public void setmHostCustomAvatarByteArray(String byteArrayToDecode){
+        mHostCustomAvatarByteArray = Base64.decode(byteArrayToDecode, Base64.DEFAULT);
+    }
+
+    public byte[] getmHostCustomAvatarByteArray(){
+      return  mHostCustomAvatarByteArray;
     }
 
     public void setmHostCityState(String mHostCityState) {
@@ -140,6 +156,10 @@ public class HostSessionData {
 
     public void setmHostAvatarNumber(String mHostAvatarNumber){
         this.mHostAvatarNumber = mHostAvatarNumber;
+    }
+
+    public static byte[] getByteArrayFromString(String stringToDecode){
+        return Base64.decode(stringToDecode, Base64.DEFAULT);
     }
 
     public String getmHostAvatarNumber(){

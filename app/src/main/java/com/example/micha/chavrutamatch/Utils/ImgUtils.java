@@ -95,12 +95,39 @@ public class ImgUtils {
         return rotatedBitmap;
     }
 
+    //todo: combine below two methods
     public static String bitmapToCompressedBase64String(Context context, Bitmap bitmapToBase64) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            bitmapToBase64.compress(Bitmap.CompressFormat.JPEG, 20, bos);
+            bitmapToBase64.compress(Bitmap.CompressFormat.JPEG, 1, bos);
 
         byte[] data = bos.toByteArray();
-        return new String(Base64.encodeToString(data, Base64.DEFAULT));
+        long testSize = data.length;
+
+        return new String(resizeBase64Image(Base64.encodeToString(data, Base64.DEFAULT)));
+    }
+
+    private static String resizeBase64Image(String base64image){
+        byte [] encodeByte=Base64.decode(base64image.getBytes(),Base64.DEFAULT);
+        BitmapFactory.Options options=new BitmapFactory.Options();
+        options.inPurgeable = true;
+        Bitmap image = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length,options);
+        int IMG_WIDTH = 400;
+        int IMG_HEIGHT = 400;
+
+
+        if(image.getHeight() <= 400 && image.getWidth() <= 400){
+            return base64image;
+        }
+        image = Bitmap.createScaledBitmap(image, IMG_WIDTH, IMG_HEIGHT, false);
+
+        ByteArrayOutputStream baos=new  ByteArrayOutputStream();
+        image.compress(Bitmap.CompressFormat.JPEG,10, baos);
+
+        byte [] b=baos.toByteArray();
+        long testReducedLength = b.length;
+        System.gc();
+        return Base64.encodeToString(b, Base64.NO_WRAP);
+
     }
 
     public static String uriToCompressedBase64String(Context context, Uri imgUriIn) {
@@ -108,7 +135,7 @@ public class ImgUtils {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try {
             bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), imgUriIn);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 20, bos);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 10, bos);
 
         } catch (IOException e) {
             e.printStackTrace();

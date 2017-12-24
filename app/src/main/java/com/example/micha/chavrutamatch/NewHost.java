@@ -1,15 +1,11 @@
 package com.example.micha.chavrutamatch;
 
-import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -18,12 +14,10 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewAnimationUtils;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -38,13 +32,8 @@ import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.example.micha.chavrutamatch.Utils.ChavrutaTextValidation;
 import com.example.micha.chavrutamatch.Utils.ChavrutaUtils;
 import com.example.micha.chavrutamatch.Utils.GlideApp;
-import com.example.micha.chavrutamatch.Utils.ImgUtils;
 import com.example.micha.chavrutamatch.Utils.TimeStampConverter;
 
-import org.w3c.dom.Text;
-
-import java.sql.Timestamp;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -367,6 +356,11 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         mLocation = etHostAddress.getText().toString();
         mHostCityState = acCityState.getText().toString();
         mHostId = UserDetails.getmUserId();
+        mHostAvatarNumber = UserDetails.getmUserAvatarNumberString();
+        //@hostAvatarNumber: asign base64array for custom image, or avatar template number if template image
+        if(mHostAvatarNumber.equals("999"))
+            mHostAvatarNumber = UserDetails.getUserAvatarBase64String();
+
         String confirmed = "not confirmed";
         String chavrutaRequest1 = "None", chavrutaRequest2 = "None", chavrutaRequest3 = "None";
         String newHost = "new host";
