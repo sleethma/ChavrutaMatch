@@ -128,6 +128,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void launchAddBioActivity() {
         Intent intent = new Intent(this, AddBio.class);
+        intent.putExtra("add new user to db", true);
         startActivity(intent);
         finish();
     }

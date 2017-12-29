@@ -84,10 +84,14 @@ public class AddBio extends AppCompatActivity {
     List<Integer> mAvatarsList = AvatarImgs.getAllAvatars();
     String mCustomUserAvatarUriString;
     String mCustomUserAvatarBase64String;
+
+    //new user to be stored in db
+    static boolean storeNewUserInDb = false;
     //checks if avatar chosen from AvatarSelectFragment
     boolean newCustomAvatarChosen = false;
 
 
+    //TODO: on emulator no new user added to db when registering!!!!!!!!!!!
     //TODO: Add input validation using: https://www.androidhive.info/2015/09/android-material-design-floating-labels-for-edittext/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,10 +105,14 @@ public class AddBio extends AppCompatActivity {
         if (getIntent().getExtras() != null) {
             Intent incomingIntent = getIntent();
 
+
             // check if data coming from avatar select frag & sets user selected avatar in addBio Activitiy
             if (incomingIntent.getBooleanExtra("affirm update bio", false)) {
                 Bundle bundle = incomingIntent.getExtras();
                 updateBio = bundle.getBoolean("affirm update bio");
+                //todo:delete next two lines if necessary
+                //check to see if this is a new user
+//                bundle.getBoolean("add new user to db")
                 int userAvatarSelected = bundle.getInt("avatar position", -1);
 
                 if (userAvatarSelected == CUSTOM_AVATAR_NUMBER_INT) {
@@ -126,15 +134,19 @@ public class AddBio extends AppCompatActivity {
                 mUserAvatarNumberString = "" + userAvatarSelected;
                 populateUserDataFromSP("pick chooser return");
             }
-            //intent sent from user selecting update bio w/o user editing avatar
-            if (incomingIntent.getExtras().getBoolean("update_bio")) {
+            //intent sent from user selecting update bio in MA
+            else if (incomingIntent.getExtras().getBoolean("update_bio")) {
                 updateBio = incomingIntent.getExtras().getBoolean("update_bio");
                 populateUserDataFromSP("no new custom avatar selected");
-            }
-            //if first login on a new device, db call is returned with user acct data
-            else if (incomingIntent.getExtras().getString("user_data_json_string") != null) {
+
+                //if first login on a new device, db call is returned with user acct data
+            }else if (incomingIntent.getExtras().getString("user_data_json_string") != null) {
                 jsonString = incomingIntent.getExtras().getString("user_data_json_string");
                 parseUserDetailsFromDB(jsonString);
+            } else if (incomingIntent.getBooleanExtra("add new user to db", false)) {
+                storeNewUserInDb = incomingIntent.getBooleanExtra("add new user to db", false);
+                //@var will be used if template avatar selected
+                updateBio = true;
             }
         } else {
             //if userFirstName in SP == null then user has not used current device,
@@ -186,11 +198,12 @@ public class AddBio extends AppCompatActivity {
                 newUserName, newUserPhoneNumber, newUserEmail, newUserAvatarNumberString, newProfImgUser, newUserCityState);
 
         if (bioDataChanged) {
-            UserDetails.setAllUserDataFromAddBio(mUserId, newUserName, newUserAvatarNumberString,
+            UserDetails.setAllUserDataFromAddBio(newUserName, newUserAvatarNumberString,
                     newUserFirstName, newUserLastName, newUserPhoneNumber, newUserEmail, newUserCityState,
                     newCustomUserAvatarString);
+            if (mCustomUserAvatarBase64String != null)
+                UserDetails.setByteArrayFromString(mCustomUserAvatarBase64String);
 
-            UserDetails.setByteArrayFromString(mCustomUserAvatarBase64String);
             saveAddBioDataToSP();
             postUserBio();
         } else {
@@ -242,6 +255,11 @@ public class AddBio extends AppCompatActivity {
             bioDataChanged = true;
         }
 
+        if (mUserCityState == null || !mUserCityState.equals(newUserCityState)) {
+            mUserCityState = newUserCityState;
+            bioDataChanged = true;
+        }
+
         //todo: must check rotation differently if API< 24, check with emulators!
         if (mCustomUserAvatarUriString != null &&
                 newUserAvatarNumberString.equals(CUSTOM_AVATAR_NUMBER_STRING) && newCustomAvatarChosen) {
@@ -249,7 +267,7 @@ public class AddBio extends AppCompatActivity {
             //check to see if image needs rotating b4 saving to db
             int rotation = 0;
             try {
-                rotation =  ImgUtils.rotateImgNeededCk(this, newProfImgUri);
+                rotation = ImgUtils.rotateImgNeededCk(this, newProfImgUri);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -260,36 +278,38 @@ public class AddBio extends AppCompatActivity {
                 e.printStackTrace();
             }
             //if image is not upright
-            if(rotation != 0) {
+            if (rotation != 0) {
                 bitmap = ImgUtils.rotateImg(bitmap, rotation);
                 mCustomUserAvatarBase64String = ImgUtils.bitmapToCompressedBase64String(this, bitmap);
-            }else {
+            } else {
                 //todo: ensure that this uses same resizing and compression as bitmapToCompressedBase64String above
                 mCustomUserAvatarBase64String = ImgUtils.uriToCompressedBase64String(this, newProfImgUri);
             }
+            //Custom avatar not newly selected
+        } else if (mCustomUserAvatarUriString != null &&
+                newUserAvatarNumberString.equals(CUSTOM_AVATAR_NUMBER_STRING)) {
+            mCustomUserAvatarBase64String = UserDetails.getUserAvatarBase64String();
         } else {
-            //todo: the same below is done in 'else' above...refactor!
-            mCustomUserAvatarBase64String = ImgUtils.uriToCompressedBase64String(this, newProfImgUri);
+            mCustomUserAvatarBase64String = "none";
         }
 
-        if (mUserCityState == null || !mUserCityState.equals(newUserCityState)) {
-            mUserCityState = newUserCityState;
-            bioDataChanged = true;
-        }
     }
 
     //posts saved user bio info to server
     public void postUserBio() {
         final String userPost = "user post";
         String userPostType;
-        if (updateBio) {
-            userPostType = "update user post";
-        } else {
+        if (storeNewUserInDb) {
             userPostType = "new user post";
+            mUserId = UserDetails.getmUserId();
+            //reset static variable once user saves bio 1st time
+            storeNewUserInDb = false;
+        } else {
+            userPostType = "update user post";
         }
 
-
         ServerConnect postUserToServer = new ServerConnect(this);
+
         postUserToServer.execute(userPost, mUserId, mUserName, mUserAvatarNumberString, mUserFirstName, mUserLastName,
                 mUserPhoneNumber, mUserEmail, mUserBio, mUserCityState, userPostType, mCustomUserAvatarBase64String);
     }
@@ -387,7 +407,14 @@ public class AddBio extends AppCompatActivity {
         editor.putString(getString(R.string.user_avatar_number_key), mUserAvatarNumberString);
         editor.putString(getString(R.string.user_bio_key), mUserBio);
         editor.putString(getString(R.string.user_city_state_key), mUserCityState);
-        editor.putString(getString(R.string.custom_user_avatar_string_uri_key), mCustomUserAvatarUriString);
+
+        //clear sp if current avatar string not custom
+        if (mUserAvatarNumberString.equals(CUSTOM_AVATAR_NUMBER_STRING)) {
+            editor.putString(getString(R.string.custom_user_avatar_string_uri_key), mCustomUserAvatarUriString);
+        } else {
+            editor.putString(getString(R.string.custom_user_avatar_string_uri_key), null);
+        }
+
         editor.putString(getString(R.string.user_avatar_base_64_key), mCustomUserAvatarBase64String);
         editor.apply();
     }

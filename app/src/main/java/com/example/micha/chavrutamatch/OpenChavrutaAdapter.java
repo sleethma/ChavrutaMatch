@@ -350,6 +350,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
             {
                 //sets chavrutahosts avatar
                 String currentHostAvatarNumberString = currentItem.getmHostAvatarNumber();
+                byte[] testCurrentHostAvatarByteArrayString = currentItem.getmHostCustomAvatarByteArray();
                 if (currentHostAvatarNumberString != null &&
                         currentHostAvatarNumberString.length() > AvatarImgs.avatarImgList.size()) {
                     byte[] customUserAvatar = currentItem.getByteArrayFromString(currentHostAvatarNumberString);

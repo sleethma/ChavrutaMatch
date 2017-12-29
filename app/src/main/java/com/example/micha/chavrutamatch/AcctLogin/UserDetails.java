@@ -69,15 +69,14 @@ public class UserDetails extends AppCompatActivity{
 
     //sets all user data from AddBio.class
     public static void setAllUserDataFromAddBio(String...param){
-        mUserId = param[0];
-         mUserName=param[1];
-         mUserAvatarNumberString=param[2];
-         mUserFirstName=param[3];
-        mUserLastName=param[4];
-        mUserPhoneNumber=param[5];
-        mUserEmail=param[6];
-        mUserCityState = param[7];
-        mUserCustomAvatarUriString = param[8];
+         mUserName=param[0];
+         mUserAvatarNumberString=param[1];
+         mUserFirstName=param[2];
+        mUserLastName=param[3];
+        mUserPhoneNumber=param[4];
+        mUserEmail=param[5];
+        mUserCityState = param[6];
+        mUserCustomAvatarUriString = param[7];
     }
 
     public static String[]  getUserDataFromSP(){
@@ -160,8 +159,8 @@ public class UserDetails extends AppCompatActivity{
         return mUserCityState;
     }
 
-    public static void setmUserId(String mUserId) {
-        UserDetails.mUserId = mUserId;
+    public static void setmUserId(String userId) {
+        mUserId = userId;
     }
 
     public static String getmUserPassword() {
