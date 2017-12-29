@@ -7,8 +7,8 @@
         -Or any welcoming message</string>
     <string name="title_activity_login_screen">LoginScreen</string>
     <string name="title_activity_login">Login</string>
-    <string name="ACCOUNT_KIT_CLIENT_TOKEN"> *********</string>
-    <string name="FACEBOOK_APP_ID">********</string>
+    <string name="ACCOUNT_KIT_CLIENT_TOKEN"> a0d9b9122b74867fe91c3df3085ded7b</string>
+    <string name="FACEBOOK_APP_ID">815662338593470</string>   
     <string name="login_phone_label">Login By Phone</string>
     <string name="login_email_label">Login By Email</string>
     //login protocol scheme is the appID preceeded by "ak"
