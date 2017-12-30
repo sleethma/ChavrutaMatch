@@ -1,33 +1,19 @@
 package com.example.micha.chavrutamatch.Utils;
 
-import android.annotation.SuppressLint;
-import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.content.Context;
-import android.content.CursorLoader;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
-import android.os.Build;
-import android.os.Environment;
-import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.util.Base64;
-import android.util.DisplayMetrics;
-import android.view.WindowManager;
-import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -76,15 +62,6 @@ public class ImgUtils {
         return rotation;
     }
 
-//    public static byte[] getByteArrayFromString(String stringToDecode) {
-//        byte[] decoded;
-//        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-//            decoded = org.apache.commons.codec.binary.Base64.decodeBase64(stringToDecode);
-//        }else {
-//            decoded = java.util.Base64.getDecoder().decode(stringToDecode);
-//        }
-//        return decoded;
-//    }
 
     public static Bitmap rotateImg(Bitmap bitmapToRotate, int degreesToRotate) {
 
@@ -98,7 +75,7 @@ public class ImgUtils {
     //todo: combine below two methods
     public static String bitmapToCompressedBase64String(Context context, Bitmap bitmapToBase64) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            bitmapToBase64.compress(Bitmap.CompressFormat.JPEG, 1, bos);
+        bitmapToBase64.compress(Bitmap.CompressFormat.JPEG, 1, bos);
 
         byte[] data = bos.toByteArray();
         long testSize = data.length;
@@ -106,28 +83,27 @@ public class ImgUtils {
         return new String(resizeBase64Image(Base64.encodeToString(data, Base64.DEFAULT)));
     }
 
-    private static String resizeBase64Image(String base64image){
-        byte [] encodeByte=Base64.decode(base64image.getBytes(),Base64.DEFAULT);
-        BitmapFactory.Options options=new BitmapFactory.Options();
+    private static String resizeBase64Image(String base64image) {
+        byte[] encodeByte = Base64.decode(base64image.getBytes(), Base64.DEFAULT);
+        BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPurgeable = true;
-        Bitmap image = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length,options);
+        Bitmap image = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length, options);
         int IMG_WIDTH = 400;
         int IMG_HEIGHT = 400;
 
 
-        if(image.getHeight() <= 400 && image.getWidth() <= 400){
+        if (image.getHeight() <= 400 && image.getWidth() <= 400) {
             return base64image;
         }
         image = Bitmap.createScaledBitmap(image, IMG_WIDTH, IMG_HEIGHT, false);
 
-        ByteArrayOutputStream baos=new  ByteArrayOutputStream();
-        image.compress(Bitmap.CompressFormat.JPEG,10, baos);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        image.compress(Bitmap.CompressFormat.JPEG, 10, baos);
 
-        byte [] b=baos.toByteArray();
+        byte[] b = baos.toByteArray();
         long testReducedLength = b.length;
         System.gc();
         return Base64.encodeToString(b, Base64.NO_WRAP);
-
     }
 
     public static String uriToCompressedBase64String(Context context, Uri imgUriIn) {
@@ -144,13 +120,6 @@ public class ImgUtils {
         return new String(Base64.encodeToString(data, Base64.DEFAULT));
     }
 
-
-    public static Bitmap base64StringToBitmap(String encodedString) {
-        byte[] decodedString = Base64.decode(encodedString, Base64.DEFAULT);
-        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-        return decodedByte;
-    }
-
     //todo: close bytebuffer and inputStream
     public static byte[] getBytes(InputStream inputStream) throws IOException {
         ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
@@ -163,7 +132,6 @@ public class ImgUtils {
         }
         return byteBuffer.toByteArray();
     }
-
 
     /**
      * Creates the temporary image file in the cache directory.
@@ -183,9 +151,6 @@ public class ImgUtils {
                 storageDir      /* directory */
         );
     }
-
-
-
 
     /**
      * Deletes image file for a given path.

@@ -11,44 +11,18 @@ import java.util.List;
 
 //class stores hostsession data for mychavruta and HostSelect activity's population
 public class HostSessionData {
-    @Nullable
-    private String mChavrutaId;
-    @Nullable
-    private String mHostFirstName;
-    @Nullable
-    private String mHostLastName;
 
-    private String mHostAvatarNumber;
-    private byte[] mHostCustomAvatarByteArray;
-    @Nullable
-    private String mSessionMessage;
-    @Nullable
-    private String mSessionDate;
-    @Nullable
-    private String mStartTime;
-    private String mHostCityState;
-    @Nullable
-    private String mEndTime;
-    @Nullable
-    private String mSefer;
-    @Nullable
-    private String mLocation;
-    @Nullable
-    private String mHostId;
-    @Nullable
-    private String mchavrutaRequest1;
-    @Nullable
-    private String mchavrutaRequest2;
-    @Nullable
-    private String mchavrutaRequest3;
 
     @Nullable
     private String mChavrutaRequest1Avatar, mChavrutaRequest1Name,mChavrutaRequest2Avatar,mChavrutaRequest2Name,
-    mChavrutaRequest3Avatar, mChavrutaRequest3Name;
+    mChavrutaRequest3Avatar, mChavrutaRequest3Name, mSefer, mLocation, mHostId, mchavrutaRequest1, mchavrutaRequest2,
+            mchavrutaRequest3, mChavrutaId, mHostFirstName, mHostLastName, mHostAvatarNumber,
+    mSessionMessage, mStartTime, mSessionDate, mHostCityState, mEndTime;
 
-@Nullable
+    private byte[] mHostCustomAvatarByteArray;
+
+    @Nullable
     private String mConfirmed;
-
     public boolean requestOneConfirmed = true;
     public boolean requestTwoConfirmed = true;
     public boolean requestThreeConfirmed = true;

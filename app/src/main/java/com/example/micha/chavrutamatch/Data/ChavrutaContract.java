@@ -10,6 +10,7 @@ public class ChavrutaContract {
 
     public class ChavrutaHostEntry implements BaseColumns {
 
+        //todo: update for offline access/SQlite
         //Column Headings for Chavrusa Host Session Creation And Match Confirmation
         public static final String TABLE_NAME = "chavrutaHosts"; //string
         public static final String HOST_FIRST_NAME = "hostFirstName"; //string
@@ -29,10 +30,8 @@ public class ChavrutaContract {
         public static final String SESSION_ID = "sessionId"; //string
         public static final String HOST_AVATAR = "hostAvatar"; //string
         public static final String REQUESTING_GUEST_PROFILE = "hostSessionConnectId"; //array
-
-
-
     }
+
 
     public class UserProfileEntry implements BaseColumns{
         public static final String TABLE_NAME = "chavrutaUsers"; //string

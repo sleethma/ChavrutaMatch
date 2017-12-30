@@ -1,31 +1,10 @@
 package com.example.micha.chavrutamatch.AcctLogin;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
-import android.util.Log;
-import android.widget.Toast;
-import android.content.SharedPreferences;
-
-import com.example.micha.chavrutamatch.AddBio;
-import com.example.micha.chavrutamatch.Data.HostSessionData;
-import com.example.micha.chavrutamatch.MainActivity;
-import com.example.micha.chavrutamatch.R;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import static android.R.attr.defaultValue;
-import static android.R.attr.targetActivity;
-import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by micha on 8/23/2017.
@@ -50,11 +29,8 @@ public class UserDetails extends AppCompatActivity{
     private static String mUserImagePathString;
     private static String mUserCustomAvatarBase64String;
     private  static byte[] mUserCustomAvatarBase64ByteArray;
-
-
-
     private static String mUserBio;
-
+    public static String mUserLoginType = "none";
 
     public UserDetails(String id, String password, String phoneNumber, String email
     ){
@@ -63,9 +39,6 @@ public class UserDetails extends AppCompatActivity{
         mUserPhoneNumber = phoneNumber;
         mUserEmail = email;
     }
-    public UserDetails(){
-    }
-
 
     //sets all user data from AddBio.class
     public static void setAllUserDataFromAddBio(String...param){
@@ -77,18 +50,6 @@ public class UserDetails extends AppCompatActivity{
         mUserEmail=param[5];
         mUserCityState = param[6];
         mUserCustomAvatarUriString = param[7];
-    }
-
-    public static String[]  getUserDataFromSP(){
-        SharedPreferences mPreferences = mContext.getSharedPreferences("user_data", MODE_PRIVATE);
-        mUserPhoneNumber = mPreferences.getString("user phone number key",null);
-        mUserName = mPreferences.getString("User Name", null);
-        mUserEmail = mPreferences.getString("User Email", null);
-        mUserAvatarNumberString = mPreferences.getString("User Avatar",null);
-        mUserFirstName = mPreferences.getString("User First Name",null);
-        mUserLastName = mPreferences.getString("User Last Name",null);
-
-       return new String[]  {mUserId, mUserName, mUserAvatarNumberString, mUserFirstName, mUserLastName};
     }
 
     public static void  setUserDetailsFromSP(Context context){
@@ -107,15 +68,15 @@ public class UserDetails extends AppCompatActivity{
         mUserCustomAvatarBase64String = prefs.getString("user avatar base 64 key", "none");
         mUserCityState = prefs.getString("user city state key", null);
 
-
         //convert String to Uri and save in @this
         if(mUserCustomAvatarUriString != null) {
             mUserCustomAvatarUri = Uri.parse(mUserCustomAvatarUriString);
             setByteArrayFromString(mUserCustomAvatarBase64String);
         }
     }
-    public static void setUserAvatarBase64String(String base64String){
-        mUserCustomAvatarBase64String = base64String;
+
+    public static void setLoginType(String loginType){
+        mUserLoginType = loginType;
     }
 
     public static String getUserAvatarBase64String(){
@@ -142,12 +103,6 @@ public class UserDetails extends AppCompatActivity{
         mUserCustomAvatarBase64ByteArray = Base64.decode(stringToDecode, Base64.DEFAULT);
     }
 
-
-
-    public static String convertUserAvatarByteArrayToString(){
-        return mUserCustomAvatarBase64String.toString();
-    }
-
     public static String getmUserId() {
         return mUserId;
     }
@@ -163,43 +118,12 @@ public class UserDetails extends AppCompatActivity{
         mUserId = userId;
     }
 
-    public static String getmUserPassword() {
-        return mUserPassword;
-    }
-
-    public static void setmUserPassword(String mUserPassword) {
-        UserDetails.mUserPassword = mUserPassword;
-    }
-
-    public static String getmUserPhoneNumber() {
-        return mUserPhoneNumber;
-    }
-
     public static void setmUserPhoneNumber(String mUserPhoneNumber) {
         UserDetails.mUserPhoneNumber = mUserPhoneNumber;
     }
 
     public static Uri getHostAvatarUri(){
         return mUserCustomAvatarUri;
-    }
-
-    public static void setHostAvatarUri(Uri userImgUri){
-        mUserCustomAvatarUri = userImgUri;
-    }
-    public static  void setUserImgPathString(String userImagePathString){
-        mUserImagePathString = userImagePathString;
-    }
-
-    public static String getUserImgPathString(){
-        return mUserImagePathString;
-    }
-
-    public static String getmUserEmail() {
-        return mUserEmail;
-    }
-
-    public static String getmUserBio() {
-        return mUserBio;
     }
 
     public static void setmUserEmail(String mUserEmail) {
@@ -210,29 +134,16 @@ public class UserDetails extends AppCompatActivity{
         return mUserName;
     }
 
-    public static void setmUserName(String mUserName) {
-        UserDetails.mUserName = mUserName;
-    }
-
     public static String getmUserAvatarNumberString() {
         return mUserAvatarNumberString;
     }
-
 
     public static String getmUserFirstName() {
         return mUserFirstName;
     }
 
-    public static void setmUserFirstName(String mUserFirstName) {
-        UserDetails.mUserFirstName = mUserFirstName;
-    }
-
     public static String getmUserLastName() {
         return mUserLastName;
-    }
-
-    public static void setmUserLastName(String mUserLastName) {
-        UserDetails.mUserLastName = mUserLastName;
     }
 
 }

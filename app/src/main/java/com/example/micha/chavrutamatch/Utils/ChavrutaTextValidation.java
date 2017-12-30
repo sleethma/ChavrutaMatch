@@ -1,7 +1,6 @@
 package com.example.micha.chavrutamatch.Utils;
 
 import android.widget.EditText;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,7 +15,6 @@ public class ChavrutaTextValidation {
     private static final String PHONE_MSG = "###-#######";
 
     // Regular Expression
-    // you can change the expression based on your need
     private static final String EMAIL_REGEX = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
     private static final String PHONE_REGEX = "\\d{3}-\\d{7}";
 
@@ -30,7 +28,7 @@ public class ChavrutaTextValidation {
     }
 
     // validating email id
-    private boolean isValidEmail(String email) {
+    public static boolean isValidEmail(String email) {
         String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
                 + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
 
@@ -47,6 +45,7 @@ public class ChavrutaTextValidation {
         }
         return false;
     }
+
     // call this method when you need to check phone number validation
     public static boolean isPhoneNumber(EditText editText, boolean required) {
         return isValid(editText, PHONE_REGEX, PHONE_MSG, required);
@@ -85,6 +84,24 @@ public class ChavrutaTextValidation {
         }
 
         return true;
+    }
+
+    //limit 10 characters in EditText
+    public static boolean hasLimit9Char(String stringText) {
+        if (stringText.length() <= 9) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    //limit # of characters in EditText
+    public static boolean hasCharLimitOf(int limitInt, String stringText) {
+        if (stringText.length() <= limitInt) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }

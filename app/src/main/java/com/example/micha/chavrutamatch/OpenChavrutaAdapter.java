@@ -167,7 +167,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
 
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        TextView hostFirstName, sessionDate, startTime, endTime, sefer, location,
+        TextView hostFullName, sessionDate, startTime, endTime, sefer, location,
                 confirmRequestName_1, confirmRequestName_2, confirmRequestName_3;
         LinearLayout pendingRequest_1;
         LinearLayout pendingRequest_2;
@@ -190,7 +190,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
 
         public ViewHolder(View listItemView) {
             super(listItemView);
-            hostFirstName = (TextView) listItemView.findViewById(R.id.host_first_name);
+            hostFullName = (TextView) listItemView.findViewById(R.id.host_full_name);
             sessionDate = (TextView) listItemView.findViewById(R.id.session_date);
             startTime = (TextView) listItemView.findViewById(R.id.start_time);
             endTime = (TextView) listItemView.findViewById(R.id.end_time);
@@ -234,6 +234,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
             if (holder.getItemViewType() == 1 && mContext == mainActivityContext) {
                 hostListItemView = true;
                 awaitingConfirmView = false;
+                holder.hostFullName.setText(UserDetails.getmUserName());
 
                 if (UserDetails.getmUserAvatarNumberString() != null &&
                         !UserDetails.getmUserAvatarNumberString().equals("999")) {
@@ -317,7 +318,11 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
             if (awaitingConfirmView) {
                 String learnerConfirmed = currentItem.getmConfirmed();
                 String currentHostAvatarNumberString = currentItem.getmHostAvatarNumber();
-                holder.hostUserName.setText(UserDetails.getmUserName());
+
+                //sets user first last name after concatonation
+                String hostNameConcat =  ChavrutaUtils.createUserFirstLastName(
+                        currentItem.getmHostFirstName(), currentItem.getmHostLastName());
+                holder.hostFullName.setText(hostNameConcat);
 
                 //checks if custom user byte array extant from MA parsing
                 if (currentHostAvatarNumberString != null &&
@@ -350,7 +355,10 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
             {
                 //sets chavrutahosts avatar
                 String currentHostAvatarNumberString = currentItem.getmHostAvatarNumber();
-                byte[] testCurrentHostAvatarByteArrayString = currentItem.getmHostCustomAvatarByteArray();
+
+                //sets user first last name after concatonation
+                holder.hostUserName.setText(ChavrutaUtils.createUserFirstLastName(
+                        currentItem.getmHostFirstName(), currentItem.getmHostLastName()));
                 if (currentHostAvatarNumberString != null &&
                         currentHostAvatarNumberString.length() > AvatarImgs.avatarImgList.size()) {
                     byte[] customUserAvatar = currentItem.getByteArrayFromString(currentHostAvatarNumberString);
@@ -557,7 +565,6 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
 
             }
 
-            holder.hostFirstName.setText(currentItem.getmHostFirstName());
             holder.sessionDate.setText(currentItem.getmSessionDate());
             holder.startTime.setText(currentItem.getmStartTime());
             holder.endTime.setText(currentItem.getmEndTime());

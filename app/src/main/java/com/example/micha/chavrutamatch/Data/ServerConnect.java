@@ -2,18 +2,13 @@ package com.example.micha.chavrutamatch.Data;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.AddBio;
-import com.example.micha.chavrutamatch.AddSelect;
 import com.example.micha.chavrutamatch.HostSelect;
 import com.example.micha.chavrutamatch.MainActivity;
-import com.example.micha.chavrutamatch.R;
-import com.facebook.share.Share;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -26,9 +21,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-
-import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by micha on 7/29/2017.
@@ -284,8 +276,6 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                                 userBio, "UTF-8")+ "&" +
                                 URLEncoder.encode("custom_avatar_string", "UTF-8") + "=" + URLEncoder.encode(
                                 customAvatarString, "UTF-8");
-
-
 
                 bufferedWriter.write(data);
                 bufferedWriter.flush();

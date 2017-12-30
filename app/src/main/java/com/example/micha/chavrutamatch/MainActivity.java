@@ -121,16 +121,20 @@ public class MainActivity extends AppCompatActivity {
                     editor.putBoolean("new_user_key", false);
                     PhoneNumber phoneNumber = account.getPhoneNumber();
 
+
                     if (account.getPhoneNumber() != null) {
                         // if the phone number is available, display it
                         String formattedPhoneNumber = formatPhoneNumber(phoneNumber.toString());
                         UserDetails.setmUserPhoneNumber(formattedPhoneNumber);
+                        //toggle user phone or email login
+                        UserDetails.setLoginType("phone");
                         editor.putString(getString(R.string.user_phone_key), formattedPhoneNumber);
 
                     } else {
                         // if the email address is available, store it
                         String emailString = account.getEmail();
                         UserDetails.setmUserEmail(emailString);
+                        UserDetails.setLoginType("email");
                         editor.putString(getString(R.string.user_email_key), emailString);
                     }
                     editor.apply();

@@ -1,6 +1,7 @@
 package com.example.micha.chavrutamatch;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -11,6 +12,8 @@ import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
@@ -23,6 +26,7 @@ import android.widget.Toast;
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.Data.AvatarImgs;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
+import com.example.micha.chavrutamatch.Utils.ChavrutaTextValidation;
 import com.example.micha.chavrutamatch.Utils.ChavrutaUtils;
 import com.example.micha.chavrutamatch.Utils.GlideApp;
 import com.example.micha.chavrutamatch.Utils.ImgUtils;
@@ -91,7 +95,6 @@ public class AddBio extends AppCompatActivity {
     boolean newCustomAvatarChosen = false;
 
 
-    //TODO: on emulator no new user added to db when registering!!!!!!!!!!!
     //TODO: Add input validation using: https://www.androidhive.info/2015/09/android-material-design-floating-labels-for-edittext/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,7 +103,7 @@ public class AddBio extends AppCompatActivity {
         ButterKnife.bind(this);
         mUserAvatarNumberString = "0";
 
-        prefs = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE);
+        prefs = getSharedPreferences("user_data", MODE_PRIVATE);
         //incoming intents
         if (getIntent().getExtras() != null) {
             Intent incomingIntent = getIntent();
@@ -140,7 +143,7 @@ public class AddBio extends AppCompatActivity {
                 populateUserDataFromSP("no new custom avatar selected");
 
                 //if first login on a new device, db call is returned with user acct data
-            }else if (incomingIntent.getExtras().getString("user_data_json_string") != null) {
+            } else if (incomingIntent.getExtras().getString("user_data_json_string") != null) {
                 jsonString = incomingIntent.getExtras().getString("user_data_json_string");
                 parseUserDetailsFromDB(jsonString);
             } else if (incomingIntent.getBooleanExtra("add new user to db", false)) {
@@ -178,6 +181,9 @@ public class AddBio extends AppCompatActivity {
         ArrayAdapter<String> adapter =
                 new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, cityList);
         autoCompleteTextView.setAdapter(adapter);
+
+        //setUp on TextWatchers for input validation
+        setUpTextWatcherValidation();
     }
 
     //stores user Biodata in db and sp
@@ -192,6 +198,15 @@ public class AddBio extends AppCompatActivity {
         String newCustomUserAvatarString = mCustomUserAvatarUriString;
         String newUserCityState = autoCompleteTextView.getText().toString();
         Uri newProfImgUser = mNewProfImgUri;
+
+        if (!ChavrutaTextValidation.isValidEmail(newUserEmail)) {
+            Toast.makeText(this, "Please enter valid email.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (!ChavrutaTextValidation.hasCharLimitOf(17, UserPhoneView.getText().toString())) {
+            Toast.makeText(this, "Please enter valid phone #.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         //check for changes before queing db
         dataChangeCheck(newUserBio, newUserFirstName, newUserLastName,
@@ -242,11 +257,13 @@ public class AddBio extends AppCompatActivity {
             mUserName = newUserName;
             bioDataChanged = true;
         }
-        if (mUserPhoneNumber == null || !mUserPhoneNumber.equals(newUserPhoneNumber)) {
+        if (mUserPhoneNumber == null || !mUserPhoneNumber.equals(newUserPhoneNumber) &&
+                !UserDetails.mUserLoginType.equals("phone")) {
             mUserPhoneNumber = newUserPhoneNumber;
             bioDataChanged = true;
         }
-        if (mUserEmail == null || !mUserEmail.equals(newUserEmail)) {
+        if (mUserEmail == null || !mUserEmail.equals(newUserEmail) &&
+                !UserDetails.mUserLoginType.equals("email")) {
             mUserEmail = newUserEmail;
             bioDataChanged = true;
         }
@@ -371,6 +388,7 @@ public class AddBio extends AppCompatActivity {
         UserFirstNameView.setText(mUserFirstName);
         UserLastNameView.setText(mUserLastName);
         autoCompleteTextView.setText(mUserCityState);
+        UserBioView.setText(mUserBio);
         //set avatar image if not just chosen
         if (activityOnCreateType.equals("no new custom avatar selected")) {
             String userAvatarNumberString = UserDetails.getmUserAvatarNumberString();
@@ -391,19 +409,22 @@ public class AddBio extends AppCompatActivity {
                 UserAvatarView.setImageResource(mAvatarsList.get(Integer.parseInt(mUserAvatarNumberString)));
             }
         }
-        UserBioView.setText(mUserBio);
-        autoCompleteTextView.setText(mUserCityState);
     }
 
     public void saveAddBioDataToSP() {
         SharedPreferences.Editor editor =
                 getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE).edit();
-        editor.putString(getString(R.string.user_email_key), mUserEmail);
-        editor.putString(getString(R.string.user_phone_key), mUserPhoneNumber);
+
+        //only save email/phone if user did not use that info to login
+        if (!UserDetails.mUserLoginType.equals("email"))
+            editor.putString(getString(R.string.user_email_key), mUserEmail);
+        if (!UserDetails.mUserLoginType.equals("phone"))
+            editor.putString(getString(R.string.user_phone_key), mUserPhoneNumber);
+
+
         editor.putString(getString(R.string.user_name_key), mUserName);
         editor.putString(getString(R.string.user_first_name_key), mUserFirstName);
         editor.putString(getString(R.string.user_last_name_key), mUserLastName);
-        editor.putString(getString(R.string.user_email_key), mUserEmail);
         editor.putString(getString(R.string.user_avatar_number_key), mUserAvatarNumberString);
         editor.putString(getString(R.string.user_bio_key), mUserBio);
         editor.putString(getString(R.string.user_city_state_key), mUserCityState);
@@ -414,7 +435,6 @@ public class AddBio extends AppCompatActivity {
         } else {
             editor.putString(getString(R.string.custom_user_avatar_string_uri_key), null);
         }
-
         editor.putString(getString(R.string.user_avatar_base_64_key), mCustomUserAvatarBase64String);
         editor.apply();
     }
@@ -425,25 +445,6 @@ public class AddBio extends AppCompatActivity {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
-
-    //todo: close inputstream
-    private byte[] convertProfUriToByteArray(Uri mNewProfImgUri) {
-
-        InputStream iStream = null;
-        try {
-            iStream = getContentResolver().openInputStream(mNewProfImgUri);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        byte[] inputData = new byte[0];
-        try {
-            inputData = ImgUtils.getBytes(iStream);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return inputData;
-    }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions,
@@ -492,5 +493,96 @@ public class AddBio extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                     PERMISSION_REQUEST_READ_EXTERNAL_STORAGE);
         }
+    }
+
+    //sets up text watcher validation
+    private void setUpTextWatcherValidation() {
+        final String CANNOT_EDIT = "Changes to this item will not save, you used this to Login!";
+
+        UserNameView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String textToCheck = UserNameView.getText().toString();
+                if (!ChavrutaTextValidation.hasLimit9Char(textToCheck)) {
+                    Toast.makeText(
+                            AddBio.this,
+                            "Please keep  below 10 characters",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        UserFirstNameView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String textToCheck = UserFirstNameView.getText().toString();
+                if (!ChavrutaTextValidation.hasLimit9Char(textToCheck)) {
+                    Toast.makeText(
+                            AddBio.this,
+                            "Please keep below 10 characters",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        UserPhoneView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                if(UserDetails.mUserLoginType.equals("phone")){
+                    Toast.makeText(AddBio.this, CANNOT_EDIT, Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String textToCheck = UserPhoneView.getText().toString();
+                if (!ChavrutaTextValidation.hasCharLimitOf(16, textToCheck)) {
+                    Toast.makeText(
+                            AddBio.this,
+                            "Valid phone numbers are shorter than 17 characters",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+        UserEmailView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                if(UserDetails.mUserLoginType.equals("email")){
+                    Toast.makeText(AddBio.this, CANNOT_EDIT, Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 }
