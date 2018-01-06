@@ -299,7 +299,6 @@ public class AddBio extends AppCompatActivity {
                 bitmap = ImgUtils.rotateImg(bitmap, rotation);
                 mCustomUserAvatarBase64String = ImgUtils.bitmapToCompressedBase64String(this, bitmap);
             } else {
-                //todo: ensure that this uses same resizing and compression as bitmapToCompressedBase64String above
                 mCustomUserAvatarBase64String = ImgUtils.uriToCompressedBase64String(this, newProfImgUri);
             }
             //Custom avatar not newly selected

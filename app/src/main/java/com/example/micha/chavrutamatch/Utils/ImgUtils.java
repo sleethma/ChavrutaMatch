@@ -123,7 +123,7 @@ public class ImgUtils {
             e.printStackTrace();
         }
         byte[] data = bos.toByteArray();
-        return Base64.encodeToString(data, Base64.DEFAULT);
+        return resizeBase64Image(Base64.encodeToString(data, Base64.DEFAULT));
     }
 
     //todo: close bytebuffer and inputStream
