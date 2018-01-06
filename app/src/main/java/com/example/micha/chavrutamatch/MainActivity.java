@@ -49,7 +49,6 @@ import butterknife.ButterKnife;
 import static com.example.micha.chavrutamatch.AcctLogin.UserDetails.getUserCustomAvatarBase64ByteArray;
 
 public class MainActivity extends AppCompatActivity {
-    //TODO add up nav arrow to each activity
     String LOGTAG = MainActivity.class.getSimpleName();
     @BindView(R.id.iv_no_match_add_match)
     ImageView noMatchView;
@@ -169,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
                     myChavrutaListView.addItemDecoration(new RecyclerViewListDecor(VERTICAL_LIST_ITEM_SPACE));
 
                     //todo: uncomment below to optimize UI if works with multiple listitem layout types
-//                myChavrutaListView.setHasFixedSize(true);
+                    myChavrutaListView.setHasFixedSize(true);
                     mAdapter = new OpenChavrutaAdapter(this, myChavrutasArrayList);
                     myChavrutaListView.setAdapter(mAdapter);
                     noMatchView.setVisibility(View.GONE);

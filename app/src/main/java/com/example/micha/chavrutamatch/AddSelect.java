@@ -40,24 +40,12 @@ public class AddSelect extends AppCompatActivity {
         UserDetails.setsApplicationContext(mContext);
 
     }
-//TODO fix bug on animate the imagebutton is gone on back pressed
+
     public void onAddGuestButtonClick(View view) {
-        addGuestButton.animate()
-                .alpha(0f)
-                .translationX(-addGuestButton.getWidth())
-                .setDuration(getResources().getInteger(
-                        android.R.integer.config_shortAnimTime))
-                .withEndAction(new Runnable() {
-                    @Override
-                    public void run() {
-                        //end action ran after animation
-                    }
-                });
         //sets user city and state for ServerConnect call
         sp = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE);
         String userCityState = sp.getString(getString(R.string.user_city_state_key), null);
         UserDetails.setUserCityState(userCityState);
-
         String getJSONKey = "getJSONKey";
         ServerConnect getJSONFromServer = new ServerConnect(mContext);
         getJSONFromServer.execute(getJSONKey);

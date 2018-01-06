@@ -113,9 +113,7 @@ public class AddBio extends AppCompatActivity {
             if (incomingIntent.getBooleanExtra("affirm update bio", false)) {
                 Bundle bundle = incomingIntent.getExtras();
                 updateBio = bundle.getBoolean("affirm update bio");
-                //todo:delete next two lines if necessary
-                //check to see if this is a new user
-//                bundle.getBoolean("add new user to db")
+
                 int userAvatarSelected = bundle.getInt("avatar position", -1);
 
                 if (userAvatarSelected == CUSTOM_AVATAR_NUMBER_INT) {
@@ -277,7 +275,7 @@ public class AddBio extends AppCompatActivity {
             bioDataChanged = true;
         }
 
-        //todo: must check rotation differently if API< 24, check with emulators!
+        //todo: must check rotation differently if API< 24, check with emulators! Currently <24 just returns 0 rotation
         if (mCustomUserAvatarUriString != null &&
                 newUserAvatarNumberString.equals(CUSTOM_AVATAR_NUMBER_STRING) && newCustomAvatarChosen) {
             bioDataChanged = true;

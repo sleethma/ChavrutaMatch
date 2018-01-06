@@ -78,14 +78,27 @@ public class ImgUtils {
         return rotatedBitmap;
     }
 
-    //todo: combine below two methods
     public static String bitmapToCompressedBase64String(Context context, Bitmap bitmapToBase64) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        bitmapToBase64.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+        bitmapToBase64.compress(Bitmap.CompressFormat.JPEG, 50, bos);
 
         byte[] data = bos.toByteArray();
         long testSize = data.length;
 
+        return resizeBase64Image(Base64.encodeToString(data, Base64.DEFAULT));
+    }
+
+    public static String uriToCompressedBase64String(Context context, Uri imgUriIn) {
+        Bitmap bitmap;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try {
+            bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), imgUriIn);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, bos);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        byte[] data = bos.toByteArray();
         return resizeBase64Image(Base64.encodeToString(data, Base64.DEFAULT));
     }
 
@@ -98,7 +111,7 @@ public class ImgUtils {
         int IMG_HEIGHT = 400;
 
 
-        if (image.getHeight() <= 400 && image.getWidth() <= 400) {
+        if (image.getHeight() <= 300 && image.getWidth() <= 300) {
             return base64image;
         }
         image = Bitmap.createScaledBitmap(image, IMG_WIDTH, IMG_HEIGHT, false);
@@ -112,32 +125,6 @@ public class ImgUtils {
         return Base64.encodeToString(b, Base64.NO_WRAP);
     }
 
-    public static String uriToCompressedBase64String(Context context, Uri imgUriIn) {
-        Bitmap bitmap = null;
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        try {
-            bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), imgUriIn);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, bos);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        byte[] data = bos.toByteArray();
-        return resizeBase64Image(Base64.encodeToString(data, Base64.DEFAULT));
-    }
-
-    //todo: close bytebuffer and inputStream
-    public static byte[] getBytes(InputStream inputStream) throws IOException {
-        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
-        int bufferSize = 1024;
-        byte[] buffer = new byte[bufferSize];
-
-        int len = 0;
-        while ((len = inputStream.read(buffer)) != -1) {
-            byteBuffer.write(buffer, 0, len);
-        }
-        return byteBuffer.toByteArray();
-    }
 
     /**
      * Creates the temporary image file in the cache directory.

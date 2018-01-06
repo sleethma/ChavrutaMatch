@@ -52,6 +52,7 @@ public class HostSelect extends AppCompatActivity {
     static Context mContext;
     //true if user non-stock image used for avatar
     final private String USER_IMG_AVATAR = "999";
+    final private String NO_DATE = "Date?";
 
     public String jsonString;
     JSONObject jsonObject;
@@ -106,16 +107,9 @@ public class HostSelect extends AppCompatActivity {
 
         //attaches data source to adapter
         mAdapter = new OpenChavrutaAdapter(this, openChavrutaArrayList);
+        allHostsList.setHasFixedSize(true);
 
         allHostsList.setAdapter(mAdapter);
-
-        //todo:functioning ripple effect removed and applied elsewhere
-//        scrollImg.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                makeCircularRevealAnim(v);
-//            }
-//        });
     }
 
     //@ var chavrutaId = autoInc from db
@@ -164,8 +158,8 @@ public class HostSelect extends AppCompatActivity {
 
                 boolean classPassed = false;
                 //format session date for outdated comparison and store chavrutaId for deletion
-                //todo: replace below block to fit flow
-                if(!sessionDate.contains("D")) {
+                //todo: refactor below block to fit flow
+                if(!sessionDate.contains(NO_DATE)) {
                     //determine a class date is in future
                     classPassed = TimeStampConverter.classDatePassedAndDelete(mContext,
                             currentDateString, sessionDate);
@@ -204,15 +198,6 @@ public class HostSelect extends AppCompatActivity {
             noHostLayout.setVisibility(View.VISIBLE);
             allHostsList.setVisibility(View.GONE);
         }
-    }
-
-    private void makeCircularRevealAnim(View v) {
-        int finalRadius = (int) Math.hypot(v.getWidth() / 2, v.getHeight() / 2);
-
-        Animator anim = ViewAnimationUtils.createCircularReveal(
-                v, (int) v.getWidth() / 2, (int) v.getHeight() / 2, 0, finalRadius);
-        v.setBackgroundColor(Color.GREEN);
-        anim.start();
     }
 
     @Override

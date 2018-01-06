@@ -58,7 +58,7 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
     ImageButton ibStartTime;
     @BindView(R.id.et_host_topic)
     EditText etHostTopic;
-//    @BindView(R.id.fl_host_pic)
+    //    @BindView(R.id.fl_host_pic)
 //    android.widget.FrameLayout flHostPic;
     @BindView(R.id.iv_host_avatar)
     ImageView ivHostAvatar;
@@ -78,7 +78,7 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
     EditText tvHostClassMessage;
     @BindView(R.id.host_it)
     ImageButton ibHostIt;
-//    @BindView(R.id.tv_host_user_name)
+    //    @BindView(R.id.tv_host_user_name)
 //    TextView tvAddHost;
     @BindView(R.id.ac_city_state)
     AutoCompleteTextView acCityState;
@@ -104,6 +104,7 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
     private static int mDay;
     public static final int DIALOG_ID = 999;
     SharedPreferences sp;
+    String NO_DATE = "Date?";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -117,23 +118,23 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
             acCityState.setText(sp.getString(getString(R.string.user_city_state_key), null));
         }
         if (UserDetails.getmUserAvatarNumberString() != null &&
-                    !UserDetails.getmUserAvatarNumberString().equals("999")) {
-                ivHostAvatar.setImageResource(AvatarImgs.getAvatarNumberResId(
-                        Integer.parseInt(UserDetails.getmUserAvatarNumberString())));
-            } else {
+                !UserDetails.getmUserAvatarNumberString().equals("999")) {
+            ivHostAvatar.setImageResource(AvatarImgs.getAvatarNumberResId(
+                    Integer.parseInt(UserDetails.getmUserAvatarNumberString())));
+        } else {
 
-                try {
-                    GlideApp
-                            .with(this)
-                            .load(UserDetails.getHostAvatarUri())
-                            .placeholder(R.drawable.ic_unknown_user)
-                            .centerCrop()
-                            .into(ivHostAvatar);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
+            try {
+                GlideApp
+                        .with(this)
+                        .load(UserDetails.getHostAvatarUri())
+                        .placeholder(R.drawable.ic_unknown_user)
+                        .centerCrop()
+                        .into(ivHostAvatar);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+
+        }
 
         ibStartTime.setOnClickListener(this);
         ibHostEndTime.setOnClickListener(this);
@@ -147,14 +148,6 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         //auto moves edittext when softkeyboard called
         this.getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-
-        //todo: delete and reapply if necessary elsewhere makeCircularRevealAnim method
-//        flHostPic.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                makeCircularRevealAnim(v);
-//            }
-//        });
 
         //set auto-complete for closest US city
         ChavrutaUtils cu = new ChavrutaUtils();
@@ -201,6 +194,7 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
                         tvDate.setText(new StringBuilder()
                                 .append(mMonth + 1).append("-").append(mDay).append("-")
                                 .append(mYear));
+                        setProfileView();
                     }
                 }
             };
@@ -230,10 +224,16 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
             confirmTime(v);
             setProfileView();
         } else if (v == ibHostIt) {
-            if (tvDate.getText().equals("Date?")) {
+            if (tvDate.getText().equals(NO_DATE)) {
                 Snackbar.make(
                         findViewById(android.R.id.content),
                         "Please select a date.",
+                        Snackbar.LENGTH_LONG)
+                        .show();
+            } else if (etHostTopic.getText().length() <= 3) {
+                Snackbar.make(
+                        findViewById(android.R.id.content),
+                        "Sefer/Topic must be greater than 3 letters.",
                         Snackbar.LENGTH_LONG)
                         .show();
             } else {
@@ -358,7 +358,7 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         mHostId = UserDetails.getmUserId();
         mHostAvatarNumber = UserDetails.getmUserAvatarNumberString();
         //@hostAvatarNumber: asign base64array for custom image, or avatar template number if template image
-        if(mHostAvatarNumber.equals("999"))
+        if (mHostAvatarNumber.equals("999"))
             mHostAvatarNumber = UserDetails.getUserAvatarBase64String();
 
         String confirmed = "not confirmed";
@@ -372,11 +372,11 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
             startActivity(intent);
             finish();
         } else {
-            Toast.makeText(this, "invalid text given", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Please input sefer of 3-22 characters", Toast.LENGTH_SHORT).show();
         }
     }
 
-//    Animations
+    //    Animations
     private void animateHostIt(View view) {
         ObjectAnimator.ofFloat(
                 view, "translationY", 130f)
@@ -384,14 +384,6 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
                 .start();
     }
 
-//    private void makeCircularRevealAnim(View v) {
-//        int finalRadius = (int) Math.hypot(v.getWidth() / 2, v.getHeight() / 2);
-//
-//        Animator anim = ViewAnimationUtils.createCircularReveal(
-//                v, (int) v.getWidth() / 2, (int) v.getHeight() / 2, 0, finalRadius);
-//        v.setBackgroundColor(Color.GREEN);
-//        anim.start();
-//    }
 
     @Override
     public void onBackPressed() {
