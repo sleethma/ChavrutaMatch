@@ -68,7 +68,7 @@ public class HostSelect extends AppCompatActivity {
         setContentView(R.layout.open_host_listview);
         ButterKnife.bind(this);
         userId = UserDetails.getmUserId();
-        mContext = this;
+        mContext = HostSelect.this;
 
         //sets HostImage in title bar
         if (UserDetails.getmUserAvatarNumberString() != null &&

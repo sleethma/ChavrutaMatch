@@ -2,15 +2,17 @@
     <string name="app_name">ChavrutaMatch</string>
     <string name="action_settings">Settings</string>
     <string name="motto">Hatzlacha \nTogether</string>
-    <string name="host_class_message_string">Include helpful info like:  \nMaterials that would be
-        helpful to bring\n  -About you and your background\n  -Why you enjoy hosting Torah\n
-        -Or any welcoming message</string>
+    <string name="host_class_message_string">Include helpful info like:
+        \n -An overview of subject/goal of learning
+        \n -Materials that would be helpful to bring
+        \n -Or any welcoming message</string>
     <string name="title_activity_login_screen">LoginScreen</string>
     <string name="title_activity_login">Login</string>
     <string name="ACCOUNT_KIT_CLIENT_TOKEN"> a0d9b9122b74867fe91c3df3085ded7b</string>
     <string name="FACEBOOK_APP_ID">815662338593470</string>
     <string name="login_phone_label">Login By Phone</string>
     <string name="login_email_label">Login By Email</string>
+
     //login protocol scheme is the appID preceeded by "ak"
     <string name="ak_login_protocol_scheme">ak815662338593470</string>
 
@@ -47,8 +49,16 @@
     <string name="awaiting_match">Awaiting" + System.getProperty("line.separator") +  "Match"</string>
     <string name="underline_your_hosting"><u>You\'re Hosting</u></string>
     <string name="alphanumeric_input">ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890 .?,:/ </string>
-    <string name="alphanumeric_address_input">ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890?.! ,:/ </string>
+    <string name="alphanumeric_address_input">ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890?.!# ,:/ </string>
+
+
     <string name="user_avatar_base_64_key">user avatar base 64 key</string>
+    <string name="new_user_registered">New User Registered!</string>
+    <string name="class_unreg">Class Unregistered!</string>
+    <string name="confirmed_request">Learner was notified!</string>
+    <string name="requestSent">Chavruta Request Sent!</string>
+    <string name="new_class_reg">New Class Registered!</string>
+    <string name="torah_topic">Torah Topic</string>
 
 
 </resources>

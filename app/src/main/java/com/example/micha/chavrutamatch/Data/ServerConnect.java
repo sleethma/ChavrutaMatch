@@ -1,5 +1,6 @@
 package com.example.micha.chavrutamatch.Data;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -9,6 +10,7 @@ import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.AddBio;
 import com.example.micha.chavrutamatch.HostSelect;
 import com.example.micha.chavrutamatch.MainActivity;
+import com.example.micha.chavrutamatch.R;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -39,23 +41,28 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
         this.mContextRegister = context;
     }
 
+    ProgressDialog pDialog;
+
+//    @Override
+//    protected void onPreExecute() {
+//        super.onPreExecute();
+//    }
+
+    /**
+     * Before starting background thread Show Progress Dialog
+     * */
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
+        pDialog = new ProgressDialog(mContextRegister);
+        pDialog.setMessage("Loading Matches. Please wait...");
+        pDialog.setIndeterminate(false);
+        pDialog.setCancelable(false);
+        pDialog.show();
     }
 
     @Override
     protected String doInBackground(String... params) {
-
-        //stores path of db php registration script on host: server_IPv4/db_folder/file
-        String reg_url = "http://brightlightproductions.online/chavruta_session_add.php";
-        String new_user_url = "http://brightlightproductions.online/chavruta_user_profiles_add.php";
-        String update_user_url = "http://brightlightproductions.online/chavruta_user_profiles_update.php";
-
-        String chavruta_request_update_url =
-                "http://brightlightproductions.online/initial_chavruta_request_update.php";
-        //@ my_chavrutas_url is changed in line to send individual user id
-        String my_chavrutas_url = "http://brightlightproductions.online/get_json_my_chavrutas.php";
 
         //checks which ServerConnect instance was sent
         String chosenBkgdTaskCheck = params[0];
@@ -65,7 +72,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
             try {
                 HttpURLConnection httpURLConnection;
                     String userID = UserDetails.getmUserId();
-                    String getUserDetailsUrlString = "http://brightlightproductions.online/get_json_user_details.php?user_id=" +
+                    String getUserDetailsUrlString = "http://brightlightproductions.online/secure_get_json_user_details.php?user_id=" +
                             userID;
                 URL getUserDetailsUrl = new URL(getUserDetailsUrlString);
                     httpURLConnection = (HttpURLConnection) getUserDetailsUrl.openConnection();
@@ -98,6 +105,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
 
         //assures register button sent this background call
         if (chosenBkgdTaskCheck.equals("new host")) {
+            String reg_url = "http://brightlightproductions.online/secure_chavruta_session_add.php";
             //get params
             String hostFirstName = params[1];
             String hostLastName = params[2];
@@ -182,14 +190,14 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                     String userID = UserDetails.getmUserId();
 
 
-                    my_chavrutas_url = "http://brightlightproductions.online/get_json_my_chavrutas.php?user_id=" +
+                    String my_chavrutas_url = "http://brightlightproductions.online/secure_get_json_my_chavrutas.php?user_id=" +
                             userID;
                     URL jsonMyChavrutasURL = new URL(my_chavrutas_url);
                     httpURLConnection = (HttpURLConnection) jsonMyChavrutasURL.openConnection();
                 } else {
                     String hostCityState = UserDetails.getUserCityState();
                     String json_url = "http://brightlightproductions.online/" +
-                            "get_chavrutaJSON.php?host_city_state=" + hostCityState;
+                            "secure_get_chavrutaJSON.php?host_city_state=" + hostCityState;
                     URL jsonURL = new URL(json_url);
                     httpURLConnection = (HttpURLConnection) jsonURL.openConnection();
                     myChavruta = false;
@@ -222,6 +230,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
         }
         //stores new user in user profile db
         if (chosenBkgdTaskCheck.equals("user post")) {
+
             //get params
             String userId = params[1];
             String userName = params[2];
@@ -241,8 +250,10 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
             try {
                 URL userPostUrl;
                 if(postType.equals("new user post")){
+                    String new_user_url = "http://brightlightproductions.online/secure_chavruta_user_profiles_add.php";
                     userPostUrl = new URL(new_user_url);
                 }else{
+                    String update_user_url = "http://brightlightproductions.online/secure_chavruta_user_profiles_update.php";
                     userPostUrl = new URL(update_user_url);
                     customAvatarString = params[11];
                 }
@@ -284,7 +295,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 InputStream inputStream = httpURLConnection.getInputStream();
                 inputStream.close();
                 postExecuteResponse = 3;
-                return "New User Registered!";
+                return mContextRegister.getString(R.string.new_user_registered);
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -297,6 +308,8 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
         //chavrutaId is the auto_inc column of db
         //requesterAvatar is the integer key to the bitmap user selected avatar chosen
         if (chosenBkgdTaskCheck.equals("chavruta request")) {
+            String chavruta_request_update_url =
+                    "http://brightlightproductions.online/secure_initial_chavruta_request_update.php";
             //get params
             String userId = params[1];
             String chavrutaId = params[2];
@@ -355,7 +368,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
             //establish connection
             try {
                 URL confirmChavrutaRequest = new URL("http://brightlightproductions.online/" +
-                        "confirm_chavruta_request.php");
+                        "secure_confirm_chavruta_request.php");
                 HttpURLConnection httpURLConnection = (HttpURLConnection) confirmChavrutaRequest.openConnection();
                 httpURLConnection.setRequestMethod("POST");
                 httpURLConnection.setDoOutput(true);
@@ -378,7 +391,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 InputStream inputStream = httpURLConnection.getInputStream();
                 inputStream.close();
                 postExecuteResponse = 5;
-                return "chavruta Confirmed in Db";
+                return "Chavruta status changed in DB";
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -390,9 +403,9 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
             String chavrutaId = params[1];
             //establish connection
             try {
-                URL confirmChavrutaRequest = new URL("http://brightlightproductions.online/" +
-                        "delete_chavruta.php");
-                HttpURLConnection httpURLConnection = (HttpURLConnection) confirmChavrutaRequest.openConnection();
+                URL unregChavruta = new URL("http://brightlightproductions.online/" +
+                        "secure_delete_chavruta.php");
+                HttpURLConnection httpURLConnection = (HttpURLConnection) unregChavruta.openConnection();
                 httpURLConnection.setRequestMethod("POST");
                 httpURLConnection.setDoOutput(true);
                 //make object of output stream
@@ -410,6 +423,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 InputStream inputStream = httpURLConnection.getInputStream();
                 inputStream.close();
                 postExecuteResponse = 7;
+                pDialog.dismiss();
                 return "chavruta ID: " + chavrutaId + "deleted!";
             } catch (MalformedURLException e) {
                 e.printStackTrace();
@@ -420,22 +434,21 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
         return null;
     }
 
-
-
-
     @Override
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
 
         switch (postExecuteResponse) {
             case 0:
-                //incorrect key sent to ServerConnect.class
-                Toast.makeText(mContextRegister, "no matched action in " + getClass().getSimpleName()
-                        + " class", Toast.LENGTH_LONG).show();
+                //incorrect key sent to ServerConnect.class or internet connection false
+                String checkCon = "Please Check Internet Connection";
+                Toast.makeText(mContextRegister, checkCon,
+                        Toast.LENGTH_LONG).show();
                 break;
             case 1:
                 //register new host successful
-                Toast.makeText(mContextRegister, result, Toast.LENGTH_LONG).show();
+                String newClassReg = mContextRegister.getString(R.string.new_class_reg);
+                Toast.makeText(mContextRegister, newClassReg, Toast.LENGTH_LONG).show();
                 break;
             case 2:
                 //return jsonString to HostSelect.class if it is caller, else return it to MA
@@ -449,27 +462,35 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                     intent.putExtra("jsonKey", jsonString);
                     mContextRegister.startActivity(intent);
                 }
+                pDialog.dismiss();
                 break;
             case 3:
                 //new user data input successful
-                Toast.makeText(mContextRegister, result, Toast.LENGTH_LONG).show();
+                pDialog.dismiss();
                 break;
             case 4:
                 //user request sent to host
-                Toast.makeText(mContextRegister, result, Toast.LENGTH_LONG).show();
+                String requestSent = mContextRegister.getString(R.string.requestSent);
+                Toast.makeText(mContextRegister, requestSent, Toast.LENGTH_LONG).show();
+                pDialog.dismiss();
                 break;
             case 5:
-                //user request sent to host
-                Toast.makeText(mContextRegister, result, Toast.LENGTH_LONG).show();
+                //host confirmed user's request
+                String confirmedRequest = mContextRegister.getString(R.string.confirmed_request);
+                Toast.makeText(mContextRegister, confirmedRequest, Toast.LENGTH_LONG).show();
+                pDialog.dismiss();
                 break;
             case 6:
                 Intent intent = new Intent(this.mContextRegister, AddBio.class);
                 intent.putExtra("user_data_json_string", jsonString);
                 mContextRegister.startActivity(intent);
+                pDialog.dismiss();
                 break;
             case 7:
                 //chavruta id deleted
-                Toast.makeText(mContextRegister, result, Toast.LENGTH_LONG).show();
+                String classUnreg = mContextRegister.getString(R.string.class_unreg);
+                Toast.makeText(mContextRegister, classUnreg, Toast.LENGTH_LONG).show();
+                pDialog.dismiss();
                 break;
         }
         postExecuteResponse = 0;

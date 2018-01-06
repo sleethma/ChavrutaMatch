@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.MediaStore;
 import android.util.Base64;
 import android.widget.Toast;
@@ -25,37 +26,42 @@ import java.util.Locale;
 public class ImgUtils {
 
     public static int rotateImgNeededCk(Context context, Uri uri) throws IOException {
-        InputStream in = context.getContentResolver().openInputStream(uri);
 
         int rotation = 0;
-        try {
-            ExifInterface exifInterface = new ExifInterface(in);
 
-            int orientation = exifInterface.getAttributeInt(
-                    ExifInterface.TAG_ORIENTATION,
-                    ExifInterface.ORIENTATION_NORMAL);
-            switch (orientation) {
-                case ExifInterface.ORIENTATION_ROTATE_90:
-                    rotation = 90;
-                    break;
-                case ExifInterface.ORIENTATION_ROTATE_180:
-                    rotation = 180;
-                    break;
-                case ExifInterface.ORIENTATION_ROTATE_270:
-                    rotation = 270;
-                    break;
-            }
-            // Now you can extract any Exif tag you want
-            // Assuming the image is a JPEG or supported raw format
-        } catch (IOException e) {
-            e.printStackTrace();
+        //only executes on API>24
+        if(Build.VERSION.SDK_INT == Build.VERSION_CODES.N) {
+            InputStream in = context.getContentResolver().openInputStream(uri);
 
-            // Handle any errors
-        } finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (IOException ignored) {
+            try {
+                ExifInterface exifInterface = new ExifInterface(in);
+
+                int orientation = exifInterface.getAttributeInt(
+                        ExifInterface.TAG_ORIENTATION,
+                        ExifInterface.ORIENTATION_NORMAL);
+                switch (orientation) {
+                    case ExifInterface.ORIENTATION_ROTATE_90:
+                        rotation = 90;
+                        break;
+                    case ExifInterface.ORIENTATION_ROTATE_180:
+                        rotation = 180;
+                        break;
+                    case ExifInterface.ORIENTATION_ROTATE_270:
+                        rotation = 270;
+                        break;
+                }
+                // Now you can extract any Exif tag you want
+                // Assuming the image is a JPEG or supported raw format
+            } catch (IOException e) {
+                e.printStackTrace();
+
+                // Handle any errors
+            } finally {
+                if (in != null) {
+                    try {
+                        in.close();
+                    } catch (IOException ignored) {
+                    }
                 }
             }
         }
@@ -75,12 +81,12 @@ public class ImgUtils {
     //todo: combine below two methods
     public static String bitmapToCompressedBase64String(Context context, Bitmap bitmapToBase64) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        bitmapToBase64.compress(Bitmap.CompressFormat.JPEG, 1, bos);
+        bitmapToBase64.compress(Bitmap.CompressFormat.JPEG, 100, bos);
 
         byte[] data = bos.toByteArray();
         long testSize = data.length;
 
-        return new String(resizeBase64Image(Base64.encodeToString(data, Base64.DEFAULT)));
+        return resizeBase64Image(Base64.encodeToString(data, Base64.DEFAULT));
     }
 
     private static String resizeBase64Image(String base64image) {
@@ -98,7 +104,7 @@ public class ImgUtils {
         image = Bitmap.createScaledBitmap(image, IMG_WIDTH, IMG_HEIGHT, false);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        image.compress(Bitmap.CompressFormat.JPEG, 10, baos);
+        image.compress(Bitmap.CompressFormat.JPEG, 50, baos);
 
         byte[] b = baos.toByteArray();
         long testReducedLength = b.length;
@@ -111,13 +117,13 @@ public class ImgUtils {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try {
             bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), imgUriIn);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 10, bos);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, bos);
 
         } catch (IOException e) {
             e.printStackTrace();
         }
         byte[] data = bos.toByteArray();
-        return new String(Base64.encodeToString(data, Base64.DEFAULT));
+        return Base64.encodeToString(data, Base64.DEFAULT);
     }
 
     //todo: close bytebuffer and inputStream

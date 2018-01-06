@@ -281,7 +281,8 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                 hostListItemView = false;
                 awaitingConfirmView = false;
                 //gets users current avatar
-                if(UserDetails.getUserAvatarBase64String() != null){
+                if(UserDetails.getUserAvatarBase64String() != null &&
+                        UserDetails.getmUserAvatarNumberString().equals(USER_IMG_AVATAR_STRING)){
                     requesterAvatar = UserDetails.getUserAvatarBase64String();
                 }else {
                     requesterAvatar = UserDetails.getmUserAvatarNumberString();

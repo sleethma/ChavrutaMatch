@@ -42,7 +42,6 @@ public class AddSelect extends AppCompatActivity {
     }
 //TODO fix bug on animate the imagebutton is gone on back pressed
     public void onAddGuestButtonClick(View view) {
-        final Context currentContext = getBaseContext();
         addGuestButton.animate()
                 .alpha(0f)
                 .translationX(-addGuestButton.getWidth())
@@ -60,7 +59,7 @@ public class AddSelect extends AppCompatActivity {
         UserDetails.setUserCityState(userCityState);
 
         String getJSONKey = "getJSONKey";
-        ServerConnect getJSONFromServer = new ServerConnect(currentContext);
+        ServerConnect getJSONFromServer = new ServerConnect(mContext);
         getJSONFromServer.execute(getJSONKey);
     }
 

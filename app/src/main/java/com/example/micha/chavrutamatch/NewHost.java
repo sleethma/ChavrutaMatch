@@ -370,12 +370,13 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
                     mStartTime, mEndTime, mSefer, mLocation, mHostCityState, mHostId, chavrutaRequest1, chavrutaRequest2, chavrutaRequest3, confirmed);
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
+            finish();
         } else {
             Toast.makeText(this, "invalid text given", Toast.LENGTH_SHORT).show();
         }
     }
 
-    //Animations
+//    Animations
     private void animateHostIt(View view) {
         ObjectAnimator.ofFloat(
                 view, "translationY", 130f)

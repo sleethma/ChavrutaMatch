@@ -10,14 +10,14 @@
 
     <TextView
         android:id="@+id/session_sefer"
-        android:layout_width="194dp"
+        android:layout_width="wrap_content"
         android:layout_height="25dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
         android:gravity="center"
         android:textColor="@android:color/black"
-        android:text="Torah Topic"
+        android:text="@string/torah_topic"
         android:textAlignment="center"
         android:textSize="20sp"
         android:textStyle="bold"
