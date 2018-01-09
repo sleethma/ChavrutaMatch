@@ -2,8 +2,13 @@ package com.example.micha.chavrutamatch.Data;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.AsyncTask;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
+import android.view.View;
 import android.widget.Toast;
 
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
@@ -11,6 +16,7 @@ import com.example.micha.chavrutamatch.AddBio;
 import com.example.micha.chavrutamatch.HostSelect;
 import com.example.micha.chavrutamatch.MainActivity;
 import com.example.micha.chavrutamatch.R;
+import com.example.micha.chavrutamatch.Utils.ConnCheckUtil;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -31,34 +37,41 @@ import java.net.URLEncoder;
 public class ServerConnect extends AsyncTask<String, Void, String> {
     Context mContextRegister;
     Boolean myChavruta;
-
+    public static boolean isConnectedToNetwork;
+    View mContextView;
     public static String jsonString;
 
     //postExecuteResponse: 0= no click/error; 1=registration; 2=get JSON
     int postExecuteResponse = 0;
 
+    public ServerConnect(Context context, View view) {
+        this.mContextRegister = context;
+        mContextView = view;
+    }
+
     public ServerConnect(Context context) {
         this.mContextRegister = context;
     }
 
-    ProgressDialog pDialog;
+    private ProgressDialog pDialog;
 
-//    @Override
-//    protected void onPreExecute() {
-//        super.onPreExecute();
-//    }
 
     /**
      * Before starting background thread Show Progress Dialog
-     * */
+     */
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        pDialog = new ProgressDialog(mContextRegister);
+//        isConnectedToNetwork = isNetworkAvailable();
+        isConnectedToNetwork = ConnCheckUtil.isConnected(mContextRegister);
+
+            pDialog = new ProgressDialog(mContextRegister);
         pDialog.setMessage("Loading Matches. Please wait...");
         pDialog.setIndeterminate(false);
         pDialog.setCancelable(false);
-        pDialog.show();
+        if (isConnectedToNetwork) {
+            pDialog.show();
+        }
     }
 
     @Override
@@ -68,14 +81,14 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
         String chosenBkgdTaskCheck = params[0];
 //todo: change all HttpURLConnection(s) --> HttpsUrlConnection(s)
         //retrieves user details from db if user exists
-        if (chosenBkgdTaskCheck.equals("get UserDetails")){
+        if (chosenBkgdTaskCheck.equals("get UserDetails")) {
             try {
                 HttpURLConnection httpURLConnection;
-                    String userID = UserDetails.getmUserId();
-                    String getUserDetailsUrlString = "http://brightlightproductions.online/secure_get_json_user_details.php?user_id=" +
-                            userID;
+                String userID = UserDetails.getmUserId();
+                String getUserDetailsUrlString = "http://brightlightproductions.online/secure_get_json_user_details.php?user_id=" +
+                        userID;
                 URL getUserDetailsUrl = new URL(getUserDetailsUrlString);
-                    httpURLConnection = (HttpURLConnection) getUserDetailsUrl.openConnection();
+                httpURLConnection = (HttpURLConnection) getUserDetailsUrl.openConnection();
 
                 httpURLConnection.setRequestMethod("GET");
                 //create inputstream
@@ -249,10 +262,10 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
             //establish connection
             try {
                 URL userPostUrl;
-                if(postType.equals("new user post")){
+                if (postType.equals("new user post")) {
                     String new_user_url = "http://brightlightproductions.online/secure_chavruta_user_profiles_add.php";
                     userPostUrl = new URL(new_user_url);
-                }else{
+                } else {
                     String update_user_url = "http://brightlightproductions.online/secure_chavruta_user_profiles_update.php";
                     userPostUrl = new URL(update_user_url);
                     customAvatarString = params[11];
@@ -284,7 +297,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                                 URLEncoder.encode("user_city_state", "UTF-8") + "=" + URLEncoder.encode(
                                 userCityState, "UTF-8") + "&" +
                                 URLEncoder.encode("user_bio", "UTF-8") + "=" + URLEncoder.encode(
-                                userBio, "UTF-8")+ "&" +
+                                userBio, "UTF-8") + "&" +
                                 URLEncoder.encode("custom_avatar_string", "UTF-8") + "=" + URLEncoder.encode(
                                 customAvatarString, "UTF-8");
 
@@ -399,7 +412,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
             }
         }
         //delete chavruta from db on swipe in MA
-        if(chosenBkgdTaskCheck.equals("delete chavruta")){
+        if (chosenBkgdTaskCheck.equals("delete chavruta")) {
             String chavrutaId = params[1];
             //establish connection
             try {
@@ -441,9 +454,10 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
         switch (postExecuteResponse) {
             case 0:
                 //incorrect key sent to ServerConnect.class or internet connection false
-                String checkCon = "Please Check Internet Connection";
-                Toast.makeText(mContextRegister, checkCon,
-                        Toast.LENGTH_LONG).show();
+//                String checkCon = "Please Check Internet Connection";
+//                Toast.makeText(mContextRegister, checkCon,
+//                        Toast.LENGTH_LONG).show();
+//                alertUserToCheckConn();
                 break;
             case 1:
                 //register new host successful
@@ -495,4 +509,33 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
         }
         postExecuteResponse = 0;
     }
+
+    //todo:delete if unused
+    public boolean isNetworkAvailable() {
+        final ConnectivityManager connectivityManager = (
+                (ConnectivityManager) mContextRegister.getSystemService(Context.CONNECTIVITY_SERVICE));
+        return connectivityManager.getActiveNetworkInfo() != null &&
+                connectivityManager.getActiveNetworkInfo().isConnected();
+    }
+
+
+    private void alertUserToCheckConn() {
+        new AlertDialog.Builder(mContextRegister)
+                .setTitle("blah")
+                .setMessage("check conn")
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        return;
+                    }
+                })
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        return;
+                    }
+                }).create().show();
+    }
+
+
 }

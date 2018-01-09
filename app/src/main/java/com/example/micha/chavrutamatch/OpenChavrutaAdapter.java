@@ -1,11 +1,14 @@
 package com.example.micha.chavrutamatch;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Path;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.util.Base64;
@@ -76,6 +79,8 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
     private Context mainActivityContext;
     private Context hostSelectContext;
     byte[] mUserAvatarByteArray;
+    //@var used to control swipe on delete Dialogue selection
+    private static boolean mConfirmed = false;
 
 
     //holds viewType for relevant listItem
@@ -281,10 +286,10 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                 hostListItemView = false;
                 awaitingConfirmView = false;
                 //gets users current avatar
-                if(UserDetails.getUserAvatarBase64String() != null &&
-                        UserDetails.getmUserAvatarNumberString().equals(USER_IMG_AVATAR_STRING)){
+                if (UserDetails.getUserAvatarBase64String() != null &&
+                        UserDetails.getmUserAvatarNumberString().equals(USER_IMG_AVATAR_STRING)) {
                     requesterAvatar = UserDetails.getUserAvatarBase64String();
-                }else {
+                } else {
                     requesterAvatar = UserDetails.getmUserAvatarNumberString();
                 }
                 String userFirstName = UserDetails.getmUserFirstName();
@@ -321,7 +326,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                 String currentHostAvatarNumberString = currentItem.getmHostAvatarNumber();
 
                 //sets user first last name after concatonation
-                String hostNameConcat =  ChavrutaUtils.createUserFirstLastName(
+                String hostNameConcat = ChavrutaUtils.createUserFirstLastName(
                         currentItem.getmHostFirstName(), currentItem.getmHostLastName());
                 holder.hostFullName.setText(hostNameConcat);
 
@@ -352,7 +357,6 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                 }
             }
             if (hostSelectView)
-
             {
                 //sets chavrutahosts avatar
                 String currentHostAvatarNumberString = currentItem.getmHostAvatarNumber();
@@ -655,12 +659,14 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
         confirmChavrutaRequest.execute("confirmChavrutaRequest", chavrutaId, requesterId);
     }
 
-    public void deleteMyChavrutaArrayItemOnSwipe(int indexToDelete) {
+    public void deleteMyChavrutaArrayItemOnSwipe(int indexToDelete, int viewTypeToDelete) {
+
         HostSessionData currentItem = mChavrutaSessionsAL.get(indexToDelete);
         //get either HostView or AwaitingConfirmView
-        int itemViewType = getItemViewType(indexToDelete);
+        int itemViewType = viewTypeToDelete;
         //awaiting confirm view db delete
         if (itemViewType == 0) {
+
             String requesterNumber;
             String requesterAvatarColumn;
             String requesterNameColumn;
@@ -691,7 +697,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
             ServerConnect deleteChavruta = new ServerConnect(mainActivityContext);
             deleteChavruta.execute(deleteChavrutaKey, chavrutaId);
         }
-        mChavrutaSessionsAL.remove(indexToDelete);
+        mChavrutaSessionsAL.remove(viewTypeToDelete);
 //        this.notifyItemRemoved(indexToDelete);
         this.notifyDataSetChanged();
 
@@ -701,6 +707,39 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
             mContext.startActivity(intent);
         }
 
+    }
+
+    public void notifyUserBeforeDelete(int viewTypeToDelete) {
+        String title;
+        String message;
+        if (viewTypeToDelete == 0) {
+            title = "Unregister For Class?";
+            message = "Let Class Host Know You Cannot Attend?";
+        } else {
+            title = "Delete Class?";
+            message = "Are you sure you want to delete class?";
+        }
+
+        new AlertDialog.Builder(mContext)
+                .setTitle(title)
+                .setMessage(message)
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        setConfirmedDeleteStatus(false);
+                    }
+                })
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        setConfirmedDeleteStatus(true);
+                    }
+                }).create().show();
+
+    }
+
+    public static void setConfirmedDeleteStatus(boolean confirmed){
+        OpenChavrutaAdapter.mConfirmed = confirmed;
     }
 
 }

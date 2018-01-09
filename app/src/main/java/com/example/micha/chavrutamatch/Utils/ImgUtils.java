@@ -117,7 +117,7 @@ public class ImgUtils {
         image = Bitmap.createScaledBitmap(image, IMG_WIDTH, IMG_HEIGHT, false);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        image.compress(Bitmap.CompressFormat.JPEG, 50, baos);
+        image.compress(Bitmap.CompressFormat.JPEG, 30, baos);
 
         byte[] b = baos.toByteArray();
         long testReducedLength = b.length;

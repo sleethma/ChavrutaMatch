@@ -20,6 +20,17 @@
         android:supportsRtl="true"
         android:largeHeap="true"
         android:theme="@style/AppTheme">
+
+
+        <!--Delete below if not used -->
+        <receiver android:exported="false"
+            android:name="com.example.micha.chavrutamatch.Utils.CheckConn" >
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.example.android.fileprovider"
@@ -75,7 +86,8 @@
             android:screenOrientation="sensorPortrait" />
         <activity
             android:name=".HostSelect"
-            android:screenOrientation="sensorPortrait" />
+            android:screenOrientation="sensorPortrait"
+        />
         <activity
             android:name=".AddBio"
             android:screenOrientation="sensorPortrait"

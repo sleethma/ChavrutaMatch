@@ -1,10 +1,13 @@
 package com.example.micha.chavrutamatch;
 
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -25,6 +28,7 @@ import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.Data.AvatarImgs;
 import com.example.micha.chavrutamatch.Data.HostSessionData;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
+import com.example.micha.chavrutamatch.Utils.ConnCheckUtil;
 import com.example.micha.chavrutamatch.Utils.GlideApp;
 import com.example.micha.chavrutamatch.Utils.RecyclerViewListDecor;
 import com.facebook.accountkit.Account;
@@ -47,6 +51,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.example.micha.chavrutamatch.AcctLogin.UserDetails.getUserCustomAvatarBase64ByteArray;
+import static com.example.micha.chavrutamatch.OpenChavrutaAdapter.setConfirmedDeleteStatus;
 
 public class MainActivity extends AppCompatActivity {
     String LOGTAG = MainActivity.class.getSimpleName();
@@ -78,14 +83,15 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         mContext = this;
 
-            //sets up UserDetails
-            UserDetails.setUserDetailsFromSP(mContext);
-            //sets user avatar. @UserAvatarNumberString = "999" indicates avatar is user photo
+
+        //sets up UserDetails
+        UserDetails.setUserDetailsFromSP(mContext);
+        //sets user avatar. @UserAvatarNumberString = "999" indicates avatar is user photo
         if (UserDetails.getmUserAvatarNumberString() != null &&
-                    !UserDetails.getmUserAvatarNumberString().equals("999")) {
-                userAvatar.setImageResource(AvatarImgs.getAvatarNumberResId(
-                        Integer.parseInt(UserDetails.getmUserAvatarNumberString())));
-            } else {
+                !UserDetails.getmUserAvatarNumberString().equals("999")) {
+            userAvatar.setImageResource(AvatarImgs.getAvatarNumberResId(
+                    Integer.parseInt(UserDetails.getmUserAvatarNumberString())));
+        } else {
             //using custom avatar
             //check to see if custom avatar is in UserDetails
             if (UserDetails.getHostAvatarUri() != null) {
@@ -105,6 +111,8 @@ public class MainActivity extends AppCompatActivity {
                 //otherwise use xml unknown profile image
             }
         }
+        if (ConnCheckUtil.isConnected(mContext)) {
+
 
             //check if already logged in
             //get current account and create new anonymous inner class
@@ -180,14 +188,6 @@ public class MainActivity extends AppCompatActivity {
                     noMatchView.setVisibility(View.VISIBLE);
                     myChavrutaLabel.setVisibility(View.GONE);
 
-                    //Todo: delete this and reapply to another element more revelant
-//                noMatchView.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        animateTransition(v);
-//                    }
-//                });
-
                 }
                 //checks to ensure db has data after parsing
                 if (myChavrutasArrayList.size() < 1) {
@@ -195,7 +195,6 @@ public class MainActivity extends AppCompatActivity {
                     noMatchView.setVisibility(View.VISIBLE);
                     myChavrutaLabel.setVisibility(View.GONE);
                 }
-
                 Toolbar toolbar = findViewById(R.id.toolbar);
                 setSupportActionBar(toolbar);
             } else {
@@ -207,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
                 //check user has a stored accountkit id on device and fetch their chavruta data from db
                 if (accountId != null) {
                     String getMyChavrutasKey = "my chavrutas";
-                    ServerConnect getMyChavrutas = new ServerConnect(this);
+                    ServerConnect getMyChavrutas = new ServerConnect(this, myChavrutaListView);
                     getMyChavrutas.execute(getMyChavrutasKey);
                 } else {
                     //device is not logged in
@@ -241,14 +240,18 @@ public class MainActivity extends AppCompatActivity {
                     // Inside, get the viewHolder's itemView's tag and store in a long variable id
                     //get the id of the item being swiped
                     int id = (int) viewHolder.itemView.getTag();
-                    mAdapter.deleteMyChavrutaArrayItemOnSwipe(id);
+                    int currentItemViewType = viewHolder.getItemViewType();
+                    notifyUserBeforeDelete(id, currentItemViewType);
+
                 }
             }).attachToRecyclerView(myChavrutaListView);
+        } else {
+            alertUserToCheckConn();
         }
+    }
 
 
-
-        //parses JSON string data to form myChavrutas ListView
+    //parses JSON string data to form myChavrutas ListView
 
     public void parseJSONMyChavrutas() {
         String chavrutaId;
@@ -323,9 +326,7 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.refresh_list) {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-            //mAdapter.notifyDataSetChanged();
+            refreshMainActivity();
             return true;
         }
         //My Profile
@@ -347,17 +348,6 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
-
-    private void animateTransition(View view) {
-        Slide slide = new Slide();
-        slide.setSlideEdge(Gravity.END);
-
-        ViewGroup root = (ViewGroup) findViewById(android.R.id.content);
-        TransitionManager.beginDelayedTransition(root, slide);
-        view.setVisibility(View.INVISIBLE);
-    }
-
 
     private void launchLoginActivity() {
         Intent intent = new Intent(this, LoginActivity.class);
@@ -384,5 +374,79 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    //verify on exiting app
+    @Override
+    public void onBackPressed() {
+        new AlertDialog.Builder(this)
+                .setTitle("Exit App?")
+                .setMessage("Are you sure you want to exit?")
+                .setNegativeButton(android.R.string.no, null)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        Intent intent = new Intent(Intent.ACTION_MAIN);
+                        intent.addCategory(Intent.CATEGORY_HOME);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
+                        finish();
+                        System.exit(0);
+                    }
+                }).create().show();
+    }
+
+    public void notifyUserBeforeDelete(final int indexToDelete, final int viewTypeToDelete) {
+        String title;
+        String message;
+        if (viewTypeToDelete == 0) {
+            title = "Unregister For Class?";
+            message = "Let Class Host Know You Cannot Attend?";
+        } else {
+            title = "Delete Class?";
+            message = "Are you sure you want to delete class?";
+        }
+
+        new AlertDialog.Builder(mContext)
+                .setTitle(title)
+                .setMessage(message)
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        refreshMainActivity();
+                    }
+                })
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        mAdapter.deleteMyChavrutaArrayItemOnSwipe(indexToDelete, viewTypeToDelete);
+                        refreshMainActivity();
+                    }
+                }).create().show();
+    }
+
+
+    private void alertUserToCheckConn() {
+        new AlertDialog.Builder(mContext)
+                .setTitle("Please check internet connection")
+                .setMessage("Retry?")
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        refreshMainActivity();
+                        //internet conn not connected
+                        ProgressDialog pDialog;
+                        pDialog = new ProgressDialog(mContext);
+                        pDialog.setMessage("Checking Connection. Please wait...");
+                        pDialog.setCancelable(false);
+                        pDialog.show();
+                    }
+                }).create().show();
+    }
+
+    public void refreshMainActivity() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+    }
 }
+
+
 
