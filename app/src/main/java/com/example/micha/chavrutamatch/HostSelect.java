@@ -49,7 +49,7 @@ public class HostSelect extends AppCompatActivity {
     LinearLayout noHostLayout;
     @BindView(R.id.iv_scroll_open_host)
     ImageView scrollImg;
-    ArrayList<HostSessionData> openChavrutaArrayList;
+    ArrayList<HostSessionData> openHostArrayList;
     static Context mContext;
     //true if user non-stock image used for avatar
     final private String USER_IMG_AVATAR = "999";
@@ -62,7 +62,7 @@ public class HostSelect extends AppCompatActivity {
     //adds spacing b/n listitems
     private final int VERTICAL_LIST_ITEM_SPACE = 40;
 
-    OpenChavrutaAdapter mAdapter;
+    OpenHostAdapter mAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -93,7 +93,7 @@ public class HostSelect extends AppCompatActivity {
         }
 
         //constructs the data source
-        openChavrutaArrayList = new ArrayList<>();
+        openHostArrayList = new ArrayList<>();
 
         //accesses JSON from ServerConnect
         jsonString = getIntent().getExtras().getString("jsonKey");
@@ -107,7 +107,7 @@ public class HostSelect extends AppCompatActivity {
         allHostsList.addItemDecoration(new RecyclerViewListDecor(VERTICAL_LIST_ITEM_SPACE));
 
         //attaches data source to adapter
-        mAdapter = new OpenChavrutaAdapter(this, openChavrutaArrayList);
+        mAdapter = new OpenHostAdapter(this, openHostArrayList);
         allHostsList.setHasFixedSize(true);
 
         allHostsList.setAdapter(mAdapter);
@@ -177,7 +177,7 @@ public class HostSelect extends AppCompatActivity {
                                 startTime, endTime, sefer, location, hostCityState, hostId, chavrutaRequest1, chavrutaRequest2, chavrutaRequest3,
                                 chavrutaRequest1Avatar, chavrutaRequest1Name, chavrutaRequest2Avatar, chavrutaRequest2Name,
                                 chavrutaRequest3Avatar, chavrutaRequest3Name, confirmed);
-                        openChavrutaArrayList
+                        openHostArrayList
                                 .add(hostClassData);
                     }else{
                         //if class date passed, delete in db
@@ -191,7 +191,7 @@ public class HostSelect extends AppCompatActivity {
             e.printStackTrace();
         }
         //changes view on host classes availiable
-        int hostArraySize = openChavrutaArrayList.size();
+        int hostArraySize = openHostArrayList.size();
         if(hostArraySize != 0) {
             allHostsList.setVisibility(View.VISIBLE);
             noHostLayout.setVisibility(View.GONE);

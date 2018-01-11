@@ -2,68 +2,32 @@ package com.example.micha.chavrutamatch;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.Path;
-import android.net.Uri;
-import android.os.Build;
-import android.support.v4.content.ContextCompat;
+import android.content.Intent;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.util.Base64;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.example.micha.chavrutamatch.Data.AvatarImgs;
-import com.example.micha.chavrutamatch.Data.HostSessionData;
-
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-
-import android.content.Intent;
-import android.database.Cursor;
-import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-
-
 import android.widget.Toast;
 
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
-import com.example.micha.chavrutamatch.Data.ChavrutaContract;
+import com.example.micha.chavrutamatch.Data.AvatarImgs;
+import com.example.micha.chavrutamatch.Data.HostSessionData;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
-import com.example.micha.chavrutamatch.OpenChavrutaAdapter;
 import com.example.micha.chavrutamatch.Utils.ChavrutaUtils;
 import com.example.micha.chavrutamatch.Utils.GlideApp;
-import com.example.micha.chavrutamatch.Utils.ImgUtils;
 
-import org.w3c.dom.Text;
-
-import java.security.Timestamp;
-
+import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
-import static android.R.attr.host;
-import static android.R.attr.resource;
-import static android.R.attr.visible;
-import static android.content.Context.MODE_PRIVATE;
 import static com.example.micha.chavrutamatch.AcctLogin.UserDetails.getUserCustomAvatarBase64ByteArray;
-import static com.example.micha.chavrutamatch.R.drawable.not_confirmed_rounded_corners;
-import static com.example.micha.chavrutamatch.R.id.user_first_name;
-import static com.example.micha.chavrutamatch.R.id.user_last_name;
-import static com.example.micha.chavrutamatch.R.id.view;
 
 /**
  * Created by micha on 7/22/2017.
@@ -78,7 +42,6 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
     String userId = UserDetails.getmUserId();
     private Context mainActivityContext;
     private Context hostSelectContext;
-    byte[] mUserAvatarByteArray;
     //@var used to control swipe on delete Dialogue selection
     private static boolean mConfirmed = false;
 
