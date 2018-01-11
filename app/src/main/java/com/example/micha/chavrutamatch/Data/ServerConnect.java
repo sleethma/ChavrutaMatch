@@ -509,33 +509,4 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
         }
         postExecuteResponse = 0;
     }
-
-    //todo:delete if unused
-    public boolean isNetworkAvailable() {
-        final ConnectivityManager connectivityManager = (
-                (ConnectivityManager) mContextRegister.getSystemService(Context.CONNECTIVITY_SERVICE));
-        return connectivityManager.getActiveNetworkInfo() != null &&
-                connectivityManager.getActiveNetworkInfo().isConnected();
-    }
-
-
-    private void alertUserToCheckConn() {
-        new AlertDialog.Builder(mContextRegister)
-                .setTitle("blah")
-                .setMessage("check conn")
-                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        return;
-                    }
-                })
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        return;
-                    }
-                }).create().show();
-    }
-
-
 }

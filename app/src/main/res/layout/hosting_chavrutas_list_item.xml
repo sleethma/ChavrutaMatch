@@ -25,6 +25,17 @@
         android:layout_marginRight="0dp"
         app:layout_constraintRight_toRightOf="parent" />
 
+    <ImageView
+        android:id="@+id/iv_knurling"
+        android:layout_width="20dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="6dp"
+        android:src="@drawable/knurling"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.92"
+        app:layout_constraintStart_toEndOf="@+id/tv_hosting_label"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/session_sefer"
         android:layout_width="wrap_content"

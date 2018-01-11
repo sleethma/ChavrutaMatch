@@ -346,8 +346,6 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                     holder.hostAvatar.setImageResource(avatarList.get(Integer.parseInt(currentItem.getmHostAvatarNumber())));
                 }
 
-                holder.hostAvatar.setBackgroundResource(R.drawable.circle_background);
-
                 if (learnerConfirmed.equals(userId)) {
                     holder.chavrutaConfirmed.setBackgroundResource(R.drawable.confirmed_rounded_corners);
                     holder.chavrutaConfirmed.setText("Matched!");
@@ -377,8 +375,6 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                 } else if (!currentHostAvatarNumberString.equals("999")) {
                     holder.hostAvatar.setImageResource(avatarList.get(Integer.parseInt(currentItem.getmHostAvatarNumber())));
                 }
-
-                holder.hostAvatar.setBackgroundResource(R.drawable.circle_background);
 
                 //sends requester's info to db as requesting class
                 holder.addHost.setOnClickListener(new View.OnClickListener() {
