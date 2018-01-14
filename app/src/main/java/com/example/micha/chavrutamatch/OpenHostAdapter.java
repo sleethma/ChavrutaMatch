@@ -1,7 +1,12 @@
 package com.example.micha.chavrutamatch;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,7 +33,7 @@ class OpenHostAdapter extends RecyclerView.Adapter<OpenHostAdapter.ViewHolder> {
 
     //number of views adapter will hold
     private Context mContext;
-    String userId = UserDetails.getmUserId();
+    private String userId = UserDetails.getmUserId();
     //@var used to control swipe on delete Dialogue selection
     private static boolean mConfirmed = false;
     final private String USER_IMG_AVATAR_STRING = "999";
@@ -36,10 +41,20 @@ class OpenHostAdapter extends RecyclerView.Adapter<OpenHostAdapter.ViewHolder> {
     ArrayList<HostSessionData> mChavrutaSessionsAL;
     List<Integer> avatarList = AvatarImgs.getAllAvatars();
 
+    private ListItemClickListener mOnClickListener;
 
-    public OpenHostAdapter(Context context, ArrayList<HostSessionData> chavrutaSessionsArrayList) {
+
+    public interface ListItemClickListener {
+        void onListItemClick(int clickedIndex, View v);
+    }
+
+
+    public OpenHostAdapter(Context context,
+                           ArrayList<HostSessionData> chavrutaSessionsArrayList,
+                           ListItemClickListener listItemClickListener) {
         this.mContext = context;
         mChavrutaSessionsAL = chavrutaSessionsArrayList;
+        mOnClickListener = listItemClickListener;
 
         //calls so can access static user vars throughout adapter
 //        orderArrayByDate(mChavrutaSessionsAL);
@@ -48,13 +63,6 @@ class OpenHostAdapter extends RecyclerView.Adapter<OpenHostAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(OpenHostAdapter.ViewHolder holder, int position) {
         holder.bind(holder, position);
-        holder.itemView.setTag(new Integer(position));
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        return super.getItemViewType(position);
-
     }
 
     @Override
@@ -73,9 +81,8 @@ class OpenHostAdapter extends RecyclerView.Adapter<OpenHostAdapter.ViewHolder> {
     }
 
 
-    class ViewHolder extends RecyclerView.ViewHolder {
-        TextView hostFullName, sessionDate, startTime, endTime, sefer, location;
-        TextView hostUserName;
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        TextView hostFullName, sessionDate, startTime, endTime, sefer, location, hostUserName, sessionMessage;
         ImageButton addHost;
         ImageView hostAvatar;
 
@@ -90,6 +97,8 @@ class OpenHostAdapter extends RecyclerView.Adapter<OpenHostAdapter.ViewHolder> {
             addHost =  listItemView.findViewById(R.id.ib_add_match);
             hostUserName = listItemView.findViewById(R.id.host_user_name);
             hostAvatar = listItemView.findViewById(R.id.iv_host_avatar);
+            sessionMessage = listItemView.findViewById(R.id.cardBack);
+            listItemView.setOnClickListener(this);
         }
 
         void bind(OpenHostAdapter.ViewHolder holder, int listIndex) {
@@ -133,7 +142,6 @@ class OpenHostAdapter extends RecyclerView.Adapter<OpenHostAdapter.ViewHolder> {
                 requesterNameColumn = null;
             }
 
-
             //sets chavrutahosts avatar
             String currentHostAvatarNumberString = currentItem.getmHostAvatarNumber();
 
@@ -153,6 +161,13 @@ class OpenHostAdapter extends RecyclerView.Adapter<OpenHostAdapter.ViewHolder> {
             } else if (!currentHostAvatarNumberString.equals("999")) {
                 holder.hostAvatar.setImageResource(avatarList.get(Integer.parseInt(currentItem.getmHostAvatarNumber())));
             }
+            holder.sessionDate.setText(currentItem.getmSessionDate());
+            holder.startTime.setText(currentItem.getmStartTime());
+            holder.endTime.setText(currentItem.getmEndTime());
+            holder.sefer.setText(currentItem.getmSefer());
+            holder.location.setText(currentItem.getmLocation());
+            holder.sessionMessage.setText(currentItem.getmSessionMessage());
+
 
             //sends requester's info to db as requesting class
             holder.addHost.setOnClickListener(new View.OnClickListener() {
@@ -164,7 +179,6 @@ class OpenHostAdapter extends RecyclerView.Adapter<OpenHostAdapter.ViewHolder> {
                     }
 
                     String chavrutaId = currentItem.getmChavrutaId();
-
                     ServerConnect addHost = new ServerConnect(mContext);
                     addHost.execute("chavruta request", userId, chavrutaId, requestSlotOpen,
                             requesterAvatarColumn, requesterAvatar, requesterNameColumn, requesterName);
@@ -173,22 +187,20 @@ class OpenHostAdapter extends RecyclerView.Adapter<OpenHostAdapter.ViewHolder> {
                     mContext.startActivity(intent);
                 }
             });
+        }
 
-            holder.sessionDate.setText(currentItem.getmSessionDate());
-            holder.startTime.setText(currentItem.getmStartTime());
-            holder.endTime.setText(currentItem.getmEndTime());
-            holder.sefer.setText(currentItem.getmSefer());
-            holder.location.setText(currentItem.getmLocation());
-            holder.itemView.setTag(position);
+        @Override
+        public void onClick(View v) {
+            int clickedPosition = getAdapterPosition();
+            mOnClickListener.onListItemClick(clickedPosition, v);
         }
     }
-
 
     public void add(HostSessionData dataAddedFromJson) {
         mChavrutaSessionsAL.add(dataAddedFromJson);
     }
 
-    public void sendConfirmationtoDb(String chavrutaId, String requesterId) {
+    public void sendChavrutaRequestToDb(String chavrutaId, String requesterId) {
         ServerConnect confirmChavrutaRequest = new ServerConnect(mContext);
         confirmChavrutaRequest.execute("confirmChavrutaRequest", chavrutaId, requesterId);
     }
@@ -203,6 +215,7 @@ class OpenHostAdapter extends RecyclerView.Adapter<OpenHostAdapter.ViewHolder> {
         }
         return requesterAvatar;
     }
+
 
 }
 

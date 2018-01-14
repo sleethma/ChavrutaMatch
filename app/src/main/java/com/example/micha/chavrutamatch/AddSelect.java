@@ -54,9 +54,6 @@ public class AddSelect extends AppCompatActivity {
 
 
     public void onAddHostButtonClick(View view) {
-        //     WORKS   view.animate().alpha(0);
-        //   WORKS  view.animate().translationX(600).withLayer();
-
         addHostButton.animate()
                 .alpha(0f)
                 .translationX(-addHostButton.getWidth())

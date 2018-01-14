@@ -1,11 +1,16 @@
 package com.example.micha.chavrutamatch;
 
 import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,6 +19,8 @@ import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.Data.AvatarImgs;
@@ -38,7 +45,7 @@ import butterknife.ButterKnife;
  * Created by micha on 7/22/2017.
  */
 
-public class HostSelect extends AppCompatActivity {
+public class HostSelect extends AppCompatActivity implements OpenHostAdapter.ListItemClickListener {
 
     @BindView(R.id.iv_user_avatar)
     ImageView userPic;
@@ -107,7 +114,7 @@ public class HostSelect extends AppCompatActivity {
         allHostsList.addItemDecoration(new RecyclerViewListDecor(VERTICAL_LIST_ITEM_SPACE));
 
         //attaches data source to adapter
-        mAdapter = new OpenHostAdapter(this, openHostArrayList);
+        mAdapter = new OpenHostAdapter(this, openHostArrayList, this);
         allHostsList.setHasFixedSize(true);
 
         allHostsList.setAdapter(mAdapter);
@@ -157,21 +164,21 @@ public class HostSelect extends AppCompatActivity {
                 chavrutaRequest3Name = jo.getString("chavruta_request_1_name");
                 confirmed = jo.getString("confirmed");
 
-                boolean classPassed = false;
+                boolean classDatePassed = false;
                 //format session date for outdated comparison and store chavrutaId for deletion
                 //todo: refactor below block to fit flow
-                if(!sessionDate.contains(NO_DATE)) {
+                if (!sessionDate.contains(NO_DATE)) {
                     //determine a class date is in future
-                    classPassed = TimeStampConverter.classDatePassedAndDelete(mContext,
+                    classDatePassed = TimeStampConverter.classDatePassedAndDelete(mContext,
                             currentDateString, sessionDate);
-                }else{
-                    classPassed = true;
+                } else {
+                    classDatePassed = true;
                 }
-            //only adds to array for adapter if user is not already requesting or hosting class
+                //only adds to array for adapter if user is not already requesting or hosting class
                 if (userId.equals(chavrutaRequest1) || userId.equals(chavrutaRequest2) ||
                         userId.equals(chavrutaRequest3) || userId.equals(hostId)) {
                 } else {
-                    if(!classPassed) {
+                    if (!classDatePassed) {
                         //make user data object of UserDataSetter class
                         HostSessionData hostClassData = new HostSessionData(chavrutaId, hostFirstName, hostLastName, hostAvatarNumber, sessionMessage, sessionDate,
                                 startTime, endTime, sefer, location, hostCityState, hostId, chavrutaRequest1, chavrutaRequest2, chavrutaRequest3,
@@ -179,10 +186,10 @@ public class HostSelect extends AppCompatActivity {
                                 chavrutaRequest3Avatar, chavrutaRequest3Name, confirmed);
                         openHostArrayList
                                 .add(hostClassData);
-                    }else{
+                    } else {
                         //if class date passed, delete in db
-                            ServerConnect deletePassedClassFromDb = new ServerConnect(mContext);
-                            deletePassedClassFromDb.execute("delete chavruta", chavrutaId);
+                        ServerConnect deletePassedClassFromDb = new ServerConnect(mContext);
+                        deletePassedClassFromDb.execute("delete chavruta", chavrutaId);
                     }
                 }
                 count++;
@@ -192,10 +199,10 @@ public class HostSelect extends AppCompatActivity {
         }
         //changes view on host classes availiable
         int hostArraySize = openHostArrayList.size();
-        if(hostArraySize != 0) {
+        if (hostArraySize != 0) {
             allHostsList.setVisibility(View.VISIBLE);
             noHostLayout.setVisibility(View.GONE);
-        }else{
+        } else {
             noHostLayout.setVisibility(View.VISIBLE);
             allHostsList.setVisibility(View.GONE);
         }
@@ -208,8 +215,58 @@ public class HostSelect extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void loadNewHost(View v){
+    public void loadNewHost(View v) {
         Intent intent = new Intent(this, NewHost.class);
         startActivity(intent);
+    }
+
+    @Override
+    public void onListItemClick(int clickedItemIndex, View cardView) {
+        flip(cardView, cardView);
+    }
+
+    public void flip(final View currentSide, final View flipToSide) {
+        final int FLIP_DURATION = 150;
+        final boolean isCardFront = currentSide.findViewById(R.id.cardFront)
+                .getVisibility() == View.VISIBLE;
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+            if (isCardFront) {
+                currentSide.findViewById(R.id.cardFront).setVisibility(View.VISIBLE);
+                currentSide.findViewById(R.id.cardBack).setVisibility(View.GONE);
+                flipToSide.findViewById(R.id.cardBack).setVisibility(View.VISIBLE);
+                flipToSide.findViewById(R.id.cardFront).setVisibility(View.GONE);
+            } else {
+                currentSide.findViewById(R.id.cardFront).setVisibility(View.GONE);
+                currentSide.findViewById(R.id.cardBack).setVisibility(View.VISIBLE);
+                flipToSide.findViewById(R.id.cardBack).setVisibility(View.GONE);
+                flipToSide.findViewById(R.id.cardFront).setVisibility(View.VISIBLE);
+            }
+
+            AnimatorSet set = new AnimatorSet();
+            set.playSequentially(
+                    ObjectAnimator.ofFloat(currentSide, "rotationY", 90).setDuration(FLIP_DURATION),
+                    ObjectAnimator.ofInt(currentSide, "visibility", View.GONE).setDuration(0),
+                    ObjectAnimator.ofFloat(flipToSide, "rotationY", -90).setDuration(0),
+                    ObjectAnimator.ofInt(flipToSide, "visibility", View.VISIBLE).setDuration(0),
+                    ObjectAnimator.ofFloat(flipToSide, "rotationY", 0).setDuration(FLIP_DURATION));
+            set.start();
+        } else {
+            currentSide.animate().rotationY(90).setDuration(FLIP_DURATION)
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            if (isCardFront) {
+                                flipToSide.findViewById(R.id.cardBack).setVisibility(View.VISIBLE);
+                                flipToSide.findViewById(R.id.cardFront).setVisibility(View.GONE);
+                            } else {
+                                flipToSide.findViewById(R.id.cardBack).setVisibility(View.GONE);
+                                flipToSide.findViewById(R.id.cardFront).setVisibility(View.VISIBLE);
+                            }
+                            flipToSide.setRotationY(-90);
+                            flipToSide.animate().rotationY(0).setDuration(FLIP_DURATION).setListener(null);
+                        }
+                    });
+        }
     }
 }

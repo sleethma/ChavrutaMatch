@@ -155,6 +155,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
         ImageButton addHost;
         FrameLayout noRequesterView;
         ImageView hostAvatar;
+        ImageView knurling;
 
         public ViewHolder(View listItemView) {
             super(listItemView);
@@ -185,6 +186,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
             chavrutaConfirmed = (Button) listItemView.findViewById(R.id.b_chavruta_confirmed);
             noRequesterView = (FrameLayout) listItemView.findViewById(R.id.fl_awaiting_requester);
             hostAvatar = (ImageView) listItemView.findViewById(R.id.iv_host_avatar);
+            knurling = listItemView.findViewById(R.id.iv_knurling);
         }
 
         void bind(OpenChavrutaAdapter.ViewHolder holder, int listIndex) {
@@ -317,8 +319,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                     holder.chavrutaConfirmed.setText("Awaiting" + System.getProperty("line.separator") + "Match");
                 }
             }
-            if (hostSelectView)
-            {
+            if (hostSelectView) {
                 //sets chavrutahosts avatar
                 String currentHostAvatarNumberString = currentItem.getmHostAvatarNumber();
 
@@ -360,9 +361,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                 });
             }
             //hosting a class list item
-            if (hostListItemView)
-
-            {
+            if (hostListItemView) {
                 String idOfConfirmedUser = currentItem.getmConfirmed();
                 String request1 = currentItem.getMchavrutaRequest1();
                 String request2 = currentItem.getMchavrutaRequest2();
@@ -528,13 +527,19 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                 }
 
             }
-
             holder.sessionDate.setText(currentItem.getmSessionDate());
             holder.startTime.setText(currentItem.getmStartTime());
             holder.endTime.setText(currentItem.getmEndTime());
             holder.sefer.setText(currentItem.getmSefer());
             holder.location.setText(currentItem.getmLocation());
             holder.itemView.setTag(position);
+
+            holder.knurling.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(mContext, R.string.info_swipe_to_unregister, Toast.LENGTH_SHORT).show();
+                }
+            });
         }
 
         private void setViewHolderConfirmations(HostSessionData currentItem, int requestClicked) {
@@ -697,8 +702,12 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
 
     }
 
-    public static void setConfirmedDeleteStatus(boolean confirmed){
+    public static void setConfirmedDeleteStatus(boolean confirmed) {
         OpenChavrutaAdapter.mConfirmed = confirmed;
+    }
+
+    public void swipeToDelete(View v) {
+        Toast.makeText(mContext, "Swipe To Unregister for Class", Toast.LENGTH_SHORT).show();
     }
 
 }

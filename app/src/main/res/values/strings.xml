@@ -59,6 +59,8 @@
     <string name="requestSent">Chavruta Request Sent!</string>
     <string name="new_class_reg">New Class Registered!</string>
     <string name="torah_topic">Torah Topic</string>
+    <string name="no_host_message">Host did not enter a description for this class</string>
+    <string name="info_swipe_to_unregister">Swipe to Unregister Class</string>
 
 
 </resources>
