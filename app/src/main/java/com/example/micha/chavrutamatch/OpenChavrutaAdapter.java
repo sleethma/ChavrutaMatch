@@ -50,26 +50,13 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
     Boolean hostListItemView;
     Boolean awaitingConfirmView;
     Boolean hostSelectView;
-    final private int USER_IMG_AVATAR = 999;
-    final private String USER_IMG_AVATAR_STRING = "999";
-
     ArrayList<HostSessionData> mChavrutaSessionsAL;
     List<Integer> avatarList = AvatarImgs.getAllAvatars();
-    private static final String LOG_TAG = OpenChavrutaAdapter.class.getSimpleName();
 
-    /**
-     * Constructor using the context and the resource
-     *
-     * @param context the calling context/activity
-     */
     public OpenChavrutaAdapter(Context context, ArrayList<HostSessionData> chavrutaSessionsArrayList) {
         this.mContext = context;
         mChavrutaSessionsAL = chavrutaSessionsArrayList;
         mainActivityContext = MainActivity.mContext;
-        hostSelectContext = HostSelect.mContext;
-        userAvatarNumberString = UserDetails.getmUserAvatarNumberString();
-        userAvatarNumberInt = UserDetails.getmUserAvatarNumberString() != null ?
-                Integer.parseInt(UserDetails.getmUserAvatarNumberString()) : 0;
         //calls so can access static user vars throughout adapter
 //        orderArrayByDate(mChavrutaSessionsAL);
     }
@@ -87,32 +74,21 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
         }
     }
 
-
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
         int layoutIdForListItem;
         //user is viewing open classes
-        if (context == hostSelectContext) {
-            layoutIdForListItem = R.layout.open_host_list_item;
+        //view is awaiting class confirmation by host
+        if (viewType == 0) {
+            layoutIdForListItem = R.layout.my_chavruta_list_item;
             hostListItemView = false;
-            awaitingConfirmView = false;
-            hostSelectView = true;
-
+            awaitingConfirmView = true;
+            //view: user is hosting a class
         } else {
-            //view is awaiting class confirmation by host
-            if (viewType == 0) {
-                layoutIdForListItem = R.layout.my_chavruta_list_item;
-                hostListItemView = false;
-                awaitingConfirmView = true;
-                hostSelectView = false;
-                //view is user is hosting a class
-            } else {
-                layoutIdForListItem = R.layout.hosting_chavrutas_list_item;
-                hostListItemView = true;
-                awaitingConfirmView = false;
-                hostSelectView = false;
-            }
+            layoutIdForListItem = R.layout.hosting_chavrutas_list_item;
+            hostListItemView = true;
+            awaitingConfirmView = false;
         }
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         View view = layoutInflater.inflate(layoutIdForListItem, parent, false);
@@ -123,8 +99,8 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
     @Override
     public void onBindViewHolder(OpenChavrutaAdapter.ViewHolder holder, int position) {
         holder.bind(holder, position);
-        holder.itemView.setTag(new Integer(position));
-
+        //todo:delete below if not needed
+        //holder.itemView.setTag(new Integer(position));
     }
 
 
@@ -236,7 +212,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                 requesterAvatarColumn = null;
                 requesterNameColumn = null;
                 //view is awaiting hosts confirmation
-            } else if (holder.getItemViewType() == 0 && mContext == mainActivityContext) {
+            } else {
                 awaitingConfirmView = true;
                 hostListItemView = false;
                 requestSlotOpen = "0";
@@ -244,44 +220,6 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                 requesterName = null;
                 requesterAvatarColumn = null;
                 requesterNameColumn = null;
-            } else {
-                //view is from HostSelect Context
-                hostListItemView = false;
-                awaitingConfirmView = false;
-                //gets users current avatar
-                if (UserDetails.getUserAvatarBase64String() != null &&
-                        UserDetails.getmUserAvatarNumberString().equals(USER_IMG_AVATAR_STRING)) {
-                    requesterAvatar = UserDetails.getUserAvatarBase64String();
-                } else {
-                    requesterAvatar = UserDetails.getmUserAvatarNumberString();
-                }
-                String userFirstName = UserDetails.getmUserFirstName();
-                String userLastName = UserDetails.getmUserLastName();
-                requesterName = ChavrutaUtils.createUserFirstLastName(
-                        userFirstName, userLastName);
-
-                //check which request slot is availiable and pass name of db column to server for insert
-                if (currentItem.getMchavrutaRequest1().length() < 5) {
-                    requestSlotOpen = "chavruta_request_1";
-                    requesterAvatarColumn = "chavruta_request_1_avatar";
-                    requesterNameColumn = "chavruta_request_1_name";
-                    holder.addHost.setImageResource(R.drawable.ib_add_match);
-                } else if (currentItem.getMchavrutaRequest2().length() < 5) {
-                    requestSlotOpen = "chavruta_request_2";
-                    requesterAvatarColumn = "chavruta_request_2_avatar";
-                    requesterNameColumn = "chavruta_request_2_name";
-                    holder.addHost.setImageResource(R.drawable.ib_add_match);
-                } else if (currentItem.getMchavrutaRequest3().length() < 5) {
-                    requestSlotOpen = "chavruta_request_3";
-                    requesterAvatarColumn = "chavruta_request_3_avatar";
-                    requesterNameColumn = "chavruta_request_3_name";
-                    holder.addHost.setImageResource(R.drawable.ib_add_match);
-                } else {
-                    requestSlotOpen = "0";
-                    holder.addHost.setImageResource(R.drawable.b_class_full);
-                    requesterAvatarColumn = null;
-                    requesterNameColumn = null;
-                }
             }
             //set initial confirmed state for awaiting confirmation list item
             if (awaitingConfirmView) {
@@ -316,47 +254,6 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                     holder.chavrutaConfirmed.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
                     holder.chavrutaConfirmed.setText("Awaiting" + System.getProperty("line.separator") + "Match");
                 }
-            }
-            if (hostSelectView) {
-                //sets chavrutahosts avatar
-                String currentHostAvatarNumberString = currentItem.getmHostAvatarNumber();
-
-                //sets user first last name after concatonation
-                holder.hostUserName.setText(ChavrutaUtils.createUserFirstLastName(
-                        currentItem.getmHostFirstName(), currentItem.getmHostLastName()));
-                if (currentHostAvatarNumberString != null &&
-                        currentHostAvatarNumberString.length() > AvatarImgs.avatarImgList.size()) {
-                    byte[] customUserAvatar = currentItem.getByteArrayFromString(currentHostAvatarNumberString);
-                    GlideApp
-                            .with(mContext)
-                            .asBitmap()
-                            .load(customUserAvatar)
-                            .placeholder(R.drawable.ic_unknown_user)
-                            .centerCrop()
-                            .into(holder.hostAvatar);
-                } else if (!currentHostAvatarNumberString.equals("999")) {
-                    holder.hostAvatar.setImageResource(avatarList.get(Integer.parseInt(currentItem.getmHostAvatarNumber())));
-                }
-
-                //sends requester's info to db as requesting class
-                holder.addHost.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (requestSlotOpen.equals("0")) {
-                            Toast.makeText(mContext, "Class Full:Check Back!", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-
-                        String chavrutaId = currentItem.getmChavrutaId();
-
-                        ServerConnect addHost = new ServerConnect(mContext);
-                        addHost.execute("chavruta request", userId, chavrutaId, requestSlotOpen,
-                                requesterAvatarColumn, requesterAvatar, requesterNameColumn, requesterName);
-
-                        Intent intent = new Intent(mContext, MainActivity.class);
-                        mContext.startActivity(intent);
-                    }
-                });
             }
             //hosting a class list item
             if (hostListItemView) {
@@ -622,7 +519,6 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
     }
 
     public void deleteMyChavrutaArrayItemOnSwipe(int indexToDelete, int viewTypeToDelete) {
-
         HostSessionData currentItem = mChavrutaSessionsAL.get(indexToDelete);
         //get either HostView or AwaitingConfirmView
         int itemViewType = viewTypeToDelete;
@@ -660,54 +556,21 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
             deleteChavruta.execute(deleteChavrutaKey, chavrutaId);
         }
         mChavrutaSessionsAL.remove(viewTypeToDelete);
-//        this.notifyItemRemoved(indexToDelete);
         this.notifyDataSetChanged();
-
 
         if (mChavrutaSessionsAL.size() == 0) {
             Intent intent = new Intent(mContext, MainActivity.class);
             mContext.startActivity(intent);
         }
-
-    }
-
-    public void notifyUserBeforeDelete(int viewTypeToDelete) {
-        String title;
-        String message;
-        if (viewTypeToDelete == 0) {
-            title = "Unregister For Class?";
-            message = "Let Class Host Know You Cannot Attend?";
-        } else {
-            title = "Delete Class?";
-            message = "Are you sure you want to delete class?";
-        }
-
-        new AlertDialog.Builder(mContext)
-                .setTitle(title)
-                .setMessage(message)
-                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        setConfirmedDeleteStatus(false);
-                    }
-                })
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-
-                    public void onClick(DialogInterface arg0, int arg1) {
-                        setConfirmedDeleteStatus(true);
-                    }
-                }).create().show();
-
     }
 
     public static void setConfirmedDeleteStatus(boolean confirmed) {
-        OpenChavrutaAdapter.mConfirmed = confirmed;
+        mConfirmed = confirmed;
     }
 
     public void swipeToDelete(View v) {
         Toast.makeText(mContext, "Swipe To Unregister for Class", Toast.LENGTH_SHORT).show();
     }
-
 }
 
 
