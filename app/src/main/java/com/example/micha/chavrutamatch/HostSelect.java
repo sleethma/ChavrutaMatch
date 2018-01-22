@@ -103,10 +103,14 @@ public class HostSelect extends AppCompatActivity implements OpenHostAdapter.Lis
         openHostArrayList = new ArrayList<>();
 
         //accesses JSON from ServerConnect
-        jsonString = getIntent().getExtras().getString("jsonKey");
+        if(getIntent().getExtras().getString("jsonKey") != null){
+            jsonString = ChavrutaMatch.getOpenHostsJsonString();
+            //parses JSON entry
+            parseJSONEntry();
+        }
 
-        //parses JSON entry
-        parseJSONEntry();
+
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         allHostsList.setLayoutManager(layoutManager);
 
@@ -121,7 +125,7 @@ public class HostSelect extends AppCompatActivity implements OpenHostAdapter.Lis
     }
 
     //@ var chavrutaId = autoInc from db
-    public void parseJSONEntry() {
+    private void parseJSONEntry() {
         String chavrutaId;
 
         String hostFirstName, hostLastName, hostAvatarNumber, sessionMessage, sessionDate,

@@ -29,7 +29,6 @@ import com.facebook.accountkit.ui.LoginType;
 public class LoginActivity extends AppCompatActivity {
 
     public static int APP_REQUEST_CODE = 1;
-    private static final String LOG_TAG = LoginActivity.class.getSimpleName();
     public static boolean mIsConnected;
     SharedPreferences prefs;
     private String mUserId;
@@ -38,32 +37,25 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_type_select);
-
         prefs = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE);
-        //check for an existing access token
         AccessToken currentAccessToken = AccountKit.getCurrentAccessToken();
         if (currentAccessToken != null) {
-            //iff previously logged in, proceed to the main activity
             launchMainActivity();
         }
     }
 
-    //override to control MainActivity.class launch
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        //check to makesure launched from our acctivity
         if (requestCode == APP_REQUEST_CODE) {
-            //extract loginResult from intent
             AccountKitLoginResult loginResult = data.getParcelableExtra(
                     AccountKitLoginResult.RESULT_KEY);
-            //handle error login as well as login success
+
             if (loginResult.getError() != null) {
                 String toastMessage = loginResult.getError().getErrorType().getMessage();
                 Toast.makeText(this, toastMessage, Toast.LENGTH_LONG).show();
             } else if (loginResult.getAccessToken() != null) {
                 //on successful login and new user, proceed to the AddBio activity
-                //@newUser = users first ever login
                 Boolean newUser = prefs.getBoolean("new_user_key", true);
                 mUserId = loginResult.getAccessToken().getAccountId();
 

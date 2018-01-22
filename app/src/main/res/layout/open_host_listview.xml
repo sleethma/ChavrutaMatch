@@ -64,7 +64,6 @@
 
         </FrameLayout>
 
-        <!-- TODO make scroll a confirm button-->
         <ImageView
             android:id="@+id/iv_scroll_open_host"
             android:layout_width="90dp"

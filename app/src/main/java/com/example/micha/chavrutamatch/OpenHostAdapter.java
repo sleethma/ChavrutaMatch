@@ -1,12 +1,7 @@
 package com.example.micha.chavrutamatch;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -167,7 +162,6 @@ class OpenHostAdapter extends RecyclerView.Adapter<OpenHostAdapter.ViewHolder> {
             holder.sefer.setText(currentItem.getmSefer());
             holder.location.setText(currentItem.getmLocation());
             holder.sessionMessage.setText(currentItem.getmSessionMessage());
-
 
             //sends requester's info to db as requesting class
             holder.addHost.setOnClickListener(new View.OnClickListener() {

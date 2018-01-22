@@ -157,7 +157,9 @@ public class MainActivity extends AppCompatActivity {
 
             //receives intent from ServerConnect to display myChavruta list, else gets myChavruta info from db
             if (getIntent().getExtras().getString("myChavrutaKey") != null) {
-                jsonString = getIntent().getExtras().getString("myChavrutaKey");
+                if(ChavrutaMatch.getMyChavrutaJsonString() != null) {
+                    jsonString = ChavrutaMatch.getMyChavrutaJsonString();
+                }
 
                 myChavrutasArrayList = new ArrayList<>();
 
@@ -165,7 +167,8 @@ public class MainActivity extends AppCompatActivity {
                 if (!jsonString.isEmpty()) {
                     //parses and adds data in JSON string from MyChavruta Server call
                     parseJSONMyChavrutas();
-                    //todo inorder to resize mychavruta recyclerview
+
+                    //inorder to resize mychavruta recyclerview
                     myChavrutaListView.requestLayout();
 
                     //attaches data source to adapter and displays list
@@ -175,7 +178,6 @@ public class MainActivity extends AppCompatActivity {
                     //add ItemDecoration
                     myChavrutaListView.addItemDecoration(new RecyclerViewListDecor(VERTICAL_LIST_ITEM_SPACE));
 
-                    //todo: uncomment below to optimize UI if works with multiple listitem layout types
                     myChavrutaListView.setHasFixedSize(true);
                     mAdapter = new OpenChavrutaAdapter(this, myChavrutasArrayList);
                     myChavrutaListView.setAdapter(mAdapter);
@@ -205,9 +207,9 @@ public class MainActivity extends AppCompatActivity {
                 UserDetails.setmUserId(accountId);
                 //check user has a stored accountkit id on device and fetch their chavruta data from db
                 if (accountId != null) {
-                    String getMyChavrutasKey = "my chavrutas";
+                    String myChavrutasKey = "my chavrutas";
                     ServerConnect getMyChavrutas = new ServerConnect(this, myChavrutaListView);
-                    getMyChavrutas.execute(getMyChavrutasKey);
+                    getMyChavrutas.execute(myChavrutasKey);
                 } else {
                     //device is not logged in
                     AccountKit.logOut();

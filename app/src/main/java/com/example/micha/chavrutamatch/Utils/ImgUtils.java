@@ -107,9 +107,11 @@ public class ImgUtils {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPurgeable = true;
         Bitmap image = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length, options);
-        int IMG_WIDTH = 400;
-        int IMG_HEIGHT = 400;
+        int IMG_WIDTH = 300;
+        int IMG_HEIGHT = 300;
 
+        int testImgHeight = image.getHeight();
+        int testImgWidth = image.getWidth();
 
         if (image.getHeight() <= 300 && image.getWidth() <= 300) {
             return base64image;

@@ -8,11 +8,13 @@ import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.AddBio;
+import com.example.micha.chavrutamatch.ChavrutaMatch;
 import com.example.micha.chavrutamatch.HostSelect;
 import com.example.micha.chavrutamatch.MainActivity;
 import com.example.micha.chavrutamatch.R;
@@ -25,10 +27,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+
+import static com.example.micha.chavrutamatch.AcctLogin.UserDetails.LOG_TAG;
 
 /**
  * Created by micha on 7/29/2017.
@@ -467,13 +472,16 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
             case 2:
                 //return jsonString to HostSelect.class if it is caller, else return it to MA
                 if (myChavruta) {
+                    ChavrutaMatch.setMyChavrutaJsonString(jsonString);
+
                     Intent intent = new Intent(this.mContextRegister, MainActivity.class);
-                    intent.putExtra("myChavrutaKey", jsonString);
+                    intent.putExtra("myChavrutaKey", "json set");
                     mContextRegister.startActivity(intent);
 
                 } else {
+                    ChavrutaMatch.setOpenHostsJsonString(jsonString);
                     Intent intent = new Intent(this.mContextRegister, HostSelect.class);
-                    intent.putExtra("jsonKey", jsonString);
+                    intent.putExtra("jsonKey", "json set");
                     mContextRegister.startActivity(intent);
                 }
                 pDialog.dismiss();

@@ -126,6 +126,9 @@ public class AvatarSelectMasterList extends Activity implements AvatarSelectFrag
         if (resultCode == RESULT_CANCELED) {
             // action cancelled
             Log.e(LOG_TAG, "onActivityResult() was canceled");
+            Intent returnToSelectorFrag = new Intent(this, AvatarSelectMasterList.class);
+            startActivity(returnToSelectorFrag);
+            return;
         }
 
         //image from user internal data
@@ -141,13 +144,22 @@ public class AvatarSelectMasterList extends Activity implements AvatarSelectFrag
             intent.putExtra("img_file_path_string_key", userImgPathString);
         }else{
             // Otherwise, delete the temporary image file
+            if(mTempPhotoPath != null)
             ImgUtils.deleteImageFile(this, mTempPhotoPath);
         }
         intent.putExtra("avatar position", 999);
         intent.putExtra("affirm update bio", true);
         startActivity(intent);
         finish();
+    }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent(this, AddBio.class);
+        Boolean updateBio = true;
+        intent.putExtra("update_bio", updateBio);
+        startActivity(intent);
     }
 }
 

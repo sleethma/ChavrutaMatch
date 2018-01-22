@@ -119,6 +119,7 @@ public class AddBio extends AppCompatActivity {
                 if (userAvatarSelected == CUSTOM_AVATAR_NUMBER_INT) {
                     requestExternalStoragePermission();
                     mCustomUserAvatarUriString = bundle.getString("img_uri_string_key");
+
                     mNewProfImgUri = Uri.parse(mCustomUserAvatarUriString);
                     newCustomAvatarChosen = true;
 
@@ -322,6 +323,7 @@ public class AddBio extends AppCompatActivity {
             userPostType = "update user post";
         }
 
+
         ServerConnect postUserToServer = new ServerConnect(this);
 
         postUserToServer.execute(userPost, mUserId, mUserName, mUserAvatarNumberString, mUserFirstName, mUserLastName,
@@ -450,15 +452,14 @@ public class AddBio extends AppCompatActivity {
         if (requestCode == PERMISSION_REQUEST_READ_EXTERNAL_STORAGE) {
             // Request for read permission.
             if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission has been granted.
-                Snackbar.make(scrollView, "Read permission was granted.",
+                // Permission request was denied.
+                Snackbar.make(scrollView, "Photo Saved!",
                         Snackbar.LENGTH_SHORT)
                         .show();
-
             } else {
                 // Permission request was denied.
                 Snackbar.make(scrollView, "Read file permission request was denied.",
-                        Snackbar.LENGTH_SHORT)
+                        Snackbar.LENGTH_LONG)
                         .show();
             }
         }
@@ -468,14 +469,11 @@ public class AddBio extends AppCompatActivity {
         // Permission has not been granted and must be requested.
         if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                 Manifest.permission.READ_EXTERNAL_STORAGE)) {
-            // Provide an additional rationale to the user if the permission was not granted
-            // and the user would benefit from additional context for the use of the permission.
-            // Display a SnackBar with a button to request the missing permission.
             Snackbar.make(scrollView, "Read permissions requested to get avatar from your image files.",
                     Snackbar.LENGTH_INDEFINITE).setAction("OK", new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    // Request the permission
+
                     ActivityCompat.requestPermissions(AddBio.this,
                             new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                             PERMISSION_REQUEST_READ_EXTERNAL_STORAGE);
@@ -536,7 +534,6 @@ public class AddBio extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-
             }
         });
 

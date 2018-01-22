@@ -230,8 +230,6 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                         //otherwise use xml unknown profile image
                     }
                 }
-
-
                 requestSlotOpen = "0";
                 requesterAvatar = null;
                 requesterName = null;
