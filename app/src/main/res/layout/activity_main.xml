@@ -2,7 +2,7 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="fill_parent"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="0dp"
     android:background="@color/colorPrimary"
@@ -74,11 +74,8 @@
         android:id="@+id/cl_parent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="0dp"
         android:background="@color/colorPrimary"
-        android:stateListAnimator="@animator/button_raise"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp">
+        android:stateListAnimator="@animator/button_raise">
 
         <android.support.constraint.Guideline
             android:layout_width="wrap_content"

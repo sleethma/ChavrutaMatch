@@ -99,7 +99,8 @@
 
         <activity
             android:name=".NewHost"
-            android:windowSoftInputMode="stateHidden"
+            android:theme="@style/AppTheme.NoActionBar"
+        android:windowSoftInputMode="stateHidden"
             android:screenOrientation="sensorPortrait"
             />
         <activity

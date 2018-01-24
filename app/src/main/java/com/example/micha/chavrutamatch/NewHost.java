@@ -13,6 +13,7 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -22,6 +23,8 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ScrollView;
+import android.widget.Scroller;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -58,6 +61,8 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
     ImageButton ibStartTime;
     @BindView(R.id.et_host_topic)
     EditText etHostTopic;
+
+
     //    @BindView(R.id.fl_host_pic)
 //    android.widget.FrameLayout flHostPic;
     @BindView(R.id.iv_host_avatar)
@@ -66,6 +71,8 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
     EditText etHostAddress;
     @BindView(R.id.ib_host_end_time)
     ImageButton ibHostEndTime;
+    @BindView(R.id.scrollView)
+    ScrollView scrollView;
     @BindView(R.id.tv_end_time)
     TextView tvEndTime;
     @BindView(R.id.ib_date)
@@ -220,7 +227,7 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
                 showDialog(DIALOG_ID);
             }
 
-        } else if (v == bTimeSet) { //when confirm time button click, set values
+        } else if (v == bTimeSet) {
             confirmTime(v);
             setProfileView();
         } else if (v == ibHostIt) {
@@ -249,6 +256,7 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         //save original view clicked to determine which to display when time confirmed button clicked
         mTimeDateViewClicked = v;
     }
+
 
     //if confirm button clicked set global date/time
     public void confirmTime(View view) {
@@ -383,7 +391,6 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
                 .setDuration(1000)
                 .start();
     }
-
 
     @Override
     public void onBackPressed() {

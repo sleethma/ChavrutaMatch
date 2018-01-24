@@ -1,366 +1,387 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    app:layout_constraintLeft_toLeftOf="parent"
-    app:layout_constraintRight_toRightOf="parent"
-    tools:layout_editor_absoluteX="8dp"
-    tools:layout_editor_absoluteY="0dp">
+    tools:context="com.example.micha.chavrutamatch.NewHost"
 
-    <android.support.constraint.ConstraintLayout
+    >
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimaryDark">
+        android:layout_height="50dp"
+        android:theme="@style/AppTheme.AppBarOverlay">
 
-        //View Title
-
-        <TextView
-            android:id="@+id/tv_title_add_host"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/rounded_corner"
-            android:elevation="8dp"
-            android:fontFamily="casual"
-            android:gravity="bottom|center_horizontal"
-            android:text=" Host a Chavruta Session "
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            app:layout_constraintHorizontal_bias="0.505"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        //User Pic
-        <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/iv_host_avatar"
-            android:layout_width="100dp"
-            android:layout_height="80dp"
-            android:layout_marginTop="20dp"
-            android:src="@drawable/ic_unknown_user"
-            app:civ_border_color="#FF000000"
-            app:civ_border_width="1dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/view"
-        />
-
-        <View
-            android:id="@+id/view"
-            android:layout_width="0dp"
-            android:layout_height="3dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginTop="10dp"
-            android:background="#f0f0f0"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_title_add_host" />
-
-        //Topic
-
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/til_chavruta_sefer"
-            style="@style/AddBioTextInputLayoutStyle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:background="@color/colorPrimaryDark"
-            android:elevation="0dp"
-            app:layout_constraintLeft_toRightOf="@+id/iv_host_avatar"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/view">
-
-            <EditText
-                android:id="@+id/et_host_topic"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:digits="@string/alphanumeric_input"
-                android:hint="Enter Topic/Book"
-                android:paddingBottom="6dp"
-                android:paddingTop="6dp"
-                android:textColor="@android:color/white" />
-        </android.support.design.widget.TextInputLayout>
-
-
-        //Chavruta Address
-
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/til_chavruta_address"
-            style="@style/AddBioTextInputLayoutStyle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:background="@color/colorPrimaryDark"
-            android:elevation="0dp"
-            app:layout_constraintBottom_toBottomOf="@+id/iv_host_avatar"
-            app:layout_constraintLeft_toRightOf="@+id/iv_host_avatar"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/til_chavruta_sefer">
-
-            <EditText
-                android:id="@+id/host_address"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:digits="@string/alphanumeric_input"
-                android:hint=" Location Address"
-                android:paddingBottom="6dp"
-                android:paddingTop="6dp"
-                android:textColor="@android:color/white" />
-        </android.support.design.widget.TextInputLayout>
-
-
-        //Start time
-
-        <ImageButton
-            android:id="@+id/ib_host_start_time"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/fab_ripple"
-            android:src="@drawable/b_start_time"
-            android:stateListAnimator="@animator/button_raise"
-            android:textColor="@android:color/white"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/til_city_state" />
-
-        <TextView
-            android:id="@+id/tv_start_time"
-            android:layout_width="160dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_gravity="end"
-            android:layout_marginLeft="12dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginTop="6dp"
-            android:background="@drawable/rounded_corner"
-            android:paddingEnd="4dp"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp"
-            android:paddingStart="4dp"
-            android:text="Start Time?"
-            android:textAlignment="center"
-            android:textColor="@android:color/black"
-            android:textSize="18sp"
-            android:visibility="invisible"
-            app:layout_constraintHorizontal_bias="0.913"
-            app:layout_constraintLeft_toRightOf="@+id/ib_host_start_time"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/til_city_state" />
-        //End time
-
-        <ImageButton
-            android:id="@+id/ib_host_end_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="24dp"
-            android:background="@drawable/fab_ripple"
-            android:src="@drawable/b_end_time"
-            android:stateListAnimator="@animator/button_raise"
-            android:textColor="@android:color/white"
-            android:visibility="visible"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ib_host_start_time" />
-
-        <TextView
-            android:id="@+id/tv_end_time"
-            android:layout_width="160dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_gravity="end"
-            android:layout_marginLeft="12dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginTop="18dp"
-            android:background="@drawable/rounded_corner"
-            android:paddingEnd="4dp"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp"
-            android:paddingStart="4dp"
-            android:text="End Time?"
-            android:textAlignment="center"
-            android:textColor="@android:color/black"
-            android:textSize="18sp"
-            android:visibility="invisible"
-            app:layout_constraintHorizontal_bias="0.913"
-            app:layout_constraintLeft_toRightOf="@+id/ib_host_end_time"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_start_time" />
-
-
-        //Date set
-
-        <TextView
-            android:id="@+id/tv_Date"
-            android:layout_width="160dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginLeft="12dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginTop="18dp"
-            android:background="@drawable/rounded_corner"
-            android:paddingEnd="4dp"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp"
-            android:paddingStart="4dp"
-            android:text="Date?"
-            android:textAlignment="center"
-            android:textColor="@android:color/black"
-            android:textSize="18sp"
-            android:visibility="invisible"
-            app:layout_constraintHorizontal_bias="0.913"
-            app:layout_constraintLeft_toRightOf="@+id/ib_date"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_end_time" />
-
-        <ImageButton
-            android:id="@+id/ib_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="24dp"
-            android:background="@drawable/fab_ripple"
-            android:src="@drawable/b_set_date"
-            android:stateListAnimator="@animator/button_raise"
-            android:visibility="visible"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ib_host_end_time" />
-
-        <DatePicker
-            android:id="@+id/dp_host"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/view" />
-
-
-        //location city
-
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/til_city_state"
-            style="@style/AddBioTextInputLayoutStyle"
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="64dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginTop="20dp"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_gravity="center_vertical"
             android:background="@color/colorPrimaryDark"
-            android:elevation="0dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintLeft_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/iv_host_avatar">
+            app:popupTheme="@style/AppTheme.PopupOverlay">
 
-            <AutoCompleteTextView
-                android:id="@+id/ac_city_state"
-                android:layout_width="match_parent"
+
+                //View Title
+
+                <TextView
+                    android:id="@+id/tv_title_add_host"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center_horizontal"
+                    android:autoSizeMaxTextSize="30dp"
+                    android:autoSizeMinTextSize="8dp"
+                    android:background="@drawable/rounded_corner"
+                    android:elevation="8dp"
+                    android:fontFamily="casual"
+                    android:paddingBottom="4dp"
+                    android:paddingRight="4dp"
+                    android:text="@string/host_a_chavruta_session"
+                    android:textAlignment="center"
+                    android:textAllCaps="true"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textStyle="bold" />
+        </android.support.v7.widget.Toolbar>
+    </android.support.design.widget.AppBarLayout>
+
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorPrimaryDark"
+        >
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/cl_new_host"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/colorPrimaryDark"
+            android:fillViewport="true"
+            android:paddingTop="50dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            tools:layout_editor_absoluteX="8dp">
+            >
+
+            //User Pic
+            <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/iv_host_avatar"
+                android:layout_width="100dp"
+                android:layout_height="80dp"
+                android:layout_marginTop="8dp"
+                android:src="@drawable/ic_unknown_user"
+                android:visibility="visible"
+                app:civ_border_color="#FF000000"
+                app:civ_border_width="1dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/dp_host" />
+
+
+            //Topic
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/til_chavruta_sefer"
+                style="@style/AddBioTextInputLayoutStyle"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="Closest City, State" />
-        </android.support.design.widget.TextInputLayout>
+                android:background="@color/colorPrimaryDark"
+                android:elevation="0dp"
+                app:layout_constraintLeft_toRightOf="@+id/iv_host_avatar"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-        //Host Message
+                <EditText
+                    android:id="@+id/et_host_topic"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:digits="@string/alphanumeric_input"
+                    android:hint="Enter Topic/Book"
+                    android:paddingBottom="6dp"
+                    android:paddingTop="6dp"
+                    android:textColor="@android:color/white" />
+            </android.support.design.widget.TextInputLayout>
 
-        <TextView
-            android:id="@+id/tv_host_message_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/rounded_corner"
-            android:paddingBottom="3dp"
-            android:paddingEnd="5dp"
-            android:paddingLeft="5dp"
-            android:paddingStart="5dp"
-            android:paddingTop="3dp"
-            android:text="About the Class: (Optional)"
-            android:textColor="@color/colorPrimaryDark"
-            android:textStyle="bold"
-            app:layout_constraintHorizontal_bias="0.502"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ib_date" />
 
-        <EditText
-            android:id="@+id/et_host_class_message"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/rounded_corner"
-            android:digits="@string/alphanumeric_address_input"
-            android:hint="@string/host_class_message_string"
-            android:paddingBottom="3dp"
-            android:paddingEnd="5dp"
-            android:paddingLeft="8dp"
-            android:paddingRight="5dp"
-            android:paddingStart="8dp"
-            android:paddingTop="3dp"
-            android:textColor="@color/colorPrimaryDark"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHorizontal_bias="0.444"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_host_message_label"
-            app:layout_constraintVertical_bias="0.035" />
+            //Chavruta Address
 
-        <ImageButton
-            android:id="@+id/host_it"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@null"
-            android:paddingTop="13dp"
-            android:src="@drawable/b_host_it"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/et_host_class_message"
-            tools:layout_editor_absoluteX="114dp" />
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/til_chavruta_address"
+                style="@style/AddBioTextInputLayoutStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimaryDark"
+                android:elevation="0dp"
+                app:layout_constraintBottom_toBottomOf="@+id/iv_host_avatar"
+                app:layout_constraintLeft_toRightOf="@+id/iv_host_avatar"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/til_chavruta_sefer">
 
-        <TimePicker
-            android:id="@+id/tp_start_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="500dp"
-            android:layout_marginTop="0dp"
-            android:paddingTop="20dp"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/view" />
+                <EditText
+                    android:id="@+id/host_address"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:digits="@string/alphanumeric_input"
+                    android:hint=" Location Address"
+                    android:paddingBottom="6dp"
+                    android:paddingTop="6dp"
+                    android:textColor="@android:color/white" />
+            </android.support.design.widget.TextInputLayout>
 
-        //confirm time set button
 
-        <ImageButton
-            android:id="@+id/b_confirm_time_set"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_marginEnd="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="50dp"
-            android:background="@null"
-            android:src="@drawable/set_time_date"
-            android:visibility="gone"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tp_start_time" />
-    </android.support.constraint.ConstraintLayout>
-</ScrollView>
+            //Start time
 
+            <ImageButton
+                android:id="@+id/ib_host_start_time"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/fab_ripple"
+                android:src="@drawable/b_start_time"
+                android:stateListAnimator="@animator/button_raise"
+                android:textColor="@android:color/white"
+                android:visibility="visible"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/til_city_state" />
+
+            <TextView
+                android:id="@+id/tv_start_time"
+                android:layout_width="160dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_gravity="end"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/rounded_corner"
+                android:paddingEnd="4dp"
+                android:paddingLeft="4dp"
+                android:paddingRight="4dp"
+                android:paddingStart="4dp"
+                android:text="Start Time?"
+                android:textAlignment="center"
+                android:textColor="@android:color/black"
+                android:textSize="18sp"
+                android:visibility="invisible"
+                app:layout_constraintHorizontal_bias="0.913"
+                app:layout_constraintLeft_toRightOf="@+id/ib_host_start_time"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/til_city_state" />
+            //End time
+
+            <ImageButton
+                android:id="@+id/ib_host_end_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/fab_ripple"
+                android:src="@drawable/b_end_time"
+                android:stateListAnimator="@animator/button_raise"
+                android:textColor="@android:color/white"
+                android:visibility="visible"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ib_host_start_time" />
+
+            <TextView
+                android:id="@+id/tv_end_time"
+                android:layout_width="160dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="end"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="18dp"
+                android:background="@drawable/rounded_corner"
+                android:paddingEnd="4dp"
+                android:paddingLeft="4dp"
+                android:paddingRight="4dp"
+                android:paddingStart="4dp"
+                android:text="End Time?"
+                android:textAlignment="center"
+                android:textColor="@android:color/black"
+                android:textSize="18sp"
+                android:visibility="invisible"
+                app:layout_constraintHorizontal_bias="0.913"
+                app:layout_constraintLeft_toRightOf="@+id/ib_host_end_time"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_start_time" />
+
+            <DatePicker
+                android:id="@+id/dp_host"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <TimePicker
+                android:id="@+id/tp_start_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:visibility="gone"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            //confirm time set button
+
+            <ImageButton
+                android:id="@+id/b_confirm_time_set"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="50dp"
+                android:background="@null"
+                android:src="@drawable/set_time_date"
+                android:visibility="gone"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tp_start_time"
+                tools:layout_editor_absoluteY="50dp"
+                />
+
+            //Date set
+            <TextView
+                android:id="@+id/tv_Date"
+                android:layout_width="160dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="18dp"
+                android:background="@drawable/rounded_corner"
+                android:paddingEnd="4dp"
+                android:paddingLeft="4dp"
+                android:paddingRight="4dp"
+                android:paddingStart="4dp"
+                android:text="Date?"
+                android:textAlignment="center"
+                android:textColor="@android:color/black"
+                android:textSize="18sp"
+                android:visibility="invisible"
+                app:layout_constraintHorizontal_bias="0.913"
+                app:layout_constraintLeft_toRightOf="@+id/ib_date"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_end_time" />
+
+            <ImageButton
+                android:id="@+id/ib_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/fab_ripple"
+                android:src="@drawable/b_set_date"
+                android:stateListAnimator="@animator/button_raise"
+                android:visibility="visible"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ib_host_end_time" />
+
+
+            //location city
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/til_city_state"
+                style="@style/AddBioTextInputLayoutStyle"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="20dp"
+                android:background="@color/colorPrimaryDark"
+                android:elevation="0dp"
+                android:visibility="visible"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintLeft_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/iv_host_avatar">
+
+                <AutoCompleteTextView
+                    android:id="@+id/ac_city_state"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Closest City, State" />
+            </android.support.design.widget.TextInputLayout>
+
+            //Host Message
+
+            <TextView
+                android:id="@+id/tv_host_message_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/rounded_corner"
+                android:paddingBottom="3dp"
+                android:paddingEnd="5dp"
+                android:paddingLeft="5dp"
+                android:paddingStart="5dp"
+                android:paddingTop="3dp"
+                android:text="About the Class: (Optional)"
+                android:textColor="@color/colorPrimaryDark"
+                android:textStyle="bold"
+                android:visibility="visible"
+                app:layout_constraintHorizontal_bias="0.502"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ib_date" />
+
+            <EditText
+                android:id="@+id/et_host_class_message"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="0dp"
+                android:background="@drawable/rounded_corner"
+                android:digits="@string/alphanumeric_address_input"
+                android:hint="@string/host_class_message_string"
+                android:paddingBottom="3dp"
+                android:paddingEnd="5dp"
+                android:paddingLeft="8dp"
+                android:paddingRight="5dp"
+                android:paddingStart="8dp"
+                android:paddingTop="3dp"
+                android:textColor="@color/colorPrimaryDark"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintHorizontal_bias="0.444"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_host_message_label"
+                app:layout_constraintVertical_bias="0.035" />
+
+            <ImageButton
+                android:id="@+id/host_it"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:paddingTop="10dp"
+                android:src="@drawable/b_host_it"
+                android:visibility="visible"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/et_host_class_message" />
+
+
+        </android.support.constraint.ConstraintLayout>
+    </ScrollView>
+
+</android.support.design.widget.CoordinatorLayout>
 
 

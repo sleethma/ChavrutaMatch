@@ -61,6 +61,7 @@
     <string name="torah_topic">Torah Topic</string>
     <string name="no_host_message">Host did not enter a description for this class</string>
     <string name="info_swipe_to_unregister">Swipe to Unregister Class</string>
+    <string name="host_a_chavruta_session">Host a Chavruta Session</string>
 
 
 </resources>
