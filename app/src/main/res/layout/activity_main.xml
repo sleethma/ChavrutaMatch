@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,6 +8,74 @@
     android:layout_margin="0dp"
     android:background="@color/colorPrimary"
     tools:context="com.example.micha.chavrutamatch.MainActivity">
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/cl_parent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorPrimary"
+        android:stateListAnimator="@animator/button_raise">
+
+        <TextView
+            android:id="@+id/tv_my_chavruta_label"
+            android:layout_width="wrap_content"
+            android:layout_height="25dp"
+            android:layout_marginTop="8dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:background="@drawable/rounded_corner_motto"
+            android:elevation="4dp"
+            android:fontFamily="cursive"
+            android:gravity="center_vertical"
+            android:text="@string/my_chavrutas"
+            android:textAlignment="center"
+            android:textColor="@color/matchColor"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintHorizontal_bias="0.515"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/gl_top" />
+
+        <android.support.constraint.Guideline
+            android:id="@+id/gl_top"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_begin="70dp" />
+
+
+        <ImageView
+            android:id="@+id/iv_no_match_add_match"
+            android:layout_width="0dp"
+            android:layout_height="300dp"
+            android:background="@drawable/rounded_corner"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_my_chavruta_label"
+            app:srcCompat="@drawable/no_matches_screen_title" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/lv_my_chavruta"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/rounded_corner"
+            android:elevation="4dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/cl_parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_my_chavruta_label" />
+
+
+
+    </android.support.constraint.ConstraintLayout>
 
 
     <android.support.design.widget.AppBarLayout
@@ -54,10 +123,13 @@
                     app:civ_border_color="#FF000000"
                     app:civ_border_width="1dp" />
             </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@android:color/black"
+                />
         </android.support.v7.widget.Toolbar>
-
     </android.support.design.widget.AppBarLayout>
-
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
@@ -67,72 +139,6 @@
         android:layout_margin="@dimen/fab_margin"
         android:elevation="4dp"
         android:src="@drawable/chavruta_logo_fab"
-        app:pressedTranslationZ="12dp" />
-
-
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/cl_parent"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/colorPrimary"
-        android:stateListAnimator="@animator/button_raise">
-
-        <android.support.constraint.Guideline
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/gl_top"
-            app:layout_constraintGuide_begin="70dp"
-            android:orientation="horizontal"/>
-
-        <TextView
-            android:id="@+id/tv_my_chavruta_label"
-            android:layout_width="100dp"
-            android:layout_height="25dp"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/rounded_corner_motto"
-            android:elevation="4dp"
-            android:fontFamily="cursive"
-            android:gravity="center_vertical"
-            android:text="My Chavrutas"
-            android:textAlignment="center"
-            android:textColor="@color/matchColor"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintHorizontal_bias="0.515"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/gl_top"/>
-
-
-        <ImageView
-            android:id="@+id/iv_no_match_add_match"
-            android:layout_width="0dp"
-            android:layout_height="400dp"
-            android:background="@drawable/rounded_corner"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/iv_logo_chavruta"
-            app:layout_constraintVertical_bias="0.22000003"
-            app:srcCompat="@drawable/no_matches_screen_title" />
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/lv_my_chavruta"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/rounded_corner"
-            android:elevation="4dp"
-            android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="@id/cl_parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_my_chavruta_label" />
-
-    </android.support.constraint.ConstraintLayout>
+        app:pressedTranslationZ="12dp"/>
 
 </android.support.design.widget.CoordinatorLayout>

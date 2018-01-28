@@ -13,15 +13,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.transition.Slide;
-import android.transition.TransitionManager;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.example.micha.chavrutamatch.AcctLogin.LoginActivity;
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
@@ -29,7 +24,6 @@ import com.example.micha.chavrutamatch.Data.AvatarImgs;
 import com.example.micha.chavrutamatch.Data.HostSessionData;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.example.micha.chavrutamatch.Utils.ConnCheckUtil;
-import com.example.micha.chavrutamatch.Utils.GlideApp;
 import com.example.micha.chavrutamatch.Utils.RecyclerViewListDecor;
 import com.facebook.accountkit.Account;
 import com.facebook.accountkit.AccountKit;
@@ -51,7 +45,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.example.micha.chavrutamatch.AcctLogin.UserDetails.getUserCustomAvatarBase64ByteArray;
-import static com.example.micha.chavrutamatch.OpenChavrutaAdapter.setConfirmedDeleteStatus;
 
 public class MainActivity extends AppCompatActivity {
     String LOGTAG = MainActivity.class.getSimpleName();
@@ -62,11 +55,12 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.iv_host_avatar)
     ImageView userAvatar;
     @BindView(R.id.tv_my_chavruta_label)
-    TextView myChavrutaLabel;
     OpenChavrutaAdapter mAdapter;
+
     static ArrayList<HostSessionData> myChavrutasArrayList;
     static Context mContext;
     private static String jsonString;
+
     JSONObject jsonObject;
     JSONArray jsonArray;
     String accountId;
@@ -182,20 +176,17 @@ public class MainActivity extends AppCompatActivity {
                     mAdapter = new OpenChavrutaAdapter(this, myChavrutasArrayList);
                     myChavrutaListView.setAdapter(mAdapter);
                     noMatchView.setVisibility(View.GONE);
-                    myChavrutaLabel.setVisibility(View.VISIBLE);
                     myChavrutaListView.setVisibility(View.VISIBLE);
                 } else {
                     //sets empty array list view
                     myChavrutaListView.setVisibility(View.GONE);
                     noMatchView.setVisibility(View.VISIBLE);
-                    myChavrutaLabel.setVisibility(View.GONE);
 
                 }
                 //checks to ensure db has data after parsing
                 if (myChavrutasArrayList.size() < 1) {
                     myChavrutaListView.setVisibility(View.GONE);
                     noMatchView.setVisibility(View.VISIBLE);
-                    myChavrutaLabel.setVisibility(View.GONE);
                 }
                 Toolbar toolbar = findViewById(R.id.toolbar);
                 setSupportActionBar(toolbar);

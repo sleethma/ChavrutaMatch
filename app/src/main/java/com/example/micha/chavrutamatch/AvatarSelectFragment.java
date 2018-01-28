@@ -20,7 +20,7 @@ public class AvatarSelectFragment extends Fragment {
     OnAvatarClickListener mCallback;
     Context mContext;
 
-   public interface OnAvatarClickListener{
+    public interface OnAvatarClickListener {
         void onAvatarClick(int position);
     }
 
@@ -28,7 +28,7 @@ public class AvatarSelectFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-mContext = context;
+        mContext = context;
         // makes sure that the host activity has implemented the callback interface
         try {
             mCallback = (OnAvatarClickListener) context;
@@ -37,15 +37,17 @@ mContext = context;
                     + " must implement OnImageClickListener");
         }
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.avatar_select_frag, container, false);
 
         GridView gridView = rootView.findViewById(R.id.gv_avatar_list);
-        if(android.os.Build.VERSION.SDK_INT >= 23) {
+        if (android.os.Build.VERSION.SDK_INT >= 23) {
             mAdapter = new AvatarSelectAdapter(getContext(), AvatarImgs.getAllFramedAvatars());
-        }else{
-            mAdapter = new AvatarSelectAdapter(mContext, AvatarImgs.getAllAvatars());
+        } else {
+            Context testActivityContext = getActivity();
+            mAdapter = new AvatarSelectAdapter(testActivityContext, AvatarImgs.getAllFramedAvatars());
         }
         gridView.setAdapter(mAdapter);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

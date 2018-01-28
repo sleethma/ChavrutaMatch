@@ -2,14 +2,13 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
+    android:layout_height="match_parent"
+    android:backgroundTint="@android:color/darker_gray">
 
     <LinearLayout
         android:id="@+id/tv_add_host"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@color/colorPrimaryDark"
         android:gravity="center_vertical"
         android:orientation="vertical"
         app:layout_constraintBottom_toTopOf="@+id/gl_center_horizontal"
@@ -22,28 +21,34 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:background="@drawable/fab_ripple"
+            android:layout_marginTop="65dp"
             android:elevation="4dp"
+            android:background="@null"
             android:onClick="onAddHostButtonClick"
             android:src="@drawable/b_host_chavruta"
             android:stateListAnimator="@animator/button_raise" />
     </LinearLayout>
-
-
 
     <android.support.constraint.Guideline
         android:id="@+id/gl_center_horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_begin="243dp" />
+        app:layout_constraintGuide_begin="300dp" />
+
+    <View
+        android:layout_width="300dp"
+        android:layout_height="2dp"
+        android:background="@color/colorPrimary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/gl_center_horizontal"/>
 
 
     <LinearLayout
         android:id="@+id/tv_add_guest"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@color/matchColor"
         android:gravity="center_vertical"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -58,14 +63,39 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:background="@drawable/fab_ripple"
+            android:background="@null"
             android:elevation="4dp"
             android:onClick="onAddGuestButtonClick"
             android:src="@drawable/b_learn_chavruta"
             android:stateListAnimator="@animator/button_raise" />
     </LinearLayout>
 
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:theme="@style/AppTheme.AppBarOverlay">
 
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_gravity="center_vertical"
+            android:background="@color/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay">
+
+
+            <ImageView
+                android:layout_width="150dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="start"
+                android:layout_marginTop="4dp"
+                android:layout_weight=".35"
+                android:src="@drawable/chavruta_match_logo" />
+
+        </android.support.v7.widget.Toolbar>
+
+    </android.support.design.widget.AppBarLayout>
 
 
 </android.support.constraint.ConstraintLayout>

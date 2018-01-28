@@ -7,45 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.micha.chavrutamatch.NewHost"
-
     >
-
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/appBarLayout"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:theme="@style/AppTheme.AppBarOverlay">
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:layout_gravity="center_vertical"
-            android:background="@color/colorPrimaryDark"
-            app:popupTheme="@style/AppTheme.PopupOverlay">
-
-
-                //View Title
-
-                <TextView
-                    android:id="@+id/tv_title_add_host"
-                    android:layout_width="wrap_content"
-                    android:layout_height="30dp"
-                    android:layout_gravity="center_horizontal"
-                    android:autoSizeMaxTextSize="30dp"
-                    android:autoSizeMinTextSize="8dp"
-                    android:background="@drawable/rounded_corner"
-                    android:elevation="8dp"
-                    android:fontFamily="casual"
-                    android:paddingBottom="4dp"
-                    android:paddingRight="4dp"
-                    android:text="@string/host_a_chavruta_session"
-                    android:textAlignment="center"
-                    android:textAllCaps="true"
-                    android:textColor="@color/colorPrimaryDark"
-                    android:textStyle="bold" />
-        </android.support.v7.widget.Toolbar>
-    </android.support.design.widget.AppBarLayout>
 
 
     <ScrollView
@@ -141,7 +103,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="8dp"
-                android:background="@drawable/fab_ripple"
+                android:background="@null"
                 android:src="@drawable/b_start_time"
                 android:stateListAnimator="@animator/button_raise"
                 android:textColor="@android:color/white"
@@ -181,7 +143,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="24dp"
-                android:background="@drawable/fab_ripple"
+                android:background="@null"
                 android:src="@drawable/b_end_time"
                 android:stateListAnimator="@animator/button_raise"
                 android:textColor="@android:color/white"
@@ -284,7 +246,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="24dp"
-                android:background="@drawable/fab_ripple"
+                android:background="@null"
                 android:src="@drawable/b_set_date"
                 android:stateListAnimator="@animator/button_raise"
                 android:visibility="visible"
@@ -323,7 +285,7 @@
             <TextView
                 android:id="@+id/tv_host_message_label"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="25dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginTop="12dp"
                 android:background="@drawable/rounded_corner"
@@ -376,11 +338,60 @@
                 android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/et_host_class_message" />
-
-
+                app:layout_constraintTop_toBottomOf="@+id/et_host_class_message"/>
+            
         </android.support.constraint.ConstraintLayout>
     </ScrollView>
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_gravity="center_vertical"
+            android:background="@color/colorPrimaryDark"
+            app:popupTheme="@style/AppTheme.PopupOverlay">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                //View Title
+                <TextView
+                    android:id="@+id/tv_title_add_host"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center_horizontal"
+                    android:autoSizeMaxTextSize="30dp"
+                    android:autoSizeMinTextSize="8dp"
+                    android:background="@drawable/rounded_corner"
+                    android:elevation="8dp"
+                    android:fontFamily="casual"
+                    android:text="@string/host_a_chavruta_session"
+                    android:textAlignment="center"
+                    android:textAllCaps="true"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp" />
+
+                <View
+                    android:layout_width="300dp"
+                    android:layout_height="2dp"
+                    android:layout_gravity="center_horizontal"
+                    android:paddingTop="5dp"
+                    android:background="@android:color/black" />
+
+            </LinearLayout>
+
+        </android.support.v7.widget.Toolbar>
+
+    </android.support.design.widget.AppBarLayout>
 
 </android.support.design.widget.CoordinatorLayout>
 

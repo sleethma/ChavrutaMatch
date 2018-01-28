@@ -1,7 +1,6 @@
 package com.example.micha.chavrutamatch;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -28,16 +27,13 @@ import com.example.micha.chavrutamatch.Data.AvatarImgs;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.example.micha.chavrutamatch.Utils.ChavrutaTextValidation;
 import com.example.micha.chavrutamatch.Utils.ChavrutaUtils;
-import com.example.micha.chavrutamatch.Utils.GlideApp;
 import com.example.micha.chavrutamatch.Utils.ImgUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 import butterknife.BindView;
@@ -296,7 +292,7 @@ public class AddBio extends AppCompatActivity {
             //if image is not upright
             if (rotation != 0) {
                 bitmap = ImgUtils.rotateImg(bitmap, rotation);
-                mCustomUserAvatarBase64String = ImgUtils.bitmapToCompressedBase64String(this, bitmap);
+                mCustomUserAvatarBase64String = ImgUtils.bitmapToCompressedBase64String(bitmap);
             } else {
                 mCustomUserAvatarBase64String = ImgUtils.uriToCompressedBase64String(this, newProfImgUri);
             }

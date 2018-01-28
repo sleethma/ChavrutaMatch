@@ -16,7 +16,6 @@ import com.example.micha.chavrutamatch.Data.AvatarImgs;
 import com.example.micha.chavrutamatch.Data.HostSessionData;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.example.micha.chavrutamatch.Utils.ChavrutaUtils;
-import com.example.micha.chavrutamatch.Utils.GlideApp;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -161,6 +160,11 @@ class OpenHostAdapter extends RecyclerView.Adapter<OpenHostAdapter.ViewHolder> {
             holder.endTime.setText(currentItem.getmEndTime());
             holder.sefer.setText(currentItem.getmSefer());
             holder.location.setText(currentItem.getmLocation());
+            String seferText = currentItem.getmSefer();
+            if(seferText.length() > 30){
+                seferText = seferText.substring(0, 27) + "...";
+            }
+            holder.sefer.setText(seferText);
             holder.sessionMessage.setText(currentItem.getmSessionMessage());
 
             //sends requester's info to db as requesting class
@@ -192,11 +196,6 @@ class OpenHostAdapter extends RecyclerView.Adapter<OpenHostAdapter.ViewHolder> {
 
     public void add(HostSessionData dataAddedFromJson) {
         mChavrutaSessionsAL.add(dataAddedFromJson);
-    }
-
-    public void sendChavrutaRequestToDb(String chavrutaId, String requesterId) {
-        ServerConnect confirmChavrutaRequest = new ServerConnect(mContext);
-        confirmChavrutaRequest.execute("confirmChavrutaRequest", chavrutaId, requesterId);
     }
 
     public String getRequesterAvatar() {

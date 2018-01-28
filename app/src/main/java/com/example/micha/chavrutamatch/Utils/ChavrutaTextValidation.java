@@ -21,8 +21,8 @@ public class ChavrutaTextValidation {
     public Boolean validateSeferInAddHost(String seferText){
        Boolean textIsValid = true;
        int seferLength = seferText.length();
-        if(seferLength >= 22 && seferLength <
-                3 && !seferText.contains("[_A-Za-z0-9-]")){
+        if(seferLength <
+                3 || seferLength > 34 && !seferText.contains("[_A-Za-z0-9-]")){
         textIsValid = false;
         }
 

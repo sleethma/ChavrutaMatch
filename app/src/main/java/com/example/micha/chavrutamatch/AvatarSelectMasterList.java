@@ -36,7 +36,6 @@ public class AvatarSelectMasterList extends Activity implements AvatarSelectFrag
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         intent = new Intent(this, AddBio.class);
-//        intent.setClass(this, AddBio.class);
         setContentView(R.layout.gv_avatar_frag);
         b = new Bundle();
         if (getIntent().getExtras().getBoolean("update_bio")) {

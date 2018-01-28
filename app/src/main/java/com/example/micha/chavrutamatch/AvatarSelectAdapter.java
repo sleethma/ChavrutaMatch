@@ -49,7 +49,6 @@ public class AvatarSelectAdapter extends BaseAdapter {
     public View getView(final int position, View convertView, ViewGroup parent) {
         ImageView imageView;
         if (convertView == null) {
-            // If the view is not recycled, this creates a new ImageView to hold an image
             imageView = new ImageView(mContext);
             // Define the layout parameters
             imageView.setAdjustViewBounds(true);
@@ -58,7 +57,6 @@ public class AvatarSelectAdapter extends BaseAdapter {
         } else {
             imageView = (ImageView) convertView;
         }
-
         // Set the image resource and return the newly created ImageView
         imageView.setImageResource(mAvatarImgIds.get(position));
         return imageView;

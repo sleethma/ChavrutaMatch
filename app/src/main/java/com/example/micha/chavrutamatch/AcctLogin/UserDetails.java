@@ -110,8 +110,14 @@ public class UserDetails extends AppCompatActivity{
     public static void setUserCityState(String userCityState) {
         mUserCityState =userCityState;
     }
+
     public static String getUserCityState(){
         return mUserCityState;
+    }
+    //sdk < 20 must have formatted url php string to succeed
+    public static String getUserCallFormattedCityState(){
+        String formattedCityState = mUserCityState.replaceAll(" ", "%20");
+        return formattedCityState;
     }
 
     public static void setmUserId(String userId) {

@@ -70,7 +70,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
 //        isConnectedToNetwork = isNetworkAvailable();
         isConnectedToNetwork = ConnCheckUtil.isConnected(mContextRegister);
 
-            pDialog = new ProgressDialog(mContextRegister);
+        pDialog = new ProgressDialog(mContextRegister);
         pDialog.setMessage("Loading Matches. Please wait...");
         pDialog.setIndeterminate(false);
         pDialog.setCancelable(false);
@@ -213,9 +213,8 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                     URL jsonMyChavrutasURL = new URL(my_chavrutas_url);
                     httpURLConnection = (HttpURLConnection) jsonMyChavrutasURL.openConnection();
                 } else {
-                    String hostCityState = UserDetails.getUserCityState();
-                    String json_url = "http://brightlightproductions.online/" +
-                            "secure_get_chavrutaJSON.php?host_city_state=" + hostCityState;
+                    String hostCityState = UserDetails.getUserCallFormattedCityState();
+                    String json_url = "http://brightlightproductions.online/secure_get_chavrutaJSON.php?host_city_state="+hostCityState;
                     URL jsonURL = new URL(json_url);
                     httpURLConnection = (HttpURLConnection) jsonURL.openConnection();
                     myChavruta = false;
@@ -235,9 +234,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 inputStream.close();
                 httpURLConnection.disconnect();
                 postExecuteResponse = 2;
-
                 jsonString = stringBuilder.toString().trim();
-
                 return jsonString;
 
             } catch (MalformedURLException e) {

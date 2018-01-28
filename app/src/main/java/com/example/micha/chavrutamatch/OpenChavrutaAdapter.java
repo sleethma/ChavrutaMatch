@@ -1,9 +1,7 @@
 package com.example.micha.chavrutamatch;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
 import android.view.LayoutInflater;
@@ -22,7 +20,6 @@ import com.example.micha.chavrutamatch.Data.AvatarImgs;
 import com.example.micha.chavrutamatch.Data.HostSessionData;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.example.micha.chavrutamatch.Utils.ChavrutaUtils;
-import com.example.micha.chavrutamatch.Utils.GlideApp;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +46,6 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
     //holds viewType for relevant listItem
     Boolean hostListItemView;
     Boolean awaitingConfirmView;
-    Boolean hostSelectView;
     ArrayList<HostSessionData> mChavrutaSessionsAL;
     List<Integer> avatarList = AvatarImgs.getAllAvatars();
 
@@ -99,10 +95,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
     @Override
     public void onBindViewHolder(OpenChavrutaAdapter.ViewHolder holder, int position) {
         holder.bind(holder, position);
-        //todo:delete below if not needed
-        //holder.itemView.setTag(new Integer(position));
     }
-
 
     @Override
     public int getItemCount() {
@@ -169,11 +162,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
             final int position = listIndex;
             //@requestSlotOpen number of next class slot availiable for requester
             //@requesterAvatar & @requesterName are vars that hold chavrutaInformation for display in hostview
-            final String requestSlotOpen;
-            final String requesterAvatar;
-            final String requesterName;
-            final String requesterAvatarColumn;
-            final String requesterNameColumn;
+
             final HostSessionData currentItem = mChavrutaSessionsAL.get(position);
 
             //view is hosting a class
@@ -206,20 +195,11 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                         //otherwise use xml unknown profile image
                     }
                 }
-                requestSlotOpen = "0";
-                requesterAvatar = null;
-                requesterName = null;
-                requesterAvatarColumn = null;
-                requesterNameColumn = null;
+
                 //view is awaiting hosts confirmation
             } else {
                 awaitingConfirmView = true;
                 hostListItemView = false;
-                requestSlotOpen = "0";
-                requesterAvatar = null;
-                requesterName = null;
-                requesterAvatarColumn = null;
-                requesterNameColumn = null;
             }
             //set initial confirmed state for awaiting confirmation list item
             if (awaitingConfirmView) {
@@ -425,7 +405,11 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
             holder.sessionDate.setText(currentItem.getmSessionDate());
             holder.startTime.setText(currentItem.getmStartTime());
             holder.endTime.setText(currentItem.getmEndTime());
-            holder.sefer.setText(currentItem.getmSefer());
+            String seferText = currentItem.getmSefer();
+            if(seferText.length() >= 30){
+               seferText = seferText.substring(0, 30) + "...";
+            }
+            holder.sefer.setText(seferText);
             holder.location.setText(currentItem.getmLocation());
             holder.itemView.setTag(position);
 

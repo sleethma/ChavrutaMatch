@@ -5,31 +5,23 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.MANAGE_DOCUMENTS"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MANAGE_DOCUMENTS" />
+
     <uses-feature android:name="android.hardware.screen.portrait" />
-    <uses-feature android:name="android.hardware.camera"
+    <uses-feature
+        android:name="android.hardware.camera"
         android:required="false" />
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_chavruta_match"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:roundIcon="@mipmap/ic_chavruta_match"
         android:screenOrientation="sensorPortrait"
         android:supportsRtl="true"
-        android:largeHeap="true"
         android:theme="@style/AppTheme">
-
-
-        <!--Delete below if not used -->
-        <receiver android:exported="false"
-            android:name="com.example.micha.chavrutamatch.Utils.CheckConn" >
-            <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-            </intent-filter>
-        </receiver>
-
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -52,7 +44,8 @@
             android:name="com.facebook.accountkit.ClientToken"
             android:value="@string/ACCOUNT_KIT_CLIENT_TOKEN" />
 
-        <activity android:name=".AcctLogin.LoginActivity" />
+        <activity android:name=".AcctLogin.LoginActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity android:name="com.facebook.accountkit.ui.AccountKitEmailRedirectActivity">
             <intent-filter>
@@ -68,8 +61,9 @@
         <activity
             android:name="com.facebook.accountkit.ui.AccountKitActivity"
             android:theme="@style/AppLoginTheme"
-            tools:replace="android:theme"></activity>
+            tools:replace="android:theme">
 
+        </activity>
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
@@ -83,30 +77,24 @@
         </activity>
         <activity
             android:name=".AddSelect"
-            android:screenOrientation="sensorPortrait" />
+            android:screenOrientation="sensorPortrait"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".HostSelect"
-            android:screenOrientation="sensorPortrait"
-        />
+            android:screenOrientation="sensorPortrait" />
         <activity
             android:name=".AddBio"
             android:screenOrientation="sensorPortrait"
-            />
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".AvatarSelectMasterList"
-            android:screenOrientation="sensorPortrait"
-            />
+            android:screenOrientation="sensorPortrait" />
 
         <activity
             android:name=".NewHost"
-            android:theme="@style/AppTheme.NoActionBar"
-        android:windowSoftInputMode="stateHidden"
             android:screenOrientation="sensorPortrait"
-            />
-        <activity
-            android:name=".Login"
-            android:label="@string/title_activity_login"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden" />
     </application>
 
 </manifest>

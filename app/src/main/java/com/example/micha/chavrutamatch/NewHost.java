@@ -13,7 +13,6 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -24,7 +23,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ScrollView;
-import android.widget.Scroller;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -34,7 +32,6 @@ import com.example.micha.chavrutamatch.Data.AvatarImgs;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.example.micha.chavrutamatch.Utils.ChavrutaTextValidation;
 import com.example.micha.chavrutamatch.Utils.ChavrutaUtils;
-import com.example.micha.chavrutamatch.Utils.GlideApp;
 import com.example.micha.chavrutamatch.Utils.TimeStampConverter;
 
 import java.text.SimpleDateFormat;
@@ -61,10 +58,8 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
     ImageButton ibStartTime;
     @BindView(R.id.et_host_topic)
     EditText etHostTopic;
-
-
-    //    @BindView(R.id.fl_host_pic)
-//    android.widget.FrameLayout flHostPic;
+    @BindView(R.id.til_chavruta_sefer)
+    TextInputLayout tilTopic;
     @BindView(R.id.iv_host_avatar)
     ImageView ivHostAvatar;
     @BindView(R.id.host_address)
@@ -85,8 +80,6 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
     EditText tvHostClassMessage;
     @BindView(R.id.host_it)
     ImageButton ibHostIt;
-    //    @BindView(R.id.tv_host_user_name)
-//    TextView tvAddHost;
     @BindView(R.id.ac_city_state)
     AutoCompleteTextView acCityState;
     @BindView(R.id.til_city_state)
@@ -159,12 +152,15 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         //set auto-complete for closest US city
         ChavrutaUtils cu = new ChavrutaUtils();
         String jsonFileString = cu.getJsonFileFromResource(this);
-        List<String> testList = cu.parseCityName(jsonFileString);
+        List<String> cities = cu.parseCityName(jsonFileString);
 
 // Create the adapter and set it to the AutoCompleteTextView
         ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, testList);
+                new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, cities);
         acCityState.setAdapter(adapter);
+
+//        Toolbar toolbar = findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
     }
 
     @Override
@@ -310,7 +306,7 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         etHostAddress.setVisibility(View.GONE);
         ivHostAvatar.setVisibility(View.GONE);
 //        flHostPic.setVisibility(View.GONE);
-        etHostTopic.setVisibility(View.GONE);
+        tilTopic.setVisibility(View.GONE);
         tv_StartTime.setVisibility(View.GONE);
         tvEndTime.setVisibility(View.GONE);
         ibDate.setVisibility(View.INVISIBLE);
@@ -380,7 +376,7 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
             startActivity(intent);
             finish();
         } else {
-            Toast.makeText(this, "Please input sefer of 3-22 characters", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Please input sefer of 3-30 characters", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -398,5 +394,4 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         Intent intent = new Intent(this, AddSelect.class);
         startActivity(intent);
     }
-
 }

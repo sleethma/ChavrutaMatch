@@ -3,6 +3,7 @@ package com.example.micha.chavrutamatch.Utils;
 import android.content.Context;
 import android.icu.text.RelativeDateTimeFormatter;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
 import com.example.micha.chavrutamatch.Data.HostSessionData;
 import com.example.micha.chavrutamatch.R;
@@ -27,7 +28,6 @@ import java.util.List;
  */
 
 public class ChavrutaUtils {
-
     public static String createUserFirstLastName(String userFirstName, String userLastName) {
         String lastInitial = userLastName.substring(0, 1);
         String userFirstLastName = userFirstName + " " + lastInitial + ".";
@@ -57,37 +57,48 @@ public class ChavrutaUtils {
     }
 
 
-        //parses city and state from json data
-        public List<String> parseCityName (String jsonString){
-            List<String> top1000CitiesStatesUS = new ArrayList<>();
-            String jsonStringCityStateNames = jsonString;
+    //parses city and state from json data
+    public List<String> parseCityName(String jsonString) {
+        List<String> top1000CitiesStatesUS = new ArrayList<>();
+        String jsonStringCityStateNames = jsonString;
 
-            try {
+        try {
 
-                JSONObject jsonObject1000CityStates = new JSONObject(jsonStringCityStateNames);
-                JSONArray jsonArray = jsonObject1000CityStates.getJSONArray("us_city_names");
+            JSONObject jsonObject1000CityStates = new JSONObject(jsonStringCityStateNames);
+            JSONArray jsonArray = jsonObject1000CityStates.getJSONArray("us_city_names");
 
-                int count = 0;
-                String city;
-                String state;
-                while (count < jsonArray.length()) {
-                    JSONObject jo = jsonArray.getJSONObject(count);
-                    city = jo.getString("city");
-                    state = jo.getString("state");
+            int count = 0;
+            String city;
+            String state;
+            while (count < jsonArray.length()) {
+                JSONObject jo = jsonArray.getJSONObject(count);
+                city = jo.getString("city");
+                state = jo.getString("state");
 
-                    //add city and state to list
-                    top1000CitiesStatesUS.add(city + ", " + state);
-                    String content_added = top1000CitiesStatesUS.get(count);
-                    count++;
-                }
-                top1000CitiesStatesUS.size();
-            } catch (JSONException e) {
-                e.printStackTrace();
+                //add city and state to list
+                top1000CitiesStatesUS.add(city + ", " + state);
+                String content_added = top1000CitiesStatesUS.get(count);
+                count++;
             }
-            return top1000CitiesStatesUS;
+            top1000CitiesStatesUS.size();
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-
+        return top1000CitiesStatesUS;
     }
+
+    //@arg decoration view of activity
+    public static void removeNavBar(View view) {
+        // Hide both the navigation bar and the status bar.
+// SYSTEM_UI_FLAG_FULLSCREEN is only available on Android 4.1 and higher, but as
+// a general rule, you should design your app to hide the status bar whenever you
+// hide the navigation bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN;
+        view.setSystemUiVisibility(uiOptions);
+    }
+
+}
 //    static ArrayList<HostSessionData> mUnsortedChavrutaArray;
 //
 ////todo: sort date for mychavruta array sequence by date, must save in date format

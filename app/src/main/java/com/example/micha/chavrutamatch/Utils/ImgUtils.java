@@ -30,7 +30,7 @@ public class ImgUtils {
         int rotation = 0;
 
         //only executes on API>24
-        if(Build.VERSION.SDK_INT == Build.VERSION_CODES.N) {
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.N) {
             InputStream in = context.getContentResolver().openInputStream(uri);
 
             try {
@@ -78,13 +78,11 @@ public class ImgUtils {
         return rotatedBitmap;
     }
 
-    public static String bitmapToCompressedBase64String(Context context, Bitmap bitmapToBase64) {
+    public static String bitmapToCompressedBase64String(Bitmap bitmapToBase64) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        bitmapToBase64.compress(Bitmap.CompressFormat.JPEG, 50, bos);
+        bitmapToBase64.compress(Bitmap.CompressFormat.JPEG, 80, bos);
 
         byte[] data = bos.toByteArray();
-        long testSize = data.length;
-
         return resizeBase64Image(Base64.encodeToString(data, Base64.DEFAULT));
     }
 
@@ -93,7 +91,7 @@ public class ImgUtils {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try {
             bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), imgUriIn);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, bos);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, bos);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -107,22 +105,18 @@ public class ImgUtils {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPurgeable = true;
         Bitmap image = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length, options);
-        int IMG_WIDTH = 300;
-        int IMG_HEIGHT = 300;
+        int IMG_WIDTH = 400;
+        int IMG_HEIGHT = 400;
 
-        int testImgHeight = image.getHeight();
-        int testImgWidth = image.getWidth();
-
-        if (image.getHeight() <= 300 && image.getWidth() <= 300) {
+        if (image.getHeight() <= 400 && image.getWidth() <= 400) {
             return base64image;
         }
         image = Bitmap.createScaledBitmap(image, IMG_WIDTH, IMG_HEIGHT, false);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        image.compress(Bitmap.CompressFormat.JPEG, 30, baos);
+        image.compress(Bitmap.CompressFormat.JPEG, 100, baos);
 
         byte[] b = baos.toByteArray();
-        long testReducedLength = b.length;
         System.gc();
         return Base64.encodeToString(b, Base64.NO_WRAP);
     }
@@ -130,9 +124,7 @@ public class ImgUtils {
 
     /**
      * Creates the temporary image file in the cache directory.
-     *
      * @return The temporary image file.
-     * @throws IOException Thrown if there is an error creating the file
      */
     public static File createTempImageFile(Context context) throws IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss",
@@ -141,9 +133,9 @@ public class ImgUtils {
         File storageDir = context.getExternalCacheDir();
 
         return File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
+                imageFileName,
+                ".jpg",
+                storageDir
         );
     }
 
@@ -167,6 +159,4 @@ public class ImgUtils {
 
         return deleted;
     }
-
-
 }
