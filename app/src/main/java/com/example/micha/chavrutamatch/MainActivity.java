@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
@@ -17,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.micha.chavrutamatch.AcctLogin.LoginActivity;
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
@@ -24,6 +26,7 @@ import com.example.micha.chavrutamatch.Data.AvatarImgs;
 import com.example.micha.chavrutamatch.Data.HostSessionData;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.example.micha.chavrutamatch.Utils.ConnCheckUtil;
+import com.example.micha.chavrutamatch.Utils.GlideApp;
 import com.example.micha.chavrutamatch.Utils.RecyclerViewListDecor;
 import com.facebook.accountkit.Account;
 import com.facebook.accountkit.AccountKit;
@@ -55,6 +58,10 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.iv_host_avatar)
     ImageView userAvatar;
     @BindView(R.id.tv_my_chavruta_label)
+    TextView myChavrutaLabel;
+    @BindView(R.id.v_underline_toolbar)
+    View underlineToolbar;
+
     OpenChavrutaAdapter mAdapter;
 
     static ArrayList<HostSessionData> myChavrutasArrayList;
@@ -80,6 +87,8 @@ public class MainActivity extends AppCompatActivity {
 
         //sets up UserDetails
         UserDetails.setUserDetailsFromSP(mContext);
+        //sets up UI specific to SDK
+        if (Build.VERSION.SDK_INT >= 21) underlineToolbar.setVisibility(View.GONE);
         //sets user avatar. @UserAvatarNumberString = "999" indicates avatar is user photo
         if (UserDetails.getmUserAvatarNumberString() != null &&
                 !UserDetails.getmUserAvatarNumberString().equals("999")) {
@@ -151,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
 
             //receives intent from ServerConnect to display myChavruta list, else gets myChavruta info from db
             if (getIntent().getExtras().getString("myChavrutaKey") != null) {
-                if(ChavrutaMatch.getMyChavrutaJsonString() != null) {
+                if (ChavrutaMatch.getMyChavrutaJsonString() != null) {
                     jsonString = ChavrutaMatch.getMyChavrutaJsonString();
                 }
 
@@ -212,8 +221,7 @@ public class MainActivity extends AppCompatActivity {
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(MainActivity.this, AddSelect.class);
-                    startActivity(intent);
+                    loadOnSelectActivity(view);
                 }
             });
 
@@ -411,6 +419,7 @@ public class MainActivity extends AppCompatActivity {
 
                     public void onClick(DialogInterface arg0, int arg1) {
                         mAdapter.deleteMyChavrutaArrayItemOnSwipe(indexToDelete, viewTypeToDelete);
+//                        myChavrutasArrayList.remove(indexToDelete);
                         refreshMainActivity();
                     }
                 }).create().show();
@@ -437,6 +446,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void refreshMainActivity() {
         Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+    }
+
+    public void loadOnSelectActivity(View view) {
+        Intent intent = new Intent(MainActivity.this, AddSelect.class);
         startActivity(intent);
     }
 }

@@ -32,6 +32,7 @@ import com.example.micha.chavrutamatch.Data.AvatarImgs;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.example.micha.chavrutamatch.Utils.ChavrutaTextValidation;
 import com.example.micha.chavrutamatch.Utils.ChavrutaUtils;
+import com.example.micha.chavrutamatch.Utils.GlideApp;
 import com.example.micha.chavrutamatch.Utils.TimeStampConverter;
 
 import java.text.SimpleDateFormat;

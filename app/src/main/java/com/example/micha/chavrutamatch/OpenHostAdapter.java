@@ -16,6 +16,7 @@ import com.example.micha.chavrutamatch.Data.AvatarImgs;
 import com.example.micha.chavrutamatch.Data.HostSessionData;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.example.micha.chavrutamatch.Utils.ChavrutaUtils;
+import com.example.micha.chavrutamatch.Utils.GlideApp;
 
 import java.util.ArrayList;
 import java.util.List;
