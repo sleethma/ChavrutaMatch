@@ -5,6 +5,7 @@ In it's current state, the app allows for a host to open a local class, and user
 The host then can select the users, who then see that confirmation. This app is under expansion of new features. If you have a suggestion, feel free to comment or create an issue. Enjoy!
 
 ## Getting Started
+This app's codebase is NOT FUNCTIONAL as is missing class to connect to server to protect sensitive network call data.
 Clone or download the master branch apk and import into Android Studio.
 
 ### Prerequisites
