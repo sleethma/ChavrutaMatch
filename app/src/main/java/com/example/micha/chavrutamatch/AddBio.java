@@ -1,6 +1,8 @@
 package com.example.micha.chavrutamatch;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -10,6 +12,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -50,7 +53,6 @@ public class AddBio extends AppCompatActivity {
     private final static String LOG_TAG = AddBio.class.getSimpleName();
     private final static String CUSTOM_AVATAR_NUMBER_STRING = "999";
     private final static int CUSTOM_AVATAR_NUMBER_INT = 999;
-    private final int PERMISSION_REQUEST_READ_EXTERNAL_STORAGE = 0;
 
     private final int REQUEST_CODE = 100;
     static String mUserId, mUserEmail, mUserPhoneNumber, mUserName, mUserFirstName, mUserLastName,
@@ -69,11 +71,11 @@ public class AddBio extends AppCompatActivity {
     EditText UserBioView;
     @BindView(R.id.iv_user_avatar)
     ImageView UserAvatarView;
-    SharedPreferences prefs;
     @BindView(R.id.ac_city_state)
     AutoCompleteTextView autoCompleteTextView;
     @BindView(R.id.sv_add_bio)
     ScrollView scrollView;
+    SharedPreferences prefs;
 
     //controls whether or not db update necessary
     Boolean bioDataChanged = false;
@@ -86,6 +88,7 @@ public class AddBio extends AppCompatActivity {
     String mCustomUserAvatarUriString;
     String mCustomUserAvatarBase64String;
 
+    Activity thisActivity = this;
     //new user to be stored in db
     static boolean storeNewUserInDb = false;
     //checks if avatar chosen from AvatarSelectFragment
@@ -104,17 +107,14 @@ public class AddBio extends AppCompatActivity {
         //incoming intents
         if (getIntent().getExtras() != null) {
             Intent incomingIntent = getIntent();
-
-
             // check if data coming from avatar select frag & sets user selected avatar in addBio Activitiy
             if (incomingIntent.getBooleanExtra("affirm update bio", false)) {
                 Bundle bundle = incomingIntent.getExtras();
-                updateBio = bundle.getBoolean("affirm update bio");
+                updateBio = bundle.getBoolean("affirm update bio", false);
 
                 int userAvatarSelected = bundle.getInt("avatar position", -1);
 
                 if (userAvatarSelected == CUSTOM_AVATAR_NUMBER_INT) {
-                    requestExternalStoragePermission();
                     mCustomUserAvatarUriString = bundle.getString("img_uri_string_key");
 
                     mNewProfImgUri = Uri.parse(mCustomUserAvatarUriString);
@@ -134,7 +134,7 @@ public class AddBio extends AppCompatActivity {
                 populateUserDataFromSP("pick chooser return");
             }
             //intent sent from user selecting update bio in MA
-            else if (incomingIntent.getExtras().getBoolean("update_bio")) {
+            else if (incomingIntent.getExtras().getBoolean("update_bio", false)) {
                 updateBio = incomingIntent.getExtras().getBoolean("update_bio");
                 populateUserDataFromSP("no new custom avatar selected");
 
@@ -144,6 +144,7 @@ public class AddBio extends AppCompatActivity {
                 parseUserDetailsFromDB(jsonString);
             } else if (incomingIntent.getBooleanExtra("add new user to db", false)) {
                 storeNewUserInDb = incomingIntent.getBooleanExtra("add new user to db", false);
+
                 //@var will be used if template avatar selected
                 updateBio = true;
             }
@@ -166,6 +167,7 @@ public class AddBio extends AppCompatActivity {
                 Intent intent = new Intent(getBaseContext(), AvatarSelectMasterList.class);
                 intent.putExtra("update_bio", updateBio);
                 startActivity(intent);
+                startActivity(intent);
             }
         });
         //set auto-complete for closest US city
@@ -180,6 +182,14 @@ public class AddBio extends AppCompatActivity {
 
         //setUp on TextWatchers for input validation
         setUpTextWatcherValidation();
+
+        //check to see if user consented to privacy policy
+        if(!prefs.getBoolean(getString(R.string.user_priv_policy_consent),false)) {
+            //todo:remove commented out below and replace
+//            UserDetails.setmUserAvatarNumberString("0");
+            displayUserConsent();
+        }
+
     }
 
     //stores user Biodata in db and sp
@@ -385,6 +395,7 @@ public class AddBio extends AppCompatActivity {
         UserLastNameView.setText(mUserLastName);
         autoCompleteTextView.setText(mUserCityState);
         UserBioView.setText(mUserBio);
+
         //set avatar image if not just chosen
         if (activityOnCreateType.equals("no new custom avatar selected")) {
             String userAvatarNumberString = UserDetails.getmUserAvatarNumberString();
@@ -440,51 +451,6 @@ public class AddBio extends AppCompatActivity {
         super.onBackPressed();
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                                           int[] grantResults) {
-        // BEGIN_INCLUDE(onRequestPermissionsResult)
-        if (requestCode == PERMISSION_REQUEST_READ_EXTERNAL_STORAGE) {
-            // Request for read permission.
-            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission request was denied.
-                Snackbar.make(scrollView, "Photo Saved!",
-                        Snackbar.LENGTH_SHORT)
-                        .show();
-            } else {
-                // Permission request was denied.
-                Snackbar.make(scrollView, "Read file permission request was denied.",
-                        Snackbar.LENGTH_LONG)
-                        .show();
-            }
-        }
-    }
-
-    private void requestExternalStoragePermission() {
-        // Permission has not been granted and must be requested.
-        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                Manifest.permission.READ_EXTERNAL_STORAGE)) {
-            Snackbar.make(scrollView, "Read permissions requested to get avatar from your image files.",
-                    Snackbar.LENGTH_INDEFINITE).setAction("OK", new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                    ActivityCompat.requestPermissions(AddBio.this,
-                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                            PERMISSION_REQUEST_READ_EXTERNAL_STORAGE);
-                }
-            }).show();
-
-        } else {
-            Snackbar.make(scrollView,
-                    "Permission is not available. Requesting read storage permission.",
-                    Snackbar.LENGTH_SHORT).show();
-            // Request the permission. The result will be received in onRequestPermissionResult().
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                    PERMISSION_REQUEST_READ_EXTERNAL_STORAGE);
-        }
     }
 
     //sets up text watcher validation
@@ -576,4 +542,32 @@ public class AddBio extends AppCompatActivity {
             }
         });
     }
+
+    private void displayUserConsent(){
+        new AlertDialog.Builder(this)
+                .setTitle("ChavrutaMatch Privacy Policy")
+                .setMessage("We do not share or profit from any personal data entrusted to us!\n" +
+                        "Privacy Policy provided at:\n\nhttp://brightlightproductions.online/privacy_policy.html\n\n" +
+                        "Please select \"Yes\" to consent to our Private Policy statement.")
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface arg0, int arg1) {
+                            Snackbar.make(UserAvatarView,
+                                    "Please Select \"Yes\", Your Data Is Kept Secure",
+                                    Snackbar.LENGTH_LONG ).show();
+                        thisActivity.recreate();
+                    }
+                })
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        boolean userConfirmsConsentToPP = true;
+                        SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE).edit();
+                        editor.putBoolean(getString(R.string.user_priv_policy_consent), userConfirmsConsentToPP);
+                        editor.putString(getString(R.string.user_account_id_key), mUserId);
+                        editor.apply();
+                    }
+                })
+                .create().show();
+    }
+
 }

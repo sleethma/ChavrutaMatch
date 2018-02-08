@@ -1,6 +1,7 @@
 package com.example.micha.chavrutamatch;
 
 import android.app.Application;
+import android.os.Build;
 
 /**
  * Created by micha on 1/21/2018.
@@ -8,6 +9,8 @@ import android.app.Application;
  */
 
 public class ChavrutaMatch extends Application {
+
+    private static int clientSdkVer = Build.VERSION.SDK_INT;
 
     private static String myChavrutaJsonString;
     private static String openHostsJsonString;

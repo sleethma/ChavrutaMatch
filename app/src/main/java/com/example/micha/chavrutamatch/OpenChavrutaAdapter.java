@@ -13,7 +13,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.Data.AvatarImgs;
@@ -34,14 +33,14 @@ import static com.example.micha.chavrutamatch.AcctLogin.UserDetails.getUserCusto
 class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewHolder> {
 
     //number of views adapter will hold
-    private int userAvatarNumberInt;
-    private String userAvatarNumberString;
     private Context mContext;
     String userId = UserDetails.getmUserId();
     private Context mainActivityContext;
-    private Context hostSelectContext;
     //@var used to control swipe on delete Dialogue selection
     private static boolean mConfirmed = false;
+    //interface for getting MainActivity context
+    private ParentView callback = (ParentView) MainActivity.mContext;
+
 
 
     //holds viewType for relevant listItem
@@ -274,6 +273,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                                 .with(mContext)
                                 .asBitmap()
                                 .load(decodeRequesterAvatar)
+                                .circleCrop()
                                 .into(holder.confirmRequestAvatar_1);
                     } else {
                         holder.confirmRequestAvatar_1.setImageResource(avatarList.get(
@@ -305,6 +305,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                                 .with(mContext)
                                 .asBitmap()
                                 .load(decodeRequesterAvatar)
+                                .circleCrop()
                                 .into(holder.confirmRequestAvatar_2);
                     } else {
                         holder.confirmRequestAvatar_2.setImageResource(avatarList.get(
@@ -339,6 +340,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
                                 .with(mContext)
                                 .asBitmap()
                                 .load(decodeRequesterAvatar)
+                                .circleCrop()
                                 .into(holder.confirmRequestAvatar_3);
                     } else {
                         holder.confirmRequestAvatar_3.setImageResource(avatarList.get(
@@ -414,10 +416,11 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
             holder.location.setText(currentItem.getmLocation());
             holder.itemView.setTag(position);
 
+
             holder.knurling.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(mContext, R.string.info_swipe_to_unregister, Toast.LENGTH_SHORT).show();
+                    callback.getParentView();
                 }
             });
         }
@@ -553,8 +556,8 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
         mConfirmed = confirmed;
     }
 
-    public void swipeToDelete(View v) {
-        Toast.makeText(mContext, "Swipe To Unregister for Class", Toast.LENGTH_SHORT).show();
+    interface ParentView{
+        void getParentView();
     }
 }
 

@@ -43,13 +43,14 @@
     <string name="skip_bio">Skip for Now</string>
     <string name="user_data_file">user_data</string>
     <string name="reset">reset</string>
+    <string name="user_priv_policy_consent">user_policy_consent</string>
 
 
     //Main Activity
     <string name="awaiting_match">Awaiting" + System.getProperty("line.separator") +  "Match"</string>
     <string name="underline_your_hosting"><u>You\'re Hosting</u></string>
-    <string name="alphanumeric_input">ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890 .!?,:/ </string>
-    <string name="alphanumeric_address_input">ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890?.# ,:/ </string>
+    <string name="alphanumeric_input">ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890- .!?,:/ </string>
+    <string name="alphanumeric_address_input">ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890?.#!- ,:/ </string>
 
 
     <string name="user_avatar_base_64_key">user avatar base 64 key</string>

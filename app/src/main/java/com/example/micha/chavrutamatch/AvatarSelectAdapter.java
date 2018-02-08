@@ -25,9 +25,6 @@ public class AvatarSelectAdapter extends BaseAdapter {
         mAvatarImgIds = avatarIds;
     }
 
-    /**
-     * Returns the number of items the adapter will display
-     */
     @Override
     public int getCount() {
         return mAvatarImgIds.size();

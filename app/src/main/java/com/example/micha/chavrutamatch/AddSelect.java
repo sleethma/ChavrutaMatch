@@ -35,6 +35,7 @@ public class AddSelect extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_select);
         ButterKnife.bind(this);
+        sp = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE);
 
         //get Context and send to UserDetails for SharedPreferences access
         mContext = AddSelect.this;
@@ -43,29 +44,37 @@ public class AddSelect extends AppCompatActivity {
     }
 
     public void onAddGuestButtonClick(View view) {
-        //sets user city and state for ServerConnect call
-        sp = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE);
-        String userCityState = sp.getString(getString(R.string.user_city_state_key), null);
-        UserDetails.setUserCityState(userCityState);
-        String getJSONKey = "getJSONKey";
-        ServerConnect getJSONFromServer = new ServerConnect(mContext);
-        getJSONFromServer.execute(getJSONKey);
+
+        if (isPrivacyPolicyChecked()) {
+            //sets user city and state for ServerConnect call
+            String userCityState = sp.getString(getString(R.string.user_city_state_key), null);
+            UserDetails.setUserCityState(userCityState);
+            String getJSONKey = "getJSONKey";
+            ServerConnect getJSONFromServer = new ServerConnect(mContext);
+            getJSONFromServer.execute(getJSONKey);
+        } else {
+            returnToAddBio();
+        }
     }
 
 
     public void onAddHostButtonClick(View view) {
-        addHostButton.animate()
-                .alpha(0f)
-                .translationX(-addHostButton.getWidth())
-                .setDuration(getResources().getInteger(
-                        android.R.integer.config_shortAnimTime))
-                .withEndAction(new Runnable() {
-                    @Override
-                    public void run() {
-                        Intent newHostIntent = new Intent(AddSelect.this, NewHost.class);
-                        startActivity(newHostIntent);
-                    }
-                });
+        if (isPrivacyPolicyChecked()) {
+            addHostButton.animate()
+                    .alpha(0f)
+                    .translationX(-addHostButton.getWidth())
+                    .setDuration(getResources().getInteger(
+                            android.R.integer.config_shortAnimTime))
+                    .withEndAction(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent newHostIntent = new Intent(AddSelect.this, NewHost.class);
+                            startActivity(newHostIntent);
+                        }
+                    });
+        } else {
+            returnToAddBio();
+        }
     }
 
     @Override
@@ -73,7 +82,7 @@ public class AddSelect extends AppCompatActivity {
         super.onBackPressed();
         addHostButton.clearAnimation();
         addGuestButton.clearAnimation();
-        Intent intent =new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
 
@@ -87,5 +96,19 @@ public class AddSelect extends AppCompatActivity {
 
     private void fadeAnimation(View v) {
         v.animate().alpha(0);
+    }
+
+    private boolean isPrivacyPolicyChecked() {
+        if (sp.getBoolean(getString(R.string.user_priv_policy_consent), false)) {
+            return true;
+        }else {
+            return false;
+        }
+    }
+
+    private void returnToAddBio() {
+        Intent addBioIntent = new Intent(this, AddBio.class);
+        addBioIntent.putExtra("update_bio", true);
+        startActivity(addBioIntent);
     }
 }

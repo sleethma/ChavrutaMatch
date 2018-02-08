@@ -4,7 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.media.ExifInterface;
+import android.support.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
@@ -28,9 +28,7 @@ public class ImgUtils {
     public static int rotateImgNeededCk(Context context, Uri uri) throws IOException {
 
         int rotation = 0;
-
-        //only executes on API>24
-        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.N) {
+        if (Build.VERSION.SDK_INT >= 24) {
             InputStream in = context.getContentResolver().openInputStream(uri);
 
             try {
@@ -80,7 +78,7 @@ public class ImgUtils {
 
     public static String bitmapToCompressedBase64String(Bitmap bitmapToBase64) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        bitmapToBase64.compress(Bitmap.CompressFormat.JPEG, 80, bos);
+        bitmapToBase64.compress(Bitmap.CompressFormat.JPEG, 100, bos);
 
         byte[] data = bos.toByteArray();
         return resizeBase64Image(Base64.encodeToString(data, Base64.DEFAULT));
@@ -91,7 +89,7 @@ public class ImgUtils {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try {
             bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), imgUriIn);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, bos);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -105,10 +103,10 @@ public class ImgUtils {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPurgeable = true;
         Bitmap image = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length, options);
-        int IMG_WIDTH = 400;
-        int IMG_HEIGHT = 400;
+        int IMG_WIDTH = 500;
+        int IMG_HEIGHT = 500;
 
-        if (image.getHeight() <= 400 && image.getWidth() <= 400) {
+        if (image.getHeight() <= IMG_HEIGHT || image.getWidth() <= IMG_WIDTH) {
             return base64image;
         }
         image = Bitmap.createScaledBitmap(image, IMG_WIDTH, IMG_HEIGHT, false);

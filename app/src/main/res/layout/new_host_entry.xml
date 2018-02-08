@@ -113,12 +113,12 @@
 
             <TextView
                 android:id="@+id/tv_start_time"
-                android:layout_width="160dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:layout_gravity="end"
-                android:layout_marginLeft="12dp"
-                android:layout_marginRight="16dp"
+                android:layout_marginLeft="32dp"
+                android:layout_marginRight="40dp"
                 android:layout_marginTop="6dp"
                 android:background="@drawable/rounded_corner"
                 android:paddingEnd="4dp"
@@ -153,13 +153,13 @@
 
             <TextView
                 android:id="@+id/tv_end_time"
-                android:layout_width="160dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
                 android:layout_gravity="end"
-                android:layout_marginLeft="12dp"
-                android:layout_marginRight="16dp"
+                android:layout_marginLeft="32dp"
+                android:layout_marginRight="40dp"
                 android:layout_marginTop="18dp"
                 android:background="@drawable/rounded_corner"
                 android:paddingEnd="4dp"
@@ -217,12 +217,12 @@
             //Date set
             <TextView
                 android:id="@+id/tv_Date"
-                android:layout_width="160dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
-                android:layout_marginLeft="12dp"
-                android:layout_marginRight="16dp"
+                android:layout_marginLeft="32dp"
+                android:layout_marginRight="40dp"
                 android:layout_marginTop="18dp"
                 android:background="@drawable/rounded_corner"
                 android:paddingEnd="4dp"
@@ -381,11 +381,13 @@
                     android:layout_marginBottom="8dp" />
 
                 <View
+                    android:id="@+id/v_no_elevation_underline"
                     android:layout_width="300dp"
                     android:layout_height="2dp"
                     android:layout_gravity="center_horizontal"
                     android:paddingTop="5dp"
-                    android:background="@android:color/black" />
+                    android:background="@android:color/black"
+                    android:visibility="gone"/>
 
             </LinearLayout>
 

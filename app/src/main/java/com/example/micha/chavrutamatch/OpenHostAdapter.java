@@ -151,7 +151,7 @@ class OpenHostAdapter extends RecyclerView.Adapter<OpenHostAdapter.ViewHolder> {
                         .asBitmap()
                         .load(customUserAvatar)
                         .placeholder(R.drawable.ic_unknown_user)
-                        .centerCrop()
+                        .circleCrop()
                         .into(holder.hostAvatar);
             } else if (!currentHostAvatarNumberString.equals("999")) {
                 holder.hostAvatar.setImageResource(avatarList.get(Integer.parseInt(currentItem.getmHostAvatarNumber())));

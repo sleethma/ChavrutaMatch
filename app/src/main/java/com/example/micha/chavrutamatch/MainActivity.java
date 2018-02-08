@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -49,7 +50,7 @@ import butterknife.ButterKnife;
 
 import static com.example.micha.chavrutamatch.AcctLogin.UserDetails.getUserCustomAvatarBase64ByteArray;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapter.ParentView{
     String LOGTAG = MainActivity.class.getSimpleName();
     @BindView(R.id.iv_no_match_add_match)
     ImageView noMatchView;
@@ -64,9 +65,12 @@ public class MainActivity extends AppCompatActivity {
 
     OpenChavrutaAdapter mAdapter;
 
+
     static ArrayList<HostSessionData> myChavrutasArrayList;
     static Context mContext;
     private static String jsonString;
+    SharedPreferences sp;
+
 
     JSONObject jsonObject;
     JSONArray jsonArray;
@@ -84,9 +88,10 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         mContext = this;
 
-
+        sp = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE);
         //sets up UserDetails
         UserDetails.setUserDetailsFromSP(mContext);
+
         //sets up UI specific to SDK
         if (Build.VERSION.SDK_INT >= 21) underlineToolbar.setVisibility(View.GONE);
         //sets user avatar. @UserAvatarNumberString = "999" indicates avatar is user photo
@@ -96,12 +101,12 @@ public class MainActivity extends AppCompatActivity {
                     Integer.parseInt(UserDetails.getmUserAvatarNumberString())));
         } else {
             //using custom avatar
-            //check to see if custom avatar is in UserDetails
-            if (UserDetails.getHostAvatarUri() != null) {
+            //custom avatar was previously chosen
+                if (UserDetails.getHostAvatarUri() != null) {
                 GlideApp
                         .with(mContext)
                         .load(UserDetails.getHostAvatarUri())
-                        .centerCrop()
+                        .circleCrop()
                         .into(userAvatar);
             } else if (getUserCustomAvatarBase64ByteArray() != null) {
                 GlideApp
@@ -109,14 +114,12 @@ public class MainActivity extends AppCompatActivity {
                         .asBitmap()
                         .load(getUserCustomAvatarBase64ByteArray())
                         .placeholder(R.drawable.ic_unknown_user)
-                        .centerCrop()
+                        .circleCrop()
                         .into(userAvatar);
                 //otherwise use xml unknown profile image
             }
         }
         if (ConnCheckUtil.isConnected(mContext)) {
-
-
             //check if already logged in
             //get current account and create new anonymous inner class
             AccountKit.getCurrentAccount(new AccountKitCallback<Account>() {
@@ -130,6 +133,7 @@ public class MainActivity extends AppCompatActivity {
                     editor.putString(getString(R.string.user_account_id_key), accountKitId);
                     editor.putBoolean("new_user_key", false);
                     PhoneNumber phoneNumber = account.getPhoneNumber();
+
 
 
                     if (account.getPhoneNumber() != null) {
@@ -202,7 +206,6 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 //if db not yet accessed, gets all chavrutas that user has requested
                 //@var sp: sets userId to UserDetails for server calls
-                SharedPreferences sp = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE);
                 accountId = sp.getString(getString(R.string.user_account_id_key), null);
                 UserDetails.setmUserId(accountId);
                 //check user has a stored accountkit id on device and fetch their chavruta data from db
@@ -249,6 +252,13 @@ public class MainActivity extends AppCompatActivity {
         } else {
             alertUserToCheckConn();
         }
+
+        userAvatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadProfile();
+            }
+        });
     }
 
 
@@ -290,10 +300,11 @@ public class MainActivity extends AppCompatActivity {
                 chavrutaRequest1Name = jo.getString("chavruta_request_1_name");
                 chavrutaRequest2 = jo.getString("chavruta_request_2");
                 chavrutaRequest2Avatar = jo.getString("chavruta_request_2_avatar");
+
                 chavrutaRequest2Name = jo.getString("chavruta_request_2_name");
                 chavrutaRequest3 = jo.getString("chavruta_request_3");
                 chavrutaRequest3Avatar = jo.getString("chavruta_request_3_avatar");
-                chavrutaRequest3Name = jo.getString("chavruta_request_1_name");
+                chavrutaRequest3Name = jo.getString("chavruta_request_3_name");
                 confirmed = jo.getString("confirmed");
 
                 //make user data object of UserDataSetter class
@@ -368,7 +379,7 @@ public class MainActivity extends AppCompatActivity {
         return phoneNumber;
     }
 
-    public void loadProfile(View view) {
+    public void loadProfile() {
         Intent intent = new Intent(this, AddBio.class);
         Boolean updateBio = true;
         intent.putExtra("update_bio", updateBio);
@@ -452,6 +463,13 @@ public class MainActivity extends AppCompatActivity {
     public void loadOnSelectActivity(View view) {
         Intent intent = new Intent(MainActivity.this, AddSelect.class);
         startActivity(intent);
+    }
+
+
+    @Override
+    public void getParentView() {
+        Snackbar.make(myChavrutaListView, "Swipe To Unregister Class", Snackbar.LENGTH_LONG).show();
+
     }
 }
 

@@ -87,6 +87,8 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
     TextInputLayout tilCityState;
     @BindView(R.id.til_chavruta_address)
     TextInputLayout tilChavrutaAddress;
+    @BindView(R.id.v_no_elevation_underline)
+    View underlineToolbar;
 
 //todo:delete all commented out flhostpic & tvaddhost references
 
@@ -104,6 +106,7 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
     private static int mMonth;
     private static int mDay;
     public static final int DIALOG_ID = 999;
+    private boolean isBelowSDK24 = Build.VERSION.SDK_INT < 24;
     SharedPreferences sp;
     String NO_DATE = "Date?";
 
@@ -112,6 +115,7 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.new_host_entry);
         ButterKnife.bind(this);
+
 
         //autopopulate location from SP
         sp = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE);
@@ -129,7 +133,7 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
                         .with(this)
                         .load(UserDetails.getHostAvatarUri())
                         .placeholder(R.drawable.ic_unknown_user)
-                        .centerCrop()
+                        .circleCrop()
                         .into(ivHostAvatar);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -160,8 +164,9 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
                 new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, cities);
         acCityState.setAdapter(adapter);
 
-//        Toolbar toolbar = findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
+        //remove toolbar underline if elevation supported
+        if(isBelowSDK24)underlineToolbar.setVisibility(View.VISIBLE);
+
     }
 
     @Override
@@ -259,7 +264,7 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
     public void confirmTime(View view) {
         String timeString;
         if (mTimeDateViewClicked == ibHostEndTime || mTimeDateViewClicked == ibStartTime) {
-            if (Build.VERSION.SDK_INT < 24) {
+            if (isBelowSDK24) {
                 hour = tpStartTime.getCurrentHour();
                 min = tpStartTime.getCurrentMinute();
             } else {
@@ -291,6 +296,7 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
             //check which imagebutton view clicked to set selected date/time to correct view
             if (mTimeDateViewClicked == ibStartTime) {
                 tv_StartTime.setText(timeString);
+
             } else if (mTimeDateViewClicked == ibHostEndTime) {
                 tvEndTime.setText(timeString);
             }
@@ -306,7 +312,6 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         ibStartTime.setVisibility(View.GONE);
         etHostAddress.setVisibility(View.GONE);
         ivHostAvatar.setVisibility(View.GONE);
-//        flHostPic.setVisibility(View.GONE);
         tilTopic.setVisibility(View.GONE);
         tv_StartTime.setVisibility(View.GONE);
         tvEndTime.setVisibility(View.GONE);
@@ -325,7 +330,6 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         ibStartTime.setVisibility(View.VISIBLE);
         etHostAddress.setVisibility(View.VISIBLE);
         ivHostAvatar.setVisibility(View.VISIBLE);
-//        flHostPic.setVisibility(View.VISIBLE);
         etHostTopic.setVisibility(View.VISIBLE);
         tv_StartTime.setVisibility(View.VISIBLE);
         tvEndTime.setVisibility(View.VISIBLE);
@@ -336,6 +340,7 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         ibHostIt.setVisibility(View.VISIBLE);
         tilCityState.setVisibility(View.VISIBLE);
         tilChavrutaAddress.setVisibility(View.VISIBLE);
+        tilTopic.setVisibility(View.VISIBLE);
 
     }
 

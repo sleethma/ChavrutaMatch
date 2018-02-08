@@ -18,7 +18,9 @@ import com.example.micha.chavrutamatch.Data.AvatarImgs;
 public class AvatarSelectFragment extends Fragment {
     AvatarSelectAdapter mAdapter;
     OnAvatarClickListener mCallback;
+    OnAvatarClickListener lowSdkCallback;
     Context mContext;
+    Context mActivityContext;
 
     public interface OnAvatarClickListener {
         void onAvatarClick(int position);
@@ -31,7 +33,12 @@ public class AvatarSelectFragment extends Fragment {
         mContext = context;
         // makes sure that the host activity has implemented the callback interface
         try {
-            mCallback = (OnAvatarClickListener) context;
+            if (android.os.Build.VERSION.SDK_INT >= 23) {
+                mCallback = (OnAvatarClickListener) context;
+            } else {
+                mActivityContext = getActivity();
+                lowSdkCallback = (OnAvatarClickListener) mContext;
+            }
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString()
                     + " must implement OnImageClickListener");
@@ -46,17 +53,27 @@ public class AvatarSelectFragment extends Fragment {
         if (android.os.Build.VERSION.SDK_INT >= 23) {
             mAdapter = new AvatarSelectAdapter(getContext(), AvatarImgs.getAllFramedAvatars());
         } else {
-            Context testActivityContext = getActivity();
-            mAdapter = new AvatarSelectAdapter(testActivityContext, AvatarImgs.getAllFramedAvatars());
+            mActivityContext = getActivity();
+            mAdapter = new AvatarSelectAdapter(mActivityContext, AvatarImgs.getAllFramedAvatars());
         }
         gridView.setAdapter(mAdapter);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mCallback.onAvatarClick(position);
+                //@conditional: only null if SDK version <23 as doesn't support getContext()
+                if(mCallback == null) {
+                    try {
+                        lowSdkCallback = (OnAvatarClickListener) mActivityContext;
+                    } catch (ClassCastException e) {
+                        throw new ClassCastException(mActivityContext.toString()
+                                + " must implement OnImageClickListener");
+                    }
+                    lowSdkCallback.onAvatarClick(position);
+                } else {
+                    mCallback.onAvatarClick(position);
+                }
             }
         });
-
         return rootView;
     }
 

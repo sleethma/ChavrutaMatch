@@ -8,7 +8,6 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -33,6 +32,8 @@ public class LoginActivity extends AppCompatActivity {
     SharedPreferences prefs;
     private String mUserId;
 
+    //todo: Works well to make dialog, BUT when I select 'no' and close then reopen app, allows access!!
+// todo:Does it then skip the login activity in main activity? If so, check shared pref in MA and redirect!
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,17 +61,16 @@ public class LoginActivity extends AppCompatActivity {
                 mUserId = loginResult.getAccessToken().getAccountId();
 
                 if (newUser) {
+                    prefs = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE);
                     SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE).edit();
                     editor.putBoolean("new_user_key", false);
-                    editor.putString(getString(R.string.user_avatar_number_key), "0");
-                    UserDetails.setmUserAvatarNumberString("0");
                     editor.putString(getString(R.string.user_account_id_key), mUserId);
                     UserDetails.setmUserId(mUserId);
                     editor.apply();
                     launchAddBioActivity();
-                } else {
-                    launchMainActivity();
                 }
+            } else {
+                launchMainActivity();
             }
         }
     }
@@ -96,7 +96,7 @@ public class LoginActivity extends AppCompatActivity {
             intent.putExtra(AccountKitActivity.ACCOUNT_KIT_ACTIVITY_CONFIGURATION, configuration);
             //startActivityForResult allows tracking of the login via onActivityResult method (overrided above)
             startActivityForResult(intent, APP_REQUEST_CODE);
-        }else{
+        } else {
             Toast.makeText(this, "check internet connection for login", Toast.LENGTH_LONG).show();
         }
     }
@@ -117,7 +117,6 @@ public class LoginActivity extends AppCompatActivity {
         finish();
     }
 
-
     private void launchAddBioActivity() {
         Intent intent = new Intent(this, AddBio.class);
         intent.putExtra("add new user to db", true);
@@ -125,13 +124,14 @@ public class LoginActivity extends AppCompatActivity {
         finish();
     }
 
-    private void internetCheck(Context context){
+    private void internetCheck(Context context) {
         ConnectivityManager cm =
-                (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         mIsConnected = activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
-        if(mIsConnected) Toast.makeText(this, "Internet Connected!", Toast.LENGTH_SHORT).show();
+        if (mIsConnected) Toast.makeText(this, "Internet Connected!", Toast.LENGTH_SHORT).show();
     }
+
 }

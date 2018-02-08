@@ -61,10 +61,10 @@ public class UserDetails extends AppCompatActivity{
         mUserName = prefs.getString("user name key", null);
         mUserFirstName = prefs.getString("user first name key", null);
         mUserLastName = prefs.getString("user last name key", null);
-        mUserAvatarNumberString = prefs.getString("user avatar number key", null);
+        mUserAvatarNumberString = prefs.getString("user avatar number key", "0");
         mUserBio = prefs.getString("user bio key", null);
         mUserId = prefs.getString("user account id key", null);
-        mUserCustomAvatarUriString = prefs.getString("user custom avatar key", null);
+        mUserCustomAvatarUriString = prefs.getString("user custom avatar key", "none");
         mUserCustomAvatarBase64String = prefs.getString("user avatar base 64 key", "none");
         mUserCityState = prefs.getString("user city state key", null);
 

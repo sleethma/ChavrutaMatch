@@ -27,7 +27,7 @@ public class AvatarSelectMasterList extends Activity implements AvatarSelectFrag
     private static final String FILE_PROVIDER_AUTHORITY = "com.example.android.fileprovider";
     String LOG_TAG = AvatarSelectMasterList.class.getSimpleName();
     private String mImgUriString, mTempPhotoPath;
-    Uri testImgUri;
+    Uri tempImgUri;
 
     Bundle b;
     Intent intent;
@@ -95,19 +95,18 @@ public class AvatarSelectMasterList extends Activity implements AvatarSelectFrag
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
-
-                // Get the path of the temporary file
                 mTempPhotoPath = photoFile.getAbsolutePath();
-                // Get the content URI for the image file
-                testImgUri = FileProvider.getUriForFile(this,
-                        FILE_PROVIDER_AUTHORITY,
-                        photoFile);
-                mImgUriString = testImgUri.toString();
+                if(Build.VERSION.SDK_INT <24) {
+                    tempImgUri = Uri.fromFile(photoFile);
+                }else{
+                    tempImgUri = FileProvider.getUriForFile(this,
+                            FILE_PROVIDER_AUTHORITY,
+                            photoFile);
+                }
+                mImgUriString = tempImgUri.toString();
 
                 // Add the URI so the camera can store the image
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, testImgUri);
-
-                // Launch the camera activity
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, tempImgUri);
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
             }
         }
@@ -125,9 +124,9 @@ public class AvatarSelectMasterList extends Activity implements AvatarSelectFrag
         if (resultCode == RESULT_CANCELED) {
             // action cancelled
             Log.e(LOG_TAG, "onActivityResult() was canceled");
-            Intent returnToSelectorFrag = new Intent(this, AvatarSelectMasterList.class);
-            startActivity(returnToSelectorFrag);
-            return;
+                Intent returnToSelectorFrag = new Intent(this, AvatarSelectMasterList.class);
+                startActivity(returnToSelectorFrag);
+                return;
         }
 
         //image from user internal data
@@ -138,7 +137,7 @@ public class AvatarSelectMasterList extends Activity implements AvatarSelectFrag
 
         } else if (resultCode == RESULT_OK ) {
             //image is from camera and successful
-            String userImgPathString = mTempPhotoPath.toString();
+            String userImgPathString = mTempPhotoPath;
             intent.putExtra("img_uri_string_key", mImgUriString);
             intent.putExtra("img_file_path_string_key", userImgPathString);
         }else{
@@ -160,5 +159,6 @@ public class AvatarSelectMasterList extends Activity implements AvatarSelectFrag
         intent.putExtra("update_bio", updateBio);
         startActivity(intent);
     }
+
 }
 

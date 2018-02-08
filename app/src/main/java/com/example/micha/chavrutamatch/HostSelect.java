@@ -85,7 +85,7 @@ public class HostSelect extends AppCompatActivity implements OpenHostAdapter.Lis
                         .with(mContext)
                         .load(UserDetails.getHostAvatarUri())
                         .placeholder(R.drawable.ic_unknown_user)
-                        .centerCrop()
+                        .circleCrop()
                         .into(userPic);
             } catch (Exception e) {
                 e.printStackTrace();
