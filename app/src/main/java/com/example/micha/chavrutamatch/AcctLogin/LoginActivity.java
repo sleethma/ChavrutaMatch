@@ -8,6 +8,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -31,9 +32,11 @@ public class LoginActivity extends AppCompatActivity {
     public static boolean mIsConnected;
     SharedPreferences prefs;
     private String mUserId;
+    private final String LOG_TAG = LoginActivity.class.getSimpleName();
 
-    //todo: Works well to make dialog, BUT when I select 'no' and close then reopen app, allows access!!
-// todo:Does it then skip the login activity in main activity? If so, check shared pref in MA and redirect!
+
+
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,11 +71,12 @@ public class LoginActivity extends AppCompatActivity {
                     UserDetails.setmUserId(mUserId);
                     editor.apply();
                     launchAddBioActivity();
+                } else {
+                    launchMainActivity();
                 }
-            } else {
-                launchMainActivity();
             }
         }
+        Log.e(LOG_TAG,"request code failed on login");
     }
 
 
@@ -82,6 +86,7 @@ public class LoginActivity extends AppCompatActivity {
         if (mIsConnected) {
             //create intent for the Account Kit activity
             final Intent intent = new Intent(this, AccountKitActivity.class);
+
 
             //configure login type and response type
             AccountKitConfiguration.AccountKitConfigurationBuilder configurationBuilder =

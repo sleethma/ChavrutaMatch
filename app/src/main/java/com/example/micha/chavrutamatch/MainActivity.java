@@ -15,6 +15,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,6 +27,7 @@ import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.Data.AvatarImgs;
 import com.example.micha.chavrutamatch.Data.HostSessionData;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
+import com.example.micha.chavrutamatch.MVPConstructs.Models.SharedPrefsModel;
 import com.example.micha.chavrutamatch.Utils.ConnCheckUtil;
 import com.example.micha.chavrutamatch.Utils.GlideApp;
 import com.example.micha.chavrutamatch.Utils.RecyclerViewListDecor;
@@ -45,9 +47,12 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.example.micha.chavrutamatch.AcctLogin.UserDetails.LOG_TAG;
 import static com.example.micha.chavrutamatch.AcctLogin.UserDetails.getUserCustomAvatarBase64ByteArray;
 
 public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapter.ParentView{
@@ -63,14 +68,14 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
     @BindView(R.id.v_underline_toolbar)
     View underlineToolbar;
 
-    OpenChavrutaAdapter mAdapter;
+    @Inject
+    SharedPrefsModel sharedPrefsModel;
 
+    OpenChavrutaAdapter mAdapter;
 
     static ArrayList<HostSessionData> myChavrutasArrayList;
     static Context mContext;
     private static String jsonString;
-    SharedPreferences sp;
-
 
     JSONObject jsonObject;
     JSONArray jsonArray;
@@ -88,7 +93,8 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
         ButterKnife.bind(this);
         mContext = this;
 
-        sp = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE);
+        ((ChavrutaMatch) getApplication()).getApplicationComponent().inject(this);
+
         //sets up UserDetails
         UserDetails.setUserDetailsFromSP(mContext);
 
@@ -129,9 +135,8 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
                     String accountKitId = account.getId();
                     UserDetails.setmUserId(accountKitId);
                     //stores user id, email, or phone in SP
-                    SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE).edit();
-                    editor.putString(getString(R.string.user_account_id_key), accountKitId);
-                    editor.putBoolean("new_user_key", false);
+                    sharedPrefsModel.putStringDataInSP(getString(R.string.user_account_id_key), accountKitId);
+                    sharedPrefsModel.putBooleanDataInSP("new_user_key", false);
                     PhoneNumber phoneNumber = account.getPhoneNumber();
 
 
@@ -142,16 +147,15 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
                         UserDetails.setmUserPhoneNumber(formattedPhoneNumber);
                         //toggle user phone or email login
                         UserDetails.setLoginType("phone");
-                        editor.putString(getString(R.string.user_phone_key), formattedPhoneNumber);
+                        sharedPrefsModel.putStringDataInSP(getString(R.string.user_phone_key), formattedPhoneNumber);
 
                     } else {
                         // if the email address is available, store it
                         String emailString = account.getEmail();
                         UserDetails.setmUserEmail(emailString);
                         UserDetails.setLoginType("email");
-                        editor.putString(getString(R.string.user_email_key), emailString);
+                        sharedPrefsModel.putStringDataInSP(getString(R.string.user_email_key), emailString);
                     }
-                    editor.apply();
                 }
 
                 @Override
@@ -206,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
             } else {
                 //if db not yet accessed, gets all chavrutas that user has requested
                 //@var sp: sets userId to UserDetails for server calls
-                accountId = sp.getString(getString(R.string.user_account_id_key), null);
+                accountId = sharedPrefsModel.getStringDataFromSP(getString(R.string.user_account_id_key));
                 UserDetails.setmUserId(accountId);
                 //check user has a stored accountkit id on device and fetch their chavruta data from db
                 if (accountId != null) {

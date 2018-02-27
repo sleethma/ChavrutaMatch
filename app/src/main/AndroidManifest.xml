@@ -16,7 +16,8 @@
         android:roundIcon="@mipmap/ic_chavruta_match"
         android:screenOrientation="sensorPortrait"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:name=".ChavrutaMatch">
 
         <provider
             android:name="android.support.v4.content.FileProvider"

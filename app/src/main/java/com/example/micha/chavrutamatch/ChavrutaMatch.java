@@ -1,7 +1,11 @@
 package com.example.micha.chavrutamatch;
 
 import android.app.Application;
-import android.os.Build;
+
+import com.example.micha.chavrutamatch.DI.ApplicationComponent;
+import com.example.micha.chavrutamatch.DI.ApplicationModule;
+import com.example.micha.chavrutamatch.DI.DaggerApplicationComponent;
+import com.example.micha.chavrutamatch.DI.SharedPrefsModule;
 
 /**
  * Created by micha on 1/21/2018.
@@ -10,7 +14,21 @@ import android.os.Build;
 
 public class ChavrutaMatch extends Application {
 
-    private static int clientSdkVer = Build.VERSION.SDK_INT;
+    private ApplicationComponent applicationComponent;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        applicationComponent = DaggerApplicationComponent.builder()
+                .applicationModule(new ApplicationModule(this))
+                .sharedPrefsModule(new SharedPrefsModule())
+                .build();
+    }
+
+    public ApplicationComponent getApplicationComponent(){
+        return applicationComponent;
+    }
 
     private static String myChavrutaJsonString;
     private static String openHostsJsonString;
