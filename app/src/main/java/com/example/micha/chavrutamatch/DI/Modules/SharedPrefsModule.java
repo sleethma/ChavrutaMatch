@@ -1,9 +1,11 @@
-package com.example.micha.chavrutamatch.DI;
+package com.example.micha.chavrutamatch.DI.Modules;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.example.micha.chavrutamatch.MVPConstructs.MAContractMVP;
+import com.example.micha.chavrutamatch.DI.Modules.ApplicationModule;
+import com.example.micha.chavrutamatch.DI.Scopes.AppScope;
+import com.example.micha.chavrutamatch.DI.Scopes.MAScope;
 import com.example.micha.chavrutamatch.MVPConstructs.Models.SharedPrefsModel;
 
 import javax.inject.Inject;
@@ -19,18 +21,18 @@ import static android.content.Context.MODE_PRIVATE;
  */
 
 @Module
-@Singleton
 public class SharedPrefsModule {
 
     @Provides
-    @Inject//injects context via method injection
-     SharedPrefsModel providesSharedPrefClass(SharedPreferences sp){
+    @MAScope //success on sp
+    SharedPrefsModel providesSharedPrefClass(SharedPreferences sp) {
         return new SharedPrefsModel(sp);
     }
 
- @Provides
-    @Inject
-    SharedPreferences providesSharedPreferences(Context context){
+    @Provides
+    @MAScope
+    @Inject//success on context
+    SharedPreferences providesSharedPreferences(Context context) {
         return context.getSharedPreferences("user_data", MODE_PRIVATE);
     }
 }

@@ -9,14 +9,15 @@ import android.content.SharedPreferences;
 public interface MAContractMVP {
 
     interface View{
-
+    void sendToast();
     }
     interface Presenter{
-
-
+        void setView(MAContractMVP.View view);
+        void testMVPToast();
     }
 
 
     interface Model{
+
     }
 }

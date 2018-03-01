@@ -4,9 +4,9 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
@@ -15,18 +15,22 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.micha.chavrutamatch.AcctLogin.LoginActivity;
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
+import com.example.micha.chavrutamatch.DI.Components.MAComponent;
+import com.example.micha.chavrutamatch.DI.Components.DaggerMAComponent;
+import com.example.micha.chavrutamatch.DI.Modules.MAModule;
 import com.example.micha.chavrutamatch.Data.AvatarImgs;
 import com.example.micha.chavrutamatch.Data.HostSessionData;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
+import com.example.micha.chavrutamatch.MVPConstructs.MAContractMVP;
 import com.example.micha.chavrutamatch.MVPConstructs.Models.SharedPrefsModel;
 import com.example.micha.chavrutamatch.Utils.ConnCheckUtil;
 import com.example.micha.chavrutamatch.Utils.GlideApp;
@@ -52,10 +56,9 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.example.micha.chavrutamatch.AcctLogin.UserDetails.LOG_TAG;
 import static com.example.micha.chavrutamatch.AcctLogin.UserDetails.getUserCustomAvatarBase64ByteArray;
 
-public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapter.ParentView{
+public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapter.ParentView, MAContractMVP.View{
     String LOGTAG = MainActivity.class.getSimpleName();
     @BindView(R.id.iv_no_match_add_match)
     ImageView noMatchView;
@@ -69,7 +72,10 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
     View underlineToolbar;
 
     @Inject
+    @Nullable
     SharedPrefsModel sharedPrefsModel;
+    @Inject
+    MAContractMVP.Presenter presenter;
 
     OpenChavrutaAdapter mAdapter;
 
@@ -93,7 +99,14 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
         ButterKnife.bind(this);
         mContext = this;
 
-        ((ChavrutaMatch) getApplication()).getApplicationComponent().inject(this);
+        MAComponent maComponent = DaggerMAComponent.builder()
+                .mAModule(new MAModule(getApplicationContext()))
+                .applicationComponent(ChavrutaMatch.get(this).getApplicationComponent())
+                .build();
+
+        maComponent.inject(this);
+
+//        ((ChavrutaMatch) getApplication()).getApplicationComponent().inject(this);
 
         //sets up UserDetails
         UserDetails.setUserDetailsFromSP(mContext);
@@ -265,9 +278,14 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        presenter.setView(this);
+        presenter.testMVPToast();
+    }
 
     //parses JSON string data to form myChavrutas ListView
-
     public void parseJSONMyChavrutas() {
         String chavrutaId;
 
@@ -474,6 +492,12 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
     public void getParentView() {
         Snackbar.make(myChavrutaListView, "Swipe To Unregister Class", Snackbar.LENGTH_LONG).show();
 
+    }
+
+
+    @Override
+    public void sendToast() {
+        Toast.makeText(this, "Sample MVP function", Toast.LENGTH_LONG).show();
     }
 }
 

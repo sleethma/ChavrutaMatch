@@ -1,11 +1,14 @@
 package com.example.micha.chavrutamatch;
 
+import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
 
-import com.example.micha.chavrutamatch.DI.ApplicationComponent;
-import com.example.micha.chavrutamatch.DI.ApplicationModule;
-import com.example.micha.chavrutamatch.DI.DaggerApplicationComponent;
-import com.example.micha.chavrutamatch.DI.SharedPrefsModule;
+import com.example.micha.chavrutamatch.DI.Components.ApplicationComponent;
+import com.example.micha.chavrutamatch.DI.Components.DaggerApplicationComponent;
+import com.example.micha.chavrutamatch.DI.Modules.ApplicationModule;
+import com.example.micha.chavrutamatch.DI.Modules.MAModule;
+import com.example.micha.chavrutamatch.DI.Modules.SharedPrefsModule;
 
 /**
  * Created by micha on 1/21/2018.
@@ -22,12 +25,15 @@ public class ChavrutaMatch extends Application {
 
         applicationComponent = DaggerApplicationComponent.builder()
                 .applicationModule(new ApplicationModule(this))
-                .sharedPrefsModule(new SharedPrefsModule())
                 .build();
     }
 
-    public ApplicationComponent getApplicationComponent(){
+    public ApplicationComponent getApplicationComponent() {
         return applicationComponent;
+    }
+
+    public static ChavrutaMatch get(Activity activity){
+        return (ChavrutaMatch) activity.getApplication();
     }
 
     private static String myChavrutaJsonString;

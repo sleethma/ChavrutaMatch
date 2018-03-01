@@ -1,7 +1,9 @@
-package com.example.micha.chavrutamatch.DI;
+package com.example.micha.chavrutamatch.DI.Modules;
 
 import android.app.Application;
 import android.content.Context;
+
+import com.example.micha.chavrutamatch.DI.Scopes.AppScope;
 
 import javax.inject.Singleton;
 
@@ -22,7 +24,7 @@ public class ApplicationModule {
     }
 
     @Provides
-    @Singleton
+    @AppScope
     public Context provideContext(){
         return application;
     }

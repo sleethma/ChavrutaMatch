@@ -10,7 +10,7 @@ import javax.inject.Inject;
  * Created by micha on 2/26/2018.
  */
 
-public class SharedPrefsModel {
+public class SharedPrefsModel implements MAContractMVP.Model {
 
     private SharedPreferences sp;
 

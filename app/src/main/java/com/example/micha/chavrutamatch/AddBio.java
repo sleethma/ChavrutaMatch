@@ -205,10 +205,11 @@ public class AddBio extends AppCompatActivity {
         String newUserCityState = autoCompleteTextView.getText().toString();
         Uri newProfImgUser = mNewProfImgUri;
 
-        if (!ChavrutaTextValidation.isValidEmail(newUserEmail)) {
-            Toast.makeText(this, "Please enter valid email.", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        //todo: reinstate if need email functionality
+//        if (!ChavrutaTextValidation.isValidEmail(newUserEmail)) {
+//            Toast.makeText(this, "Please enter valid email.", Toast.LENGTH_SHORT).show();
+//            return;
+
         if (!ChavrutaTextValidation.hasCharLimitOf(17, UserPhoneView.getText().toString())) {
             Toast.makeText(this, "Please enter valid phone #.", Toast.LENGTH_SHORT).show();
             return;
