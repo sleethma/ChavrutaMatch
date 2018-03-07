@@ -1,5 +1,7 @@
 package com.example.micha.chavrutamatch.DI.Components;
 
+import android.content.Context;
+
 import com.example.micha.chavrutamatch.DI.Modules.ApplicationModule;
 import com.example.micha.chavrutamatch.DI.Modules.MAModule;
 import com.example.micha.chavrutamatch.DI.Scopes.AppScope;
@@ -17,6 +19,4 @@ import dagger.Component;
 @AppScope
 @Component(modules = {ApplicationModule.class})
 public interface ApplicationComponent {
-
-//    void inject(MainActivity target);
 }

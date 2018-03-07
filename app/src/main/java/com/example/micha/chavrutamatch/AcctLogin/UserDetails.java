@@ -32,6 +32,8 @@ public class UserDetails extends AppCompatActivity{
     private static String mUserBio;
     public static String mUserLoginType = "none";
 
+    private static boolean newUserKey;
+
     public UserDetails(String id, String password, String phoneNumber, String email
     ){
         mUserId = id;
@@ -73,6 +75,14 @@ public class UserDetails extends AppCompatActivity{
             mUserCustomAvatarUri = Uri.parse(mUserCustomAvatarUriString);
             setByteArrayFromString(mUserCustomAvatarBase64String);
         }
+    }
+
+    public static boolean getNewUserKey() {
+        return newUserKey;
+    }
+
+    public static void setNewUserKey(boolean newUserKey) {
+        UserDetails.newUserKey = newUserKey;
     }
 
     public static void setLoginType(String loginType){
@@ -124,12 +134,20 @@ public class UserDetails extends AppCompatActivity{
         mUserId = userId;
     }
 
+    public static String getmUserPhoneNumber() {
+        return mUserPhoneNumber;
+    }
+
     public static void setmUserPhoneNumber(String mUserPhoneNumber) {
         UserDetails.mUserPhoneNumber = mUserPhoneNumber;
     }
 
     public static Uri getHostAvatarUri(){
         return mUserCustomAvatarUri;
+    }
+
+    public static String getmUserEmail() {
+        return mUserEmail;
     }
 
     public static void setmUserEmail(String mUserEmail) {
@@ -151,5 +169,40 @@ public class UserDetails extends AppCompatActivity{
     public static String getmUserLastName() {
         return mUserLastName;
     }
+
+    public static void setmUserName(String mUserName) {
+        UserDetails.mUserName = mUserName;
+    }
+    public static void setmUserFirstName(String mUserFirstName) {
+        UserDetails.mUserFirstName = mUserFirstName;
+    }
+    public static void setmUserLastName(String mUserLastName) {
+        UserDetails.mUserLastName = mUserLastName;
+    }
+
+    public static void setmUserBio(String mUserBio) {
+        UserDetails.mUserBio = mUserBio;
+    }
+
+    public static void setmUserPassword(String mUserPassword) {
+        UserDetails.mUserPassword = mUserPassword;
+    }
+
+    public static void setmUserCityState(String mUserCityState) {
+        UserDetails.mUserCityState = mUserCityState;
+    }
+
+    public static void setmUserCustomAvatarUri(Uri mUserCustomAvatarUri) {
+        UserDetails.mUserCustomAvatarUri = mUserCustomAvatarUri;
+    }
+
+    public static void setmUserCustomAvatarBase64String(String mUserCustomAvatarBase64String) {
+        UserDetails.mUserCustomAvatarBase64String = mUserCustomAvatarBase64String;
+    }
+
+    public static void setmUserCustomAvatarBase64ByteArray(byte[] mUserCustomAvatarBase64ByteArray) {
+        UserDetails.mUserCustomAvatarBase64ByteArray = mUserCustomAvatarBase64ByteArray;
+    }
+
 
 }

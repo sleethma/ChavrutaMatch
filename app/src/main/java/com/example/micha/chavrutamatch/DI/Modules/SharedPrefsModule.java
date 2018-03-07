@@ -3,13 +3,11 @@ package com.example.micha.chavrutamatch.DI.Modules;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.example.micha.chavrutamatch.DI.Modules.ApplicationModule;
-import com.example.micha.chavrutamatch.DI.Scopes.AppScope;
+import com.example.micha.chavrutamatch.AcctLogin.AccountActivity;
 import com.example.micha.chavrutamatch.DI.Scopes.MAScope;
-import com.example.micha.chavrutamatch.MVPConstructs.Models.SharedPrefsModel;
+import com.example.micha.chavrutamatch.MVPConstructs.Models.MainActivityModel;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
@@ -24,9 +22,10 @@ import static android.content.Context.MODE_PRIVATE;
 public class SharedPrefsModule {
 
     @Provides
-    @MAScope //success on sp
-    SharedPrefsModel providesSharedPrefClass(SharedPreferences sp) {
-        return new SharedPrefsModel(sp);
+    @MAScope
+    @Inject
+    MainActivityModel providesSharedPrefClass(SharedPreferences sp, AccountActivity accountActivity) {
+        return new MainActivityModel(sp, accountActivity);
     }
 
     @Provides

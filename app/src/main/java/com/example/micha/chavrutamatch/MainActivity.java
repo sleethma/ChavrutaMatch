@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -31,7 +32,7 @@ import com.example.micha.chavrutamatch.Data.AvatarImgs;
 import com.example.micha.chavrutamatch.Data.HostSessionData;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.example.micha.chavrutamatch.MVPConstructs.MAContractMVP;
-import com.example.micha.chavrutamatch.MVPConstructs.Models.SharedPrefsModel;
+import com.example.micha.chavrutamatch.MVPConstructs.Models.MainActivityModel;
 import com.example.micha.chavrutamatch.Utils.ConnCheckUtil;
 import com.example.micha.chavrutamatch.Utils.GlideApp;
 import com.example.micha.chavrutamatch.Utils.RecyclerViewListDecor;
@@ -71,9 +72,11 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
     @BindView(R.id.v_underline_toolbar)
     View underlineToolbar;
 
+
+    //todo: remove below SPM when no longer needed!
     @Inject
     @Nullable
-    SharedPrefsModel sharedPrefsModel;
+    MainActivityModel mainActivityModel;
     @Inject
     MAContractMVP.Presenter presenter;
 
@@ -92,6 +95,8 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
     // indicates user custom avatar used
     private final String CUSTOM_AVATAR = "999";
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -100,85 +105,17 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
         mContext = this;
 
         MAComponent maComponent = DaggerMAComponent.builder()
-                .mAModule(new MAModule(getApplicationContext()))
+                .mAModule(new MAModule(mContext))
                 .applicationComponent(ChavrutaMatch.get(this).getApplicationComponent())
                 .build();
 
         maComponent.inject(this);
 
-//        ((ChavrutaMatch) getApplication()).getApplicationComponent().inject(this);
-
-        //sets up UserDetails
-        UserDetails.setUserDetailsFromSP(mContext);
-
-        //sets up UI specific to SDK
-        if (Build.VERSION.SDK_INT >= 21) underlineToolbar.setVisibility(View.GONE);
-        //sets user avatar. @UserAvatarNumberString = "999" indicates avatar is user photo
-        if (UserDetails.getmUserAvatarNumberString() != null &&
-                !UserDetails.getmUserAvatarNumberString().equals("999")) {
-            userAvatar.setImageResource(AvatarImgs.getAvatarNumberResId(
-                    Integer.parseInt(UserDetails.getmUserAvatarNumberString())));
-        } else {
-            //using custom avatar
-            //custom avatar was previously chosen
-                if (UserDetails.getHostAvatarUri() != null) {
-                GlideApp
-                        .with(mContext)
-                        .load(UserDetails.getHostAvatarUri())
-                        .circleCrop()
-                        .into(userAvatar);
-            } else if (getUserCustomAvatarBase64ByteArray() != null) {
-                GlideApp
-                        .with(mContext)
-                        .asBitmap()
-                        .load(getUserCustomAvatarBase64ByteArray())
-                        .placeholder(R.drawable.ic_unknown_user)
-                        .circleCrop()
-                        .into(userAvatar);
-                //otherwise use xml unknown profile image
-            }
-        }
         if (ConnCheckUtil.isConnected(mContext)) {
             //check if already logged in
-            //get current account and create new anonymous inner class
-            AccountKit.getCurrentAccount(new AccountKitCallback<Account>() {
-                @Override
-                public void onSuccess(final com.facebook.accountkit.Account account) {
-                    // Get Account Kit ID
-                    String accountKitId = account.getId();
-                    UserDetails.setmUserId(accountKitId);
-                    //stores user id, email, or phone in SP
-                    sharedPrefsModel.putStringDataInSP(getString(R.string.user_account_id_key), accountKitId);
-                    sharedPrefsModel.putBooleanDataInSP("new_user_key", false);
-                    PhoneNumber phoneNumber = account.getPhoneNumber();
-
-
-
-                    if (account.getPhoneNumber() != null) {
-                        // if the phone number is available, display it
-                        String formattedPhoneNumber = formatPhoneNumber(phoneNumber.toString());
-                        UserDetails.setmUserPhoneNumber(formattedPhoneNumber);
-                        //toggle user phone or email login
-                        UserDetails.setLoginType("phone");
-                        sharedPrefsModel.putStringDataInSP(getString(R.string.user_phone_key), formattedPhoneNumber);
-
-                    } else {
-                        // if the email address is available, store it
-                        String emailString = account.getEmail();
-                        UserDetails.setmUserEmail(emailString);
-                        UserDetails.setLoginType("email");
-                        sharedPrefsModel.putStringDataInSP(getString(R.string.user_email_key), emailString);
-                    }
-                }
-
-                @Override
-                public void onError(final AccountKitError error) {
-                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                    startActivity(intent);
-                }
-            });
-
-
+            //get current accountkit account
+            presenter.getAccountKit();
+            presenter.getJsonChavrutaString();
             //receives intent from ServerConnect to display myChavruta list, else gets myChavruta info from db
             if (getIntent().getExtras().getString("myChavrutaKey") != null) {
                 if (ChavrutaMatch.getMyChavrutaJsonString() != null) {
@@ -195,6 +132,7 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
                     //inorder to resize mychavruta recyclerview
                     myChavrutaListView.requestLayout();
 
+                    //todo: inject adapter using: http://frogermcs.github.io/inject-everything-viewholder-and-dagger-2-example/
                     //attaches data source to adapter and displays list
                     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
                     myChavrutaListView.setLayoutManager(linearLayoutManager);
@@ -223,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
             } else {
                 //if db not yet accessed, gets all chavrutas that user has requested
                 //@var sp: sets userId to UserDetails for server calls
-                accountId = sharedPrefsModel.getStringDataFromSP(getString(R.string.user_account_id_key));
+                accountId = mainActivityModel.getStringDataFromSP(getString(R.string.user_account_id_key));
                 UserDetails.setmUserId(accountId);
                 //check user has a stored accountkit id on device and fetch their chavruta data from db
                 if (accountId != null) {
@@ -245,8 +183,6 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
                 }
             });
 
-            // COMPLETED (3) Create a new ItemTouchHelper with a SimpleCallback that handles both LEFT and RIGHT swipe directions
-            // Create an item touch helper to handle swiping items off the list
             new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
 
                 // COMPLETED (4) Override onMove and simply return false inside
@@ -282,9 +218,8 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
     protected void onResume() {
         super.onResume();
         presenter.setView(this);
-        presenter.testMVPToast();
+        presenter.setupToolbar();
     }
-
     //parses JSON string data to form myChavrutas ListView
     public void parseJSONMyChavrutas() {
         String chavrutaId;
@@ -389,17 +324,17 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
         finish();
     }
 
-    private String formatPhoneNumber(String phoneNumber) {
-        // helper method to format the phone number for display
-        try {
-            PhoneNumberUtil pnu = PhoneNumberUtil.getInstance();
-            Phonenumber.PhoneNumber pn = pnu.parse(phoneNumber, Locale.getDefault().getCountry());
-            phoneNumber = pnu.format(pn, PhoneNumberUtil.PhoneNumberFormat.NATIONAL);
-        } catch (NumberParseException e) {
-            e.printStackTrace();
-        }
-        return phoneNumber;
-    }
+//    private String formatPhoneNumber(String phoneNumber) {
+//        // helper method to format the phone number for display
+//        try {
+//            PhoneNumberUtil pnu = PhoneNumberUtil.getInstance();
+//            Phonenumber.PhoneNumber pn = pnu.parse(phoneNumber, Locale.getDefault().getCountry());
+//            phoneNumber = pnu.format(pn, PhoneNumberUtil.PhoneNumberFormat.NATIONAL);
+//        } catch (NumberParseException e) {
+//            e.printStackTrace();
+//        }
+//        return phoneNumber;
+//    }
 
     public void loadProfile() {
         Intent intent = new Intent(this, AddBio.class);
@@ -497,7 +432,42 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
 
     @Override
     public void sendToast() {
-        Toast.makeText(this, "Sample MVP function", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "You Are Not Logged in with AccountKit", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void setToolbarUnderline() {
+        //sets up UI specific to SDK
+        if (Build.VERSION.SDK_INT >= 21) underlineToolbar.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void setUserAvatar(){
+        //sets user avatar. @UserAvatarNumberString = "999" indicates avatar is user photo
+
+        if (UserDetails.getmUserAvatarNumberString() != null &&
+                !UserDetails.getmUserAvatarNumberString().equals("999")) {
+            userAvatar.setImageResource(AvatarImgs.getAvatarNumberResId(
+                    Integer.parseInt(UserDetails.getmUserAvatarNumberString())));
+        } else {
+            //using custom avatar
+            //custom avatar was previously chosen
+            if (UserDetails.getHostAvatarUri() != null) {
+                GlideApp
+                        .with(mContext)
+                        .load(UserDetails.getHostAvatarUri())
+                        .circleCrop()
+                        .into(userAvatar);
+            } else if (getUserCustomAvatarBase64ByteArray() != null) {
+                GlideApp
+                        .with(mContext)
+                        .asBitmap()
+                        .load(getUserCustomAvatarBase64ByteArray())
+                        .placeholder(R.drawable.ic_unknown_user)
+                        .circleCrop()
+                        .into(userAvatar);
+            }
+        }
     }
 }
 

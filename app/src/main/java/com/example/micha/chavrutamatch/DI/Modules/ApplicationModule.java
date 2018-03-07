@@ -5,8 +5,6 @@ import android.content.Context;
 
 import com.example.micha.chavrutamatch.DI.Scopes.AppScope;
 
-import javax.inject.Singleton;
-
 import dagger.Module;
 import dagger.Provides;
 
