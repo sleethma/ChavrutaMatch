@@ -21,12 +21,12 @@ import static android.content.Context.MODE_PRIVATE;
 @Module
 public class SharedPrefsModule {
 
-    @Provides
-    @MAScope
-    @Inject
-    MainActivityModel providesSharedPrefClass(SharedPreferences sp, AccountActivity accountActivity) {
-        return new MainActivityModel(sp, accountActivity);
-    }
+//    @Provides
+//    @MAScope
+//    @Inject
+//    MainActivityModel providesSharedPrefClass(SharedPreferences sp, AccountActivity accountActivity) {
+//        return new MainActivityModel(sp, accountActivity);
+//    }
 
     @Provides
     @MAScope

@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 
 import com.example.micha.chavrutamatch.AcctLogin.AccountActivity;
 import com.example.micha.chavrutamatch.DI.Scopes.MAScope;
+import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.example.micha.chavrutamatch.MVPConstructs.MAContractMVP;
 import com.example.micha.chavrutamatch.MVPConstructs.Models.MainActivityModel;
 import com.example.micha.chavrutamatch.MVPConstructs.Presenters.MAPresenter;
@@ -39,12 +40,18 @@ public class MAModule {
         return new AccountActivity();
     }
 
+    @Provides
+    @MAScope
+    public ServerConnect providesServerConnect(){
+        return new ServerConnect(maContext);
+    }
+
     //provides and constructs the Model instance when it is requested
     @Provides
     @MAScope
     @Inject
-    public MAContractMVP.Model providesSharedPrefModel(SharedPreferences sp, AccountActivity accountActivity) {
-        return new MainActivityModel(sp, accountActivity);
+    public MAContractMVP.Model providesMainActivityModel(SharedPreferences sp, AccountActivity accountActivity, ServerConnect serverConnect) {
+        return new MainActivityModel(sp, accountActivity, serverConnect);
     }
 
     //provides presenter concrete class object with model instance which is the implementation of the Presenter interface
@@ -53,6 +60,7 @@ public class MAModule {
     public MAContractMVP.Presenter providesMAPresenter(MAContractMVP.Model model){
         return  new MAPresenter(model);
     }
+
 
 
 }

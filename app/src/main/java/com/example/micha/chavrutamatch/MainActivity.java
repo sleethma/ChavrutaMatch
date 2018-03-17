@@ -4,17 +4,14 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,32 +22,18 @@ import android.widget.Toast;
 
 import com.example.micha.chavrutamatch.AcctLogin.LoginActivity;
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
-import com.example.micha.chavrutamatch.DI.Components.MAComponent;
 import com.example.micha.chavrutamatch.DI.Components.DaggerMAComponent;
+import com.example.micha.chavrutamatch.DI.Components.MAComponent;
 import com.example.micha.chavrutamatch.DI.Modules.MAModule;
 import com.example.micha.chavrutamatch.Data.AvatarImgs;
 import com.example.micha.chavrutamatch.Data.HostSessionData;
-import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.example.micha.chavrutamatch.MVPConstructs.MAContractMVP;
-import com.example.micha.chavrutamatch.MVPConstructs.Models.MainActivityModel;
 import com.example.micha.chavrutamatch.Utils.ConnCheckUtil;
 import com.example.micha.chavrutamatch.Utils.GlideApp;
 import com.example.micha.chavrutamatch.Utils.RecyclerViewListDecor;
-import com.facebook.accountkit.Account;
 import com.facebook.accountkit.AccountKit;
-import com.facebook.accountkit.AccountKitCallback;
-import com.facebook.accountkit.AccountKitError;
-import com.facebook.accountkit.PhoneNumber;
-import com.google.i18n.phonenumbers.NumberParseException;
-import com.google.i18n.phonenumbers.PhoneNumberUtil;
-import com.google.i18n.phonenumbers.Phonenumber;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -72,11 +55,6 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
     @BindView(R.id.v_underline_toolbar)
     View underlineToolbar;
 
-
-    //todo: remove below SPM when no longer needed!
-    @Inject
-    @Nullable
-    MainActivityModel mainActivityModel;
     @Inject
     MAContractMVP.Presenter presenter;
 
@@ -86,9 +64,9 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
     static Context mContext;
     private static String jsonString;
 
-    JSONObject jsonObject;
-    JSONArray jsonArray;
-    String accountId;
+//    JSONObject jsonObject;
+//    JSONArray jsonArray;
+//    String accountId;
 
     //adds spacing b/n listitems
     private final int VERTICAL_LIST_ITEM_SPACE = 40;
@@ -116,92 +94,34 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
             //get current accountkit account
             presenter.getAccountKit();
             presenter.getJsonChavrutaString();
-            //receives intent from ServerConnect to display myChavruta list, else gets myChavruta info from db
-            if (getIntent().getExtras().getString("myChavrutaKey") != null) {
-                if (ChavrutaMatch.getMyChavrutaJsonString() != null) {
-                    jsonString = ChavrutaMatch.getMyChavrutaJsonString();
-                }
 
-                myChavrutasArrayList = new ArrayList<>();
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                loadOnSelectActivity(view);
+            }
+        });
 
-                //add and remove views to display myChavrutas
-                if (!jsonString.isEmpty()) {
-                    //parses and adds data in JSON string from MyChavruta Server call
-                    parseJSONMyChavrutas();
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
 
-                    //inorder to resize mychavruta recyclerview
-                    myChavrutaListView.requestLayout();
-
-                    //todo: inject adapter using: http://frogermcs.github.io/inject-everything-viewholder-and-dagger-2-example/
-                    //attaches data source to adapter and displays list
-                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-                    myChavrutaListView.setLayoutManager(linearLayoutManager);
-
-                    //add ItemDecoration
-                    myChavrutaListView.addItemDecoration(new RecyclerViewListDecor(VERTICAL_LIST_ITEM_SPACE));
-
-                    myChavrutaListView.setHasFixedSize(true);
-                    mAdapter = new OpenChavrutaAdapter(this, myChavrutasArrayList);
-                    myChavrutaListView.setAdapter(mAdapter);
-                    noMatchView.setVisibility(View.GONE);
-                    myChavrutaListView.setVisibility(View.VISIBLE);
-                } else {
-                    //sets empty array list view
-                    myChavrutaListView.setVisibility(View.GONE);
-                    noMatchView.setVisibility(View.VISIBLE);
-
-                }
-                //checks to ensure db has data after parsing
-                if (myChavrutasArrayList.size() < 1) {
-                    myChavrutaListView.setVisibility(View.GONE);
-                    noMatchView.setVisibility(View.VISIBLE);
-                }
-                Toolbar toolbar = findViewById(R.id.toolbar);
-                setSupportActionBar(toolbar);
-            } else {
-                //if db not yet accessed, gets all chavrutas that user has requested
-                //@var sp: sets userId to UserDetails for server calls
-                accountId = mainActivityModel.getStringDataFromSP(getString(R.string.user_account_id_key));
-                UserDetails.setmUserId(accountId);
-                //check user has a stored accountkit id on device and fetch their chavruta data from db
-                if (accountId != null) {
-                    String myChavrutasKey = "my chavrutas";
-                    ServerConnect getMyChavrutas = new ServerConnect(this, myChavrutaListView);
-                    getMyChavrutas.execute(myChavrutasKey);
-                } else {
-                    //device is not logged in
-                    AccountKit.logOut();
-                    launchLoginActivity();
-                }
+            // COMPLETED (4) Override onMove and simply return false inside
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                //do nothing, we only swipe needed
+                return false;
             }
 
-            FloatingActionButton fab = findViewById(R.id.fab);
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    loadOnSelectActivity(view);
-                }
-            });
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+                // Inside, get the viewHolder's itemView's tag and store in a long variable id
+                //get the id of the item being swiped
+                int id = (int) viewHolder.itemView.getTag();
+                int currentItemViewType = viewHolder.getItemViewType();
+                notifyUserBeforeDelete(id, currentItemViewType);
 
-            new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-
-                // COMPLETED (4) Override onMove and simply return false inside
-                @Override
-                public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-                    //do nothing, we only swipe needed
-                    return false;
-                }
-
-                @Override
-                public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
-                    // Inside, get the viewHolder's itemView's tag and store in a long variable id
-                    //get the id of the item being swiped
-                    int id = (int) viewHolder.itemView.getTag();
-                    int currentItemViewType = viewHolder.getItemViewType();
-                    notifyUserBeforeDelete(id, currentItemViewType);
-
-                }
-            }).attachToRecyclerView(myChavrutaListView);
+            }
+        }).attachToRecyclerView(myChavrutaListView);
         } else {
             alertUserToCheckConn();
         }
@@ -217,67 +137,14 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
     @Override
     protected void onResume() {
         super.onResume();
-        presenter.setView(this);
+        presenter.setMAView(this);
         presenter.setupToolbar();
     }
-    //parses JSON string data to form myChavrutas ListView
-    public void parseJSONMyChavrutas() {
-        String chavrutaId;
 
-        String hostFirstName, hostLastName, hostAvatarNumber, sessionMessage, sessionDate,
-                startTime, endTime, sefer, location, hostCityState, hostId,
-                chavrutaRequest1, chavrutaRequest1Avatar, chavrutaRequest1Name,
-                chavrutaRequest2, chavrutaRequest2Avatar, chavrutaRequest2Name,
-                chavrutaRequest3, chavrutaRequest3Avatar, chavrutaRequest3Name,
-                confirmed;
-        try {
+//    public void initiateListViewRetrieval(){
+//        presenter.setMainActivityListView((MAContractMVP.View) myChavrutaListView);
+//    }
 
-            jsonObject = new JSONObject(jsonString);
-            jsonArray = jsonObject.getJSONArray("server_response");
-
-            //loop through array and extract objects, adding them individually as setter objects,
-            //and adding objects to list adapter.
-            int count = 0;
-            while (count < jsonArray.length()) {
-                JSONObject jo = jsonArray.getJSONObject(count);
-                chavrutaId = jo.getString("chavruta_id");
-                hostFirstName = jo.getString("hostFirstName");
-                hostLastName = jo.getString("hostLastName");
-                hostAvatarNumber = jo.getString("hostAvatarNumber");
-                sessionMessage = jo.getString("sessionMessage");
-                sessionDate = jo.getString("sessionDate");
-                startTime = jo.getString("startTime");
-                endTime = jo.getString("endTime");
-                sefer = jo.getString("sefer");
-                location = jo.getString("location");
-                hostCityState = jo.getString("hostCityState");
-                hostId = jo.getString("host_id");
-                chavrutaRequest1 = jo.getString("chavruta_request_1");
-                chavrutaRequest1Avatar = jo.getString("chavruta_request_1_avatar");
-                chavrutaRequest1Name = jo.getString("chavruta_request_1_name");
-                chavrutaRequest2 = jo.getString("chavruta_request_2");
-                chavrutaRequest2Avatar = jo.getString("chavruta_request_2_avatar");
-
-                chavrutaRequest2Name = jo.getString("chavruta_request_2_name");
-                chavrutaRequest3 = jo.getString("chavruta_request_3");
-                chavrutaRequest3Avatar = jo.getString("chavruta_request_3_avatar");
-                chavrutaRequest3Name = jo.getString("chavruta_request_3_name");
-                confirmed = jo.getString("confirmed");
-
-                //make user data object of UserDataSetter class
-                HostSessionData myChavrutaData = new HostSessionData(chavrutaId, hostFirstName,
-                        hostLastName, hostAvatarNumber, sessionMessage, sessionDate, startTime, endTime, sefer, location,
-                        hostCityState, hostId, chavrutaRequest1, chavrutaRequest2, chavrutaRequest3,
-                        chavrutaRequest1Avatar, chavrutaRequest1Name, chavrutaRequest2Avatar, chavrutaRequest2Name,
-                        chavrutaRequest3Avatar, chavrutaRequest3Name,
-                        confirmed);
-                myChavrutasArrayList.add(myChavrutaData);
-                count++;
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -323,18 +190,6 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
         startActivity(intent);
         finish();
     }
-
-//    private String formatPhoneNumber(String phoneNumber) {
-//        // helper method to format the phone number for display
-//        try {
-//            PhoneNumberUtil pnu = PhoneNumberUtil.getInstance();
-//            Phonenumber.PhoneNumber pn = pnu.parse(phoneNumber, Locale.getDefault().getCountry());
-//            phoneNumber = pnu.format(pn, PhoneNumberUtil.PhoneNumberFormat.NATIONAL);
-//        } catch (NumberParseException e) {
-//            e.printStackTrace();
-//        }
-//        return phoneNumber;
-//    }
 
     public void loadProfile() {
         Intent intent = new Intent(this, AddBio.class);
@@ -426,13 +281,12 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
     @Override
     public void getParentView() {
         Snackbar.make(myChavrutaListView, "Swipe To Unregister Class", Snackbar.LENGTH_LONG).show();
-
     }
 
 
     @Override
-    public void sendToast() {
-        Toast.makeText(this, "You Are Not Logged in with AccountKit", Toast.LENGTH_LONG).show();
+    public void sendToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -445,7 +299,7 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
     public void setUserAvatar(){
         //sets user avatar. @UserAvatarNumberString = "999" indicates avatar is user photo
 
-        if (UserDetails.getmUserAvatarNumberString() != null &&
+         if (UserDetails.getmUserAvatarNumberString() != null &&
                 !UserDetails.getmUserAvatarNumberString().equals("999")) {
             userAvatar.setImageResource(AvatarImgs.getAvatarNumberResId(
                     Integer.parseInt(UserDetails.getmUserAvatarNumberString())));
@@ -469,7 +323,161 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
             }
         }
     }
+
+    @Override
+    public void setMyChavrutaAdapter(ArrayList<HostSessionData> myChavrutasArrayList){
+        myChavrutaListView.requestLayout();
+
+                //attaches data source to adapter and displays list
+                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+                myChavrutaListView.setLayoutManager(linearLayoutManager);
+
+                //add ItemDecoration
+                myChavrutaListView.addItemDecoration(new RecyclerViewListDecor(VERTICAL_LIST_ITEM_SPACE));
+
+                myChavrutaListView.setHasFixedSize(true);
+                mAdapter = new OpenChavrutaAdapter(mContext, myChavrutasArrayList,presenter);
+                myChavrutaListView.setAdapter(mAdapter);
+    }
+
+    @Override
+    public void displayRecyclerView() {
+        myChavrutaListView.setVisibility(View.VISIBLE);
+        noMatchView.setVisibility(View.GONE);
+    }
 }
+
+//parses JSON string data to form myChavrutas ListView
+//    public void parseJSONMyChavrutas() {
+//        String chavrutaId;
+//
+//        String hostFirstName, hostLastName, hostAvatarNumber, sessionMessage, sessionDate,
+//                startTime, endTime, sefer, location, hostCityState, hostId,
+//                chavrutaRequest1, chavrutaRequest1Avatar, chavrutaRequest1Name,
+//                chavrutaRequest2, chavrutaRequest2Avatar, chavrutaRequest2Name,
+//                chavrutaRequest3, chavrutaRequest3Avatar, chavrutaRequest3Name,
+//                confirmed;
+//        try {
+//
+//            jsonObject = new JSONObject(jsonString);
+//            jsonArray = jsonObject.getJSONArray("server_response");
+//
+//            //loop through array and extract objects, adding them individually as setter objects,
+//            //and adding objects to list adapter.
+//            int count = 0;
+//            while (count < jsonArray.length()) {
+//                JSONObject jo = jsonArray.getJSONObject(count);
+//                chavrutaId = jo.getString("chavruta_id");
+//                hostFirstName = jo.getString("hostFirstName");
+//                hostLastName = jo.getString("hostLastName");
+//                hostAvatarNumber = jo.getString("hostAvatarNumber");
+//                sessionMessage = jo.getString("sessionMessage");
+//                sessionDate = jo.getString("sessionDate");
+//                startTime = jo.getString("startTime");
+//                endTime = jo.getString("endTime");
+//                sefer = jo.getString("sefer");
+//                location = jo.getString("location");
+//                hostCityState = jo.getString("hostCityState");
+//                hostId = jo.getString("host_id");
+//                chavrutaRequest1 = jo.getString("chavruta_request_1");
+//                chavrutaRequest1Avatar = jo.getString("chavruta_request_1_avatar");
+//                chavrutaRequest1Name = jo.getString("chavruta_request_1_name");
+//                chavrutaRequest2 = jo.getString("chavruta_request_2");
+//                chavrutaRequest2Avatar = jo.getString("chavruta_request_2_avatar");
+//
+//                chavrutaRequest2Name = jo.getString("chavruta_request_2_name");
+//                chavrutaRequest3 = jo.getString("chavruta_request_3");
+//                chavrutaRequest3Avatar = jo.getString("chavruta_request_3_avatar");
+//                chavrutaRequest3Name = jo.getString("chavruta_request_3_name");
+//                confirmed = jo.getString("confirmed");
+//
+//                //make user data object of UserDataSetter class
+//                HostSessionData myChavrutaData = new HostSessionData(chavrutaId, hostFirstName,
+//                        hostLastName, hostAvatarNumber, sessionMessage, sessionDate, startTime, endTime, sefer, location,
+//                        hostCityState, hostId, chavrutaRequest1, chavrutaRequest2, chavrutaRequest3,
+//                        chavrutaRequest1Avatar, chavrutaRequest1Name, chavrutaRequest2Avatar, chavrutaRequest2Name,
+//                        chavrutaRequest3Avatar, chavrutaRequest3Name,
+//                        confirmed);
+//                myChavrutasArrayList.add(myChavrutaData);
+//                count++;
+//            }
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
+//    private String formatPhoneNumber(String phoneNumber) {
+//        // helper method to format the phone number for display
+//        try {
+//            PhoneNumberUtil pnu = PhoneNumberUtil.getInstance();
+//            Phonenumber.PhoneNumber pn = pnu.parse(phoneNumber, Locale.getDefault().getCountry());
+//            phoneNumber = pnu.format(pn, PhoneNumberUtil.PhoneNumberFormat.NATIONAL);
+//        } catch (NumberParseException e) {
+//            e.printStackTrace();
+//        }
+//        return phoneNumber;
+//    }
+
+//            receives intent from ServerConnect to display myChavruta list, else gets myChavruta info from db
+//        if (getIntent().getExtras().getString("myChavrutaKey") != null) {
+//            if (ChavrutaMatch.getMyChavrutaJsonString() != null) {
+//                jsonString = ChavrutaMatch.getMyChavrutaJsonString();
+//            }
+//
+//            String jsonString = ChavrutaMatch.getMyChavrutaJsonString();
+//
+//            myChavrutasArrayList = new ArrayList<>();
+//
+//            //add and remove views to display myChavrutas
+//            if (!jsonString.isEmpty()) {
+//                //parses and adds data in JSON string from MyChavruta Server call
+//                parseJSONMyChavrutas();
+//
+//                //inorder to resize mychavruta recyclerview
+//                myChavrutaListView.requestLayout();
+//
+//                //todo: inject adapter using: http://frogermcs.github.io/inject-everything-viewholder-and-dagger-2-example/
+//                //attaches data source to adapter and displays list
+//                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+//                myChavrutaListView.setLayoutManager(linearLayoutManager);
+//
+//                //add ItemDecoration
+//                myChavrutaListView.addItemDecoration(new RecyclerViewListDecor(VERTICAL_LIST_ITEM_SPACE));
+//
+//                myChavrutaListView.setHasFixedSize(true);
+//                mAdapter = new OpenChavrutaAdapter(this, myChavrutasArrayList);
+//                myChavrutaListView.setAdapter(mAdapter);
+//                noMatchView.setVisibility(View.GONE);
+//                myChavrutaListView.setVisibility(View.VISIBLE);
+//            } else {
+//                //sets empty array list view
+//                myChavrutaListView.setVisibility(View.GONE);
+//                noMatchView.setVisibility(View.VISIBLE);
+//
+//            }
+//            //checks to ensure db has data after parsing
+//            if (myChavrutasArrayList.size() < 1) {
+//                myChavrutaListView.setVisibility(View.GONE);
+//                noMatchView.setVisibility(View.VISIBLE);
+//            }
+//            Toolbar toolbar = findViewById(R.id.toolbar);
+//            setSupportActionBar(toolbar);
+//        } else {
+//            //if db not yet accessed, gets all chavrutas that user has requested
+//            //@var sp: sets userId to UserDetails for server calls
+//            accountId = mainActivityModel.getStringDataFromSP(getString(R.string.user_account_id_key));
+//            UserDetails.setmUserId(accountId);
+//            //check user has a stored accountkit id on device and fetch their chavruta data from db
+//            if (accountId != null) {
+//                String myChavrutasKey = "my chavrutas";
+//                ServerConnect getMyChavrutas = new ServerConnect(this, myChavrutaListView);
+//                getMyChavrutas.execute(myChavrutasKey);
+//            } else {
+//                //device is not logged in
+//                AccountKit.logOut();
+//                launchLoginActivity();
+//            }
+//        }
 
 
 

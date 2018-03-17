@@ -18,7 +18,8 @@ import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.Data.AvatarImgs;
 import com.example.micha.chavrutamatch.Data.HostSessionData;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
-import com.example.micha.chavrutamatch.Utils.ChavrutaUtils;
+import com.example.micha.chavrutamatch.MVPConstructs.MAContractMVP;
+import com.example.micha.chavrutamatch.MVPConstructs.Repos.MARepoContract;
 import com.example.micha.chavrutamatch.Utils.GlideApp;
 
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ import static com.example.micha.chavrutamatch.AcctLogin.UserDetails.getUserCusto
  * Created by micha on 7/22/2017.
  */
 
-class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewHolder> {
+public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewHolder> {
 
     //number of views adapter will hold
     private Context mContext;
@@ -40,35 +41,24 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
     private static boolean mConfirmed = false;
     //interface for getting MainActivity context
     private ParentView callback = (ParentView) MainActivity.mContext;
-
+    private MAContractMVP.Presenter presenter;
 
 
     //holds viewType for relevant listItem
     Boolean hostListItemView;
     Boolean awaitingConfirmView;
-    ArrayList<HostSessionData> mChavrutaSessionsAL;
+    private static ArrayList<HostSessionData> mChavrutaSessionsAL;
     List<Integer> avatarList = AvatarImgs.getAllAvatars();
 
-    public OpenChavrutaAdapter(Context context, ArrayList<HostSessionData> chavrutaSessionsArrayList) {
+    public OpenChavrutaAdapter(Context context, ArrayList<HostSessionData> chavrutaSessionsArrayList, MAContractMVP.Presenter presenter) {
         this.mContext = context;
+        this.presenter = presenter;
         mChavrutaSessionsAL = chavrutaSessionsArrayList;
         mainActivityContext = MainActivity.mContext;
         //calls so can access static user vars throughout adapter
 //        orderArrayByDate(mChavrutaSessionsAL);
     }
 
-    @Override
-    public int getItemViewType(int position) {
-        //selects hostId or userId for inflation
-        HostSessionData chavrutaData = mChavrutaSessionsAL.get(position);
-        String hostId = chavrutaData.getmHostId();
-        // @return 1: hostview, else awaitingConfirmView
-        if (hostId.equals(userId)) {
-            return 1;
-        } else {
-            return 0;
-        }
-    }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -94,7 +84,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
 
     @Override
     public void onBindViewHolder(OpenChavrutaAdapter.ViewHolder holder, int position) {
-        holder.bind(holder, position);
+        presenter.onBindToPresenter(holder, position);
     }
 
     @Override
@@ -103,7 +93,7 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
     }
 
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder implements MARepoContract {
         TextView hostFullName, sessionDate, startTime, endTime, sefer, location,
                 confirmRequestName_1, confirmRequestName_2, confirmRequestName_3;
         LinearLayout pendingRequest_1;
@@ -158,266 +148,45 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
             knurling = listItemView.findViewById(R.id.iv_knurling);
         }
 
-        void bind(OpenChavrutaAdapter.ViewHolder holder, int listIndex) {
-            final int position = listIndex;
-            //@requestSlotOpen number of next class slot availiable for requester
-            //@requesterAvatar & @requesterName are vars that hold chavrutaInformation for display in hostview
-
-            final HostSessionData currentItem = mChavrutaSessionsAL.get(position);
-
-            //view is hosting a class
-            if (holder.getItemViewType() == 1 && mContext == mainActivityContext) {
-                hostListItemView = true;
-                awaitingConfirmView = false;
-                holder.hostFullName.setText(UserDetails.getmUserName());
-
-                if (UserDetails.getmUserAvatarNumberString() != null &&
-                        !UserDetails.getmUserAvatarNumberString().equals("999")) {
-                    hostAvatar.setImageResource(AvatarImgs.getAvatarNumberResId(
-                            Integer.parseInt(UserDetails.getmUserAvatarNumberString())));
-                } else {
-                    //using custom avatar
-                    //check to see if custom avatar is in UserDetails
-                    if (UserDetails.getHostAvatarUri() != null) {
-                        GlideApp
-                                .with(mContext)
-                                .load(UserDetails.getHostAvatarUri())
-                                .centerCrop()
-                                .into(hostAvatar);
-                    } else if (getUserCustomAvatarBase64ByteArray() != null) {
-                        GlideApp
-                                .with(mContext)
-                                .asBitmap()
-                                .load(getUserCustomAvatarBase64ByteArray())
-                                .placeholder(R.drawable.ic_unknown_user)
-                                .centerCrop()
-                                .into(hostAvatar);
-                        //otherwise use xml unknown profile image
-                    }
-                }
-
-                //view is awaiting hosts confirmation
+        @Override
+        public void setHostRequestAvatar(byte[] customRequesterAvatar, String request1AvatarNumber, int requesterNumber) {
+            ImageView currentAvatarView;
+            if (requesterNumber == 1) {
+                currentAvatarView = confirmRequestAvatar_1;
+            } else if (requesterNumber == 2) {
+                currentAvatarView = confirmRequestAvatar_2;
             } else {
-                awaitingConfirmView = true;
-                hostListItemView = false;
+                currentAvatarView = confirmRequestAvatar_3;
             }
-            //set initial confirmed state for awaiting confirmation list item
-            if (awaitingConfirmView) {
-                String learnerConfirmed = currentItem.getmConfirmed();
-                String currentHostAvatarNumberString = currentItem.getmHostAvatarNumber();
 
-                //sets user first last name after concatonation
-                String hostNameConcat = ChavrutaUtils.createUserFirstLastName(
-                        currentItem.getmHostFirstName(), currentItem.getmHostLastName());
-                holder.hostFullName.setText(hostNameConcat);
-
-                //checks if custom user byte array extant from MA parsing
-                if (currentHostAvatarNumberString != null &&
-                        currentHostAvatarNumberString.length() > AvatarImgs.avatarImgList.size()) {
-                    byte[] customHostAvatar = currentItem.getmHostCustomAvatarByteArray();
-                    GlideApp
-                            .with(mContext)
-                            .asBitmap()
-                            .load(customHostAvatar)
-                            .placeholder(R.drawable.ic_unknown_user)
-                            .centerCrop()
-                            .into(holder.hostAvatar);
-                    //checks if user using template avatar img
-                } else if (!currentHostAvatarNumberString.equals("999")) {
-                    holder.hostAvatar.setImageResource(avatarList.get(Integer.parseInt(currentItem.getmHostAvatarNumber())));
-                }
-
-                if (learnerConfirmed.equals(userId)) {
-                    holder.chavrutaConfirmed.setBackgroundResource(R.drawable.confirmed_rounded_corners);
-                    holder.chavrutaConfirmed.setText("Matched!");
-                } else {
-                    holder.chavrutaConfirmed.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
-                    holder.chavrutaConfirmed.setText("Awaiting" + System.getProperty("line.separator") + "Match");
-                }
+            if (customRequesterAvatar != null) {
+                GlideApp
+                        .with(mContext)
+                        .asBitmap()
+                        .load(customRequesterAvatar)
+                        .circleCrop()
+                        .into(currentAvatarView);
+            } else {
+                currentAvatarView.setImageResource(avatarList.get(
+                        Integer.parseInt(request1AvatarNumber)));
             }
-            //hosting a class list item
-            if (hostListItemView) {
-                String idOfConfirmedUser = currentItem.getmConfirmed();
-                String request1 = currentItem.getMchavrutaRequest1();
-                String request2 = currentItem.getMchavrutaRequest2();
-                String request3 = currentItem.getMchavrutaRequest3();
-                String chavrutaRequestName1 = currentItem.getmChavrutaRequest1Name();
-                String chavrutaRequestName2 = currentItem.getmChavrutaRequest2Name();
-                String chavrutaRequestName3 = currentItem.getmChavrutaRequest3Name();
+        }
 
-                Boolean isRequest1 = false;
-                Boolean isRequest2 = false;
-                Boolean isRequest3 = false;
-
-
-                //sets the initial status of confirmed button to check to indicate confirmed
-                if (request1.length() > 5) {
-                    isRequest1 = true;
-                    holder.pendingRequest_1.setVisibility(View.VISIBLE);
-                    holder.underlinePendingRequest_1.setVisibility(View.VISIBLE);
-                    if (idOfConfirmedUser.equals(request1) && currentItem.requestOneConfirmed) {
-                        mChavrutaSessionsAL.get(position).setRequestOneConfirmed(true);
-                        holder.confirmRequest_1.setBackgroundResource(R.drawable.ic_confirm_class);
-                        currentItem.setRequestOneConfirmed(true);
-                    } else {
-                        currentItem.setRequestOneConfirmed(false);
-                    }
-                    holder.confirmRequestName_1.setText(
-                            chavrutaRequestName1);
-                    String request1AvatarNumber = currentItem.getmChavrutaRequest1Avatar();
-                    if (request1AvatarNumber.length() >= 3) {
-                        byte[] decodeRequesterAvatar = Base64.decode(
-                                request1AvatarNumber, Base64.DEFAULT);
-
-                        GlideApp
-                                .with(mContext)
-                                .asBitmap()
-                                .load(decodeRequesterAvatar)
-                                .circleCrop()
-                                .into(holder.confirmRequestAvatar_1);
-                    } else {
-                        holder.confirmRequestAvatar_1.setImageResource(avatarList.get(
-                                Integer.parseInt(request1AvatarNumber)));
-                    }
-                } else {
-                    holder.pendingRequest_1.setVisibility(View.GONE);
-                    holder.underlinePendingRequest_1.setVisibility(View.GONE);
-                    currentItem.setRequestOneConfirmed(false);
-                }
-                if (request2.length() > 5) {
-                    holder.pendingRequest_2.setVisibility(View.VISIBLE);
-                    holder.underlinePendingRequest_2.setVisibility(View.VISIBLE);
-                    isRequest2 = true;
-                    if (idOfConfirmedUser.equals(request2) && currentItem.requestTwoConfirmed) {
-                        holder.confirmRequest_2.setBackgroundResource(R.drawable.ic_confirm_class);
-                        currentItem.setRequestTwoConfirmed(true);
-                    } else {
-                        currentItem.setRequestTwoConfirmed(false);
-                    }
-                    holder.confirmRequestName_2.setText(
-                            chavrutaRequestName2);
-                    String request2AvatarNumber = currentItem.getmChavrutaRequest2Avatar();
-                    if (request2AvatarNumber.length() >= 3) {
-                        byte[] decodeRequesterAvatar = Base64.decode(
-                                request2AvatarNumber, Base64.DEFAULT);
-
-                        GlideApp
-                                .with(mContext)
-                                .asBitmap()
-                                .load(decodeRequesterAvatar)
-                                .circleCrop()
-                                .into(holder.confirmRequestAvatar_2);
-                    } else {
-                        holder.confirmRequestAvatar_2.setImageResource(avatarList.get(
-                                Integer.parseInt(request2AvatarNumber)));
-                    }
-
-                } else {
-                    holder.pendingRequest_2.setVisibility(View.GONE);
-                    holder.underlinePendingRequest_2.setVisibility(View.GONE);
-                    currentItem.setRequestTwoConfirmed(false);
-                }
-                if (request3.length() > 5) {
-                    holder.pendingRequest_3.setVisibility(View.VISIBLE);
-                    holder.underlinePendingRequest_3.setVisibility(View.VISIBLE);
-                    isRequest3 = true;
-                    if (idOfConfirmedUser.equals(request3) && currentItem.requestThreeConfirmed) {
-                        holder.confirmRequest_3.setBackgroundResource(R.drawable.ic_confirm_class);
-                        currentItem.setRequestThreeConfirmed(true);
-                    } else {
-                        currentItem.setRequestThreeConfirmed(false);
-                    }
-                    holder.confirmRequestName_3.setText(
-                            chavrutaRequestName3);
-
-                    String request3AvatarNumber = currentItem.getmChavrutaRequest3Avatar();
-                    if (request3AvatarNumber.length() >= 3) {
-                        byte[] decodeRequesterAvatar = Base64.decode(
-                                request3AvatarNumber, Base64.DEFAULT);
-
-
-                        GlideApp
-                                .with(mContext)
-                                .asBitmap()
-                                .load(decodeRequesterAvatar)
-                                .circleCrop()
-                                .into(holder.confirmRequestAvatar_3);
-                    } else {
-                        holder.confirmRequestAvatar_3.setImageResource(avatarList.get(
-                                Integer.parseInt(request3AvatarNumber)));
-                    }
-                } else {
-                    holder.pendingRequest_3.setVisibility(View.GONE);
-                    currentItem.setRequestThreeConfirmed(false);
-                    holder.underlinePendingRequest_3.setVisibility(View.GONE);
-
-                }
-
-                //populates view if there is a request
-                if (isRequest1 || isRequest2 || isRequest3) {
-                    holder.pendingRequestLabel.setVisibility(View.VISIBLE);
-                    holder.noRequesterView.setVisibility(View.GONE);
-
-                } else {
-                    holder.pendingRequestLabel.setVisibility(View.GONE);
-                    holder.noRequesterView.setVisibility(View.VISIBLE);
-
-                }
-                //confirms or unconfirms requested view with color change indicator and db update
-                if (isRequest1) {
-                    holder.confirmRequest_1.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            HostSessionData currentItem = mChavrutaSessionsAL.get(position);
-                            currentItem.getMchavrutaRequest1();
-
-                            // sets and sends to db hosts specific request confirmation
-                            setViewHolderConfirmations(currentItem, 1);
-                        }
-                    });
-                }
-
-                //sets confirmed state for request 2
-                if (isRequest2) {
-                    holder.confirmRequest_2.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            HostSessionData currentItem = mChavrutaSessionsAL.get(position);
-
-                            // sets and sends to db hosts specific request confirmation
-                            setViewHolderConfirmations(currentItem, 2);
-                        }
-                    });
-                }
-
-
-                //sets confirmed state for request 3
-                if (isRequest3) {
-                    holder.confirmRequest_3.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            HostSessionData currentItem = mChavrutaSessionsAL.get(position);
-
-                            // sets and sends to db hosts specific request confirmation
-                            setViewHolderConfirmations(currentItem, 3);
-                        }
-                    });
-                }
-
+        @Override
+        public void setViewItemData(HostSessionData repoHSD, int position) {
+            sessionDate.setText(repoHSD.getmSessionDate());
+            startTime.setText(repoHSD.getmStartTime());
+            endTime.setText(repoHSD.getmEndTime());
+            String seferText = repoHSD.getmSefer();
+            if (seferText.length() >= 30) {
+                seferText = seferText.substring(0, 30) + "...";
             }
-            holder.sessionDate.setText(currentItem.getmSessionDate());
-            holder.startTime.setText(currentItem.getmStartTime());
-            holder.endTime.setText(currentItem.getmEndTime());
-            String seferText = currentItem.getmSefer();
-            if(seferText.length() >= 30){
-               seferText = seferText.substring(0, 30) + "...";
-            }
-            holder.sefer.setText(seferText);
-            holder.location.setText(currentItem.getmLocation());
-            holder.itemView.setTag(position);
+            sefer.setText(seferText);
+            location.setText(repoHSD.getmLocation());
+            itemView.setTag(position);
 
 
-            holder.knurling.setOnClickListener(new View.OnClickListener() {
+            knurling.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     callback.getParentView();
@@ -425,86 +194,161 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
             });
         }
 
-        private void setViewHolderConfirmations(HostSessionData currentItem, int requestClicked) {
-
-            switch (requestClicked) {
-                case 1:
-                    //sets confirmed state for request 1
-                    if (!currentItem.requestOneConfirmed) {
-                        currentItem.setRequestOneConfirmed(true);
-                        currentItem.setmConfirmed(currentItem.getMchavrutaRequest1());
-                        confirmRequest_1.setBackgroundResource(R.drawable.ic_confirm_class);
-
-                        //set other request confirmations to false
-                        currentItem.setRequestTwoConfirmed(false);
-                        currentItem.setRequestThreeConfirmed(false);
-                        confirmRequest_2.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
-                        confirmRequest_3.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
-                    } else {
-                        currentItem.setRequestOneConfirmed(false);
-                        currentItem.setmConfirmed("0");
-                        confirmRequest_1.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
-                    }
-
-                    break;
-
-                case 2:
-                    //sets confirmed or not
-                    if (!currentItem.requestTwoConfirmed) {
-                        currentItem.setRequestTwoConfirmed(true);
-                        currentItem.setmConfirmed(currentItem.getMchavrutaRequest2());
-                        confirmRequest_2.setBackgroundResource(R.drawable.ic_confirm_class);
-
-
-                        //set other request confirmations to false
-                        currentItem.setRequestOneConfirmed(false);
-                        currentItem.setRequestThreeConfirmed(false);
-                        confirmRequest_1.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
-                        confirmRequest_3.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
-                    } else {
-                        currentItem.setRequestTwoConfirmed(false);
-                        currentItem.setmConfirmed("0");
-                        confirmRequest_2.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
-                    }
-                    break;
-
-                case 3:
-                    //sets confirmed or not
-                    if (!currentItem.requestThreeConfirmed) {
-                        currentItem.setRequestThreeConfirmed(true);
-                        currentItem.setmConfirmed(currentItem.getMchavrutaRequest3());
-                        //confirmRequest_3.setBackgroundColor(Color.parseColor("#10ef2e"));
-                        confirmRequest_3.setBackgroundResource(R.drawable.ic_confirm_class);
-
-                        //set other request confirmations to false
-                        currentItem.setRequestOneConfirmed(false);
-                        currentItem.setRequestTwoConfirmed(false);
-                        confirmRequest_1.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
-                        confirmRequest_2.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
-                    } else {
-                        currentItem.setRequestThreeConfirmed(false);
-                        currentItem.setmConfirmed("0");
-                        confirmRequest_3.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
-                    }
-                    break;
-
-                default:
-                    return;
+        @Override
+        public void setupHostsRequestersViews(String requesterName, int requesterNumber) {
+            if (requesterNumber == 1) {
+                pendingRequest_1.setVisibility(View.VISIBLE);
+                underlinePendingRequest_1.setVisibility(View.VISIBLE);
+                confirmRequestName_1.setText(
+                        requesterName);
             }
-            String chavrutaId = currentItem.getmChavrutaId();
-            sendConfirmationtoDb(chavrutaId, currentItem.getmConfirmed());
+            if (requesterNumber == 2) {
+                pendingRequest_2.setVisibility(View.VISIBLE);
+                underlinePendingRequest_2.setVisibility(View.VISIBLE);
+                confirmRequestName_2.setText(
+                        requesterName);
+            }
+            if (requesterNumber == 3) {
+                pendingRequest_3.setVisibility(View.VISIBLE);
+                underlinePendingRequest_3.setVisibility(View.VISIBLE);
+                confirmRequestName_3.setText(
+                        requesterName);
+            }
         }
 
+        @Override
+        public void setRequestButtonStatus(int requestNumber) {
+            confirmRequest_1.setBackgroundResource(R.drawable.ic_confirm_class);
+        }
+
+        @Override
+        public void setCustomListItemHostAvatar() {
+            if (UserDetails.getHostAvatarUri() != null) {
+                GlideApp
+                        .with(mContext)
+                        .load(UserDetails.getHostAvatarUri())
+                        .centerCrop()
+                        .into(hostAvatar);
+            } else if (getUserCustomAvatarBase64ByteArray() != null) {
+                GlideApp
+                        .with(mContext)
+                        .asBitmap()
+                        .load(getUserCustomAvatarBase64ByteArray())
+                        .placeholder(R.drawable.ic_unknown_user)
+                        .centerCrop()
+                        .into(hostAvatar);
+                //otherwise use xml unknown profile image
+            }
+        }
+
+
+        @Override
+        public void setUserConfirmedStatus(boolean userIsConfirmed) {
+            if (userIsConfirmed) {
+                chavrutaConfirmed.setBackgroundResource(R.drawable.confirmed_rounded_corners);
+                chavrutaConfirmed.setText("Matched!");
+            } else {
+                chavrutaConfirmed.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
+                chavrutaConfirmed.setText("Awaiting" + System.getProperty("line.separator") + "Match");
+            }
+        }
+
+        @Override
+        public void setDisplayIfRequesters(boolean hasRequesters) {
+            //populates view if there is a request
+            if (hasRequesters) {
+                pendingRequestLabel.setVisibility(View.VISIBLE);
+                noRequesterView.setVisibility(View.GONE);
+
+            } else {
+                pendingRequestLabel.setVisibility(View.GONE);
+                noRequesterView.setVisibility(View.VISIBLE);
+            }
+        }
+
+        @Override
+        public void setListItemHostAvatar() {
+            hostAvatar.setImageResource(AvatarImgs.getAvatarNumberResId(
+                    Integer.parseInt(UserDetails.getmUserAvatarNumberString())));
+        }
+
+        @Override
+        public void setHostFullName(String text) {
+            hostFullName.setText(text);
+        }
+
+        @Override
+        public int getItemViewTypeIF(HostSessionData hsdRepo) {
+            //selects hostId or userId for inflation
+            String hostId = hsdRepo.getmHostId();
+            // @return 1: hostview, else awaitingConfirmView
+            if (hostId.equals(userId)) {
+                return 1;
+            } else {
+                return 0;
+            }
+
+        }
+
+        @Override
+        public void setOnClickListenerOnRequester(final MARepoContract holder, final HostSessionData repoHSD, int requesterNumber) {
+            //confirms or unconfirms requested view with color change indicator and db update
+            Button requestButtonView;
+            switch (requesterNumber) {
+                case 1:
+                    requestButtonView = confirmRequest_1;
+                    break;
+                case 2:
+                    requestButtonView = confirmRequest_2;
+                    break;
+                default:
+                    requestButtonView = confirmRequest_3;
+                    break;
+            }
+            requestButtonView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // sets and sends to db hosts specific request confirmation
+                    presenter.setViewHolderConfirmations(repoHSD, holder, 1);
+                }
+            });
+        }
+
+        @Override
+        public void setButtonToConfirmedState(String confirmButtonAction) {
+            switch (confirmButtonAction) {
+                case "Requester 1 Confirmed":
+                    confirmRequest_1.setBackgroundResource(R.drawable.ic_confirm_class);
+                    confirmRequest_2.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
+                    confirmRequest_3.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
+                    break;
+                case "Requester 1 Not Confirmed":
+                    confirmRequest_1.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
+                    break;
+                case "Requester 2 Confirmed":
+                    confirmRequest_2.setBackgroundResource(R.drawable.ic_confirm_class);
+                    confirmRequest_1.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
+                    confirmRequest_3.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
+                    break;
+                case "Requester 2 Not Confirmed":
+                    confirmRequest_2.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
+                    break;
+                case "Requester 3 Confirmed":
+                    confirmRequest_3.setBackgroundResource(R.drawable.ic_confirm_class);
+                    confirmRequest_1.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
+                    confirmRequest_2.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
+                    break;
+                case "Requester 3 Not Confirmed":
+                    confirmRequest_3.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
+                    break;
+            }
+        }
     }
 
     public void add(HostSessionData dataAddedFromJson) {
         mChavrutaSessionsAL.add(dataAddedFromJson);
     }
 
-    public void sendConfirmationtoDb(String chavrutaId, String requesterId) {
-        ServerConnect confirmChavrutaRequest = new ServerConnect(mContext);
-        confirmChavrutaRequest.execute("confirmChavrutaRequest", chavrutaId, requesterId);
-    }
 
     public void deleteMyChavrutaArrayItemOnSwipe(int indexToDelete, int viewTypeToDelete) {
         HostSessionData currentItem = mChavrutaSessionsAL.get(indexToDelete);
@@ -517,11 +361,11 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
             String requesterAvatarColumn;
             String requesterNameColumn;
 
-            if (userId.equals(currentItem.getMchavrutaRequest1())) {
+            if (userId.equals(currentItem.getMchavrutaRequest1Id())) {
                 requesterNumber = "chavruta_request_1";
                 requesterAvatarColumn = "chavruta_request_1_avatar";
                 requesterNameColumn = "chavruta_request_1_name";
-            } else if (userId.equals(currentItem.getMchavrutaRequest2())) {
+            } else if (userId.equals(currentItem.getMchavrutaRequest2Id())) {
                 requesterNumber = "chavruta_request_2";
                 requesterAvatarColumn = "chavruta_request_2_avatar";
                 requesterNameColumn = "chavruta_request_2_name";
@@ -556,10 +400,481 @@ class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapter.ViewH
         mConfirmed = confirmed;
     }
 
-    interface ParentView{
+    interface ParentView {
         void getParentView();
     }
+
+    public ArrayList<HostSessionData> getmChavrutaSessionsAL() {
+        return mChavrutaSessionsAL;
+    }
 }
+
+//@Override
+//        public void populateRequestDataToHolder(HostSessionData repoHSD) {
+//            String idOfConfirmedUser = repoHSD.getmConfirmed();
+//            String request1 = repoHSD.getMchavrutaRequest1Id();
+//            String request2 = repoHSD.getMchavrutaRequest2Id();
+//            String request3 = repoHSD.getMchavrutaRequest3Id();
+//            String chavrutaRequestName1 = repoHSD.getmChavrutaRequest1Name();
+//            String chavrutaRequestName2 = repoHSD.getmChavrutaRequest2Name();
+//            String chavrutaRequestName3 = repoHSD.getmChavrutaRequest3Name();
+//
+//            Boolean isRequest1 = false;
+//            Boolean isRequest2 = false;
+//            Boolean isRequest3 = false;
+
+//            if (request1.length() > 5) {
+//                isRequest1 = true;
+//                holder.pendingRequest_1.setVisibility(View.VISIBLE);
+//                holder.underlinePendingRequest_1.setVisibility(View.VISIBLE);
+//                if (idOfConfirmedUser.equals(request1) && repoHSD.requestOneConfirmed) {
+//                    mChavrutaSessionsAL.get(position).setRequestOneConfirmed(true);
+//                    holder.confirmRequest_1.setBackgroundResource(R.drawable.ic_confirm_class);
+//                    repoHSD.setRequestOneConfirmed(true);
+//                } else {
+//                    repoHSD.setRequestOneConfirmed(false);
+//                }
+//                holder.confirmRequestName_1.setText(
+//                        chavrutaRequestName1);
+//                String request1AvatarNumber = repoHSD.getmChavrutaRequest1Avatar();
+//                if (request1AvatarNumber.length() >= 3) {
+//                    byte[] decodeRequesterAvatar = Base64.decode(
+//                            request1AvatarNumber, Base64.DEFAULT);
+//
+//                    GlideApp
+//                            .with(mContext)
+//                            .asBitmap()
+//                            .load(decodeRequesterAvatar)
+//                            .circleCrop()
+//                            .into(holder.confirmRequestAvatar_1);
+//                } else {
+//                    holder.confirmRequestAvatar_1.setImageResource(avatarList.get(
+//                            Integer.parseInt(request1AvatarNumber)));
+//                }
+//        } else
+//
+//        {
+//            holder.pendingRequest_1.setVisibility(View.GONE);
+//            holder.underlinePendingRequest_1.setVisibility(View.GONE);
+//            repoHSD.setRequestOneConfirmed(false);
+//        }
+//            if(request2.length()>5)
+//
+//        {
+//            holder.pendingRequest_2.setVisibility(View.VISIBLE);
+//            holder.underlinePendingRequest_2.setVisibility(View.VISIBLE);
+//            isRequest2 = true;
+//            if (idOfConfirmedUser.equals(request2) && repoHSD.requestTwoConfirmed) {
+//                holder.confirmRequest_2.setBackgroundResource(R.drawable.ic_confirm_class);
+//                repoHSD.setRequestTwoConfirmed(true);
+//            } else {
+//                repoHSD.setRequestTwoConfirmed(false);
+//            }
+//            holder.confirmRequestName_2.setText(
+//                    chavrutaRequestName2);
+//            String request2AvatarNumber = repoHSD.getmChavrutaRequest2Avatar();
+//            if (request2AvatarNumber.length() >= 3) {
+//                byte[] decodeRequesterAvatar = Base64.decode(
+//                        request2AvatarNumber, Base64.DEFAULT);
+//
+//                GlideApp
+//                        .with(mContext)
+//                        .asBitmap()
+//                        .load(decodeRequesterAvatar)
+//                        .circleCrop()
+//                        .into(holder.confirmRequestAvatar_2);
+//            } else {
+//                holder.confirmRequestAvatar_2.setImageResource(avatarList.get(
+//                        Integer.parseInt(request2AvatarNumber)));
+//            }
+//
+//        } else
+//
+//        {
+//            holder.pendingRequest_2.setVisibility(View.GONE);
+//            holder.underlinePendingRequest_2.setVisibility(View.GONE);
+//            repoHSD.setRequestTwoConfirmed(false);
+//        }
+//            if(request3.length()>5)
+//
+//        {
+//            holder.pendingRequest_3.setVisibility(View.VISIBLE);
+//            holder.underlinePendingRequest_3.setVisibility(View.VISIBLE);
+//            isRequest3 = true;
+//            if (idOfConfirmedUser.equals(request3) && repoHSD.requestThreeConfirmed) {
+//                holder.confirmRequest_3.setBackgroundResource(R.drawable.ic_confirm_class);
+//                repoHSD.setRequestThreeConfirmed(true);
+//            } else {
+//                repoHSD.setRequestThreeConfirmed(false);
+//            }
+//            holder.confirmRequestName_3.setText(
+//                    chavrutaRequestName3);
+//
+//            String request3AvatarNumber = repoHSD.getmChavrutaRequest3Avatar();
+//            if (request3AvatarNumber.length() >= 3) {
+//                byte[] decodeRequesterAvatar = Base64.decode(
+//                        request3AvatarNumber, Base64.DEFAULT);
+//
+//
+//                GlideApp
+//                        .with(mContext)
+//                        .asBitmap()
+//                        .load(decodeRequesterAvatar)
+//                        .circleCrop()
+//                        .into(holder.confirmRequestAvatar_3);
+//            } else {
+//                holder.confirmRequestAvatar_3.setImageResource(avatarList.get(
+//                        Integer.parseInt(request3AvatarNumber)));
+//            }
+//        } else{
+//            holder.pendingRequest_3.setVisibility(View.GONE);
+//            repoHSD.setRequestThreeConfirmed(false);
+//            holder.underlinePendingRequest_3.setVisibility(View.GONE);
+//        }
+//    }
+
+//    public void sendConfirmationtoDb(String chavrutaId, String requesterId) {
+//        ServerConnect confirmChavrutaRequest = new ServerConnect(mContext);
+//        confirmChavrutaRequest.execute("confirmChavrutaRequest", chavrutaId, requesterId);
+//    }
+
+//    private void setViewHolderConfirmations(HostSessionData currentItem, int requestClicked) {
+//
+//        switch (requestClicked) {
+//            case 1:
+//                //sets confirmed state for request 1
+//                if (!currentItem.requestOneConfirmed) {
+//                    currentItem.setRequestConfirmed(true, );
+//                    currentItem.setmConfirmed(currentItem.getMchavrutaRequest1Id());
+//                    confirmRequest_1.setBackgroundResource(R.drawable.ic_confirm_class);
+//
+//                    //set other request confirmations to false
+//                    currentItem.setRequestTwoConfirmed(false);
+//                    currentItem.setRequestThreeConfirmed(false);
+//                    confirmRequest_2.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
+//                    confirmRequest_3.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
+//                } else {
+//                    currentItem.setRequestConfirmed(false, );
+//                    currentItem.setmConfirmed("0");
+//                    confirmRequest_1.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
+//                }
+//
+//                break;
+//
+//            case 2:
+//                //sets confirmed or not
+//                if (!currentItem.requestTwoConfirmed) {
+//                    currentItem.setRequestTwoConfirmed(true);
+//                    currentItem.setmConfirmed(currentItem.getMchavrutaRequest2Id());
+//                    confirmRequest_2.setBackgroundResource(R.drawable.ic_confirm_class);
+//
+//
+//                    //set other request confirmations to false
+//                    currentItem.setRequestConfirmed(false, );
+//                    currentItem.setRequestThreeConfirmed(false);
+//                    confirmRequest_1.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
+//                    confirmRequest_3.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
+//                } else {
+//                    currentItem.setRequestTwoConfirmed(false);
+//                    currentItem.setmConfirmed("0");
+//                    confirmRequest_2.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
+//                }
+//                break;
+//
+//            case 3:
+//                //sets confirmed or not
+//                if (!currentItem.requestThreeConfirmed) {
+//                    currentItem.setRequestThreeConfirmed(true);
+//                    currentItem.setmConfirmed(currentItem.getMchavrutaRequest3Id());
+//                    //confirmRequest_3.setBackgroundColor(Color.parseColor("#10ef2e"));
+//                    confirmRequest_3.setBackgroundResource(R.drawable.ic_confirm_class);
+//
+//                    //set other request confirmations to false
+//                    currentItem.setRequestConfirmed(false, );
+//                    currentItem.setRequestTwoConfirmed(false);
+//                    confirmRequest_1.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
+//                    confirmRequest_2.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
+//                } else {
+//                    currentItem.setRequestThreeConfirmed(false);
+//                    currentItem.setmConfirmed("0");
+//                    confirmRequest_3.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
+//                }
+//                break;
+//
+//            default:
+//                return;
+//        }
+//        String chavrutaId = currentItem.getmChavrutaId();
+//        sendConfirmationtoDb(chavrutaId, currentItem.getmConfirmed());
+//    }
+
+
+//    void bind(OpenChavrutaAdapter.ViewHolder holder, int listIndex) {
+//            final int position = listIndex;
+//            //@requestSlotOpen number of next class slot availiable for requester
+//            //@requesterAvatar & @requesterName are vars that hold chavrutaInformation for display in hostview
+//
+//            final HostSessionData currentItem = mChavrutaSessionsAL.get(position);
+
+        //view is hosting a class
+//            if (holder.getItemViewType() == 1 ) {
+//                hostListItemView = true;
+//                awaitingConfirmView = false;
+//                holder.hostFullName.setText(UserDetails.getmUserName());
+//
+//                if (UserDetails.getmUserAvatarNumberString() != null &&
+//                        !UserDetails.getmUserAvatarNumberString().equals("999")) {
+//                    hostAvatar.setImageResource(AvatarImgs.getAvatarNumberResId(
+//                            Integer.parseInt(UserDetails.getmUserAvatarNumberString())));
+//                } else {
+//                    //using custom avatar
+//                    //check to see if custom avatar is in UserDetails
+//                    if (UserDetails.getHostAvatarUri() != null) {
+//                        GlideApp
+//                                .with(mContext)
+//                                .load(UserDetails.getHostAvatarUri())
+//                                .centerCrop()
+//                                .into(hostAvatar);
+//                    } else if (getUserCustomAvatarBase64ByteArray() != null) {
+//                        GlideApp
+//                                .with(mContext)
+//                                .asBitmap()
+//                                .load(getUserCustomAvatarBase64ByteArray())
+//                                .placeholder(R.drawable.ic_unknown_user)
+//                                .centerCrop()
+//                                .into(hostAvatar);
+//                        //otherwise use xml unknown profile image
+//                    }
+//                }
+//
+//                //view is awaiting hosts confirmation
+//            } else {
+//                awaitingConfirmView = true;
+//                hostListItemView = false;
+//            }
+//            //set initial confirmed state for awaiting confirmation list item
+//            if (awaitingConfirmView) {
+//                String learnerConfirmed = currentItem.getmConfirmed();
+//                String currentHostAvatarNumberString = currentItem.getmHostAvatarNumber();
+//
+//                //sets user first last name after concatonation
+//                String hostNameConcat = ChavrutaUtils.createUserFirstLastName(
+//                        currentItem.getmHostFirstName(), currentItem.getmHostLastName());
+//                holder.hostFullName.setText(hostNameConcat);
+//
+//                //checks if custom user byte array extant from MA parsing
+//                if (currentHostAvatarNumberString != null &&
+//                        currentHostAvatarNumberString.length() > AvatarImgs.avatarImgList.size()) {
+//                    byte[] customHostAvatar = currentItem.getmHostCustomAvatarByteArray();
+//                    GlideApp
+//                            .with(mContext)
+//                            .asBitmap()
+//                            .load(customHostAvatar)
+//                            .placeholder(R.drawable.ic_unknown_user)
+//                            .centerCrop()
+//                            .into(holder.hostAvatar);
+//                    //checks if user using template avatar img
+//                } else if (!currentHostAvatarNumberString.equals("999")) {
+//                    holder.hostAvatar.setImageResource(avatarList.get(Integer.parseInt(currentItem.getmHostAvatarNumber())));
+//                }
+//
+//                if (learnerConfirmed.equals(userId)) {
+//                    holder.chavrutaConfirmed.setBackgroundResource(R.drawable.confirmed_rounded_corners);
+//                    holder.chavrutaConfirmed.setText("Matched!");
+//                } else {
+//                    holder.chavrutaConfirmed.setBackgroundResource(R.drawable.not_confirmed_rounded_corners);
+//                    holder.chavrutaConfirmed.setText("Awaiting" + System.getProperty("line.separator") + "Match");
+//                }
+//            }
+//            //hosting a class list item
+//            if (hostListItemView) {
+//                String idOfConfirmedUser = currentItem.getmConfirmed();
+//                String request1 = currentItem.getMchavrutaRequest1Id();
+//                String request2 = currentItem.getMchavrutaRequest2Id();
+//                String request3 = currentItem.getMchavrutaRequest3Id();
+//                String chavrutaRequestName1 = currentItem.getmChavrutaRequest1Name();
+//                String chavrutaRequestName2 = currentItem.getmChavrutaRequest2Name();
+//                String chavrutaRequestName3 = currentItem.getmChavrutaRequest3Name();
+//
+//                Boolean isRequest1 = false;
+//                Boolean isRequest2 = false;
+//                Boolean isRequest3 = false;
+//
+//
+//                //sets the initial status of confirmed button to check to indicate confirmed
+//                if (request1.length() > 5) {
+//                    isRequest1 = true;
+//                    holder.pendingRequest_1.setVisibility(View.VISIBLE);
+//                    holder.underlinePendingRequest_1.setVisibility(View.VISIBLE);
+//                    if (idOfConfirmedUser.equals(request1) && currentItem.requestOneConfirmed) {
+//                        mChavrutaSessionsAL.get(position).setRequestOneConfirmed(true);
+//                        holder.confirmRequest_1.setBackgroundResource(R.drawable.ic_confirm_class);
+//                        currentItem.setRequestOneConfirmed(true);
+//                    } else {
+//                        currentItem.setRequestOneConfirmed(false);
+//                    }
+//                    holder.confirmRequestName_1.setText(
+//                            chavrutaRequestName1);
+//                    String request1AvatarNumber = currentItem.getmChavrutaRequest1Avatar();
+//                    if (request1AvatarNumber.length() >= 3) {
+//                        byte[] decodeRequesterAvatar = Base64.decode(
+//                                request1AvatarNumber, Base64.DEFAULT);
+//
+//                        GlideApp
+//                                .with(mContext)
+//                                .asBitmap()
+//                                .load(decodeRequesterAvatar)
+//                                .circleCrop()
+//                                .into(holder.confirmRequestAvatar_1);
+//                    } else {
+//                        holder.confirmRequestAvatar_1.setImageResource(avatarList.get(
+//                                Integer.parseInt(request1AvatarNumber)));
+//                    }
+//                } else {
+//                    holder.pendingRequest_1.setVisibility(View.GONE);
+//                    holder.underlinePendingRequest_1.setVisibility(View.GONE);
+//                    currentItem.setRequestOneConfirmed(false);
+//                }
+//                if (request2.length() > 5) {
+//                    holder.pendingRequest_2.setVisibility(View.VISIBLE);
+//                    holder.underlinePendingRequest_2.setVisibility(View.VISIBLE);
+//                    isRequest2 = true;
+//                    if (idOfConfirmedUser.equals(request2) && currentItem.requestTwoConfirmed) {
+//                        holder.confirmRequest_2.setBackgroundResource(R.drawable.ic_confirm_class);
+//                        currentItem.setRequestTwoConfirmed(true);
+//                    } else {
+//                        currentItem.setRequestTwoConfirmed(false);
+//                    }
+//                    holder.confirmRequestName_2.setText(
+//                            chavrutaRequestName2);
+//                    String request2AvatarNumber = currentItem.getmChavrutaRequest2Avatar();
+//                    if (request2AvatarNumber.length() >= 3) {
+//                        byte[] decodeRequesterAvatar = Base64.decode(
+//                                request2AvatarNumber, Base64.DEFAULT);
+//
+//                        GlideApp
+//                                .with(mContext)
+//                                .asBitmap()
+//                                .load(decodeRequesterAvatar)
+//                                .circleCrop()
+//                                .into(holder.confirmRequestAvatar_2);
+//                    } else {
+//                        holder.confirmRequestAvatar_2.setImageResource(avatarList.get(
+//                                Integer.parseInt(request2AvatarNumber)));
+//                    }
+//
+//                } else {
+//                    holder.pendingRequest_2.setVisibility(View.GONE);
+//                    holder.underlinePendingRequest_2.setVisibility(View.GONE);
+//                    currentItem.setRequestTwoConfirmed(false);
+//                }
+//                if (request3.length() > 5) {
+//                    holder.pendingRequest_3.setVisibility(View.VISIBLE);
+//                    holder.underlinePendingRequest_3.setVisibility(View.VISIBLE);
+//                    isRequest3 = true;
+//                    if (idOfConfirmedUser.equals(request3) && currentItem.requestThreeConfirmed) {
+//                        holder.confirmRequest_3.setBackgroundResource(R.drawable.ic_confirm_class);
+//                        currentItem.setRequestThreeConfirmed(true);
+//                    } else {
+//                        currentItem.setRequestThreeConfirmed(false);
+//                    }
+//                    holder.confirmRequestName_3.setText(
+//                            chavrutaRequestName3);
+//
+//                    String request3AvatarNumber = currentItem.getmChavrutaRequest3Avatar();
+//                    if (request3AvatarNumber.length() >= 3) {
+//                        byte[] decodeRequesterAvatar = Base64.decode(
+//                                request3AvatarNumber, Base64.DEFAULT);
+//
+//
+//                        GlideApp
+//                                .with(mContext)
+//                                .asBitmap()
+//                                .load(decodeRequesterAvatar)
+//                                .circleCrop()
+//                                .into(holder.confirmRequestAvatar_3);
+//                    } else {
+//                        holder.confirmRequestAvatar_3.setImageResource(avatarList.get(
+//                                Integer.parseInt(request3AvatarNumber)));
+//                    }
+//                } else {
+//                    holder.pendingRequest_3.setVisibility(View.GONE);
+//                    currentItem.setRequestThreeConfirmed(false);
+//                    holder.underlinePendingRequest_3.setVisibility(View.GONE);
+//
+//                }
+//
+//                //populates view if there is a request
+//                if (isRequest1 || isRequest2 || isRequest3) {
+//                    holder.pendingRequestLabel.setVisibility(View.VISIBLE);
+//                    holder.noRequesterView.setVisibility(View.GONE);
+//
+//                } else {
+//                    holder.pendingRequestLabel.setVisibility(View.GONE);
+//                    holder.noRequesterView.setVisibility(View.VISIBLE);
+//
+//                }
+//                //confirms or unconfirms requested view with color change indicator and db update
+//                if (isRequest1) {
+//                    holder.confirmRequest_1.setOnClickListener(new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View v) {
+//                            HostSessionData currentItem = mChavrutaSessionsAL.get(position);
+//                            currentItem.getMchavrutaRequest1Id();
+//
+//                            // sets and sends to db hosts specific request confirmation
+//                            setViewHolderConfirmations(currentItem, 1);
+//                        }
+//                    });
+//                }
+//
+//                //sets confirmed state for request 2
+//                if (isRequest2) {
+//                    holder.confirmRequest_2.setOnClickListener(new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View v) {
+//                            HostSessionData currentItem = mChavrutaSessionsAL.get(position);
+//
+//                            // sets and sends to db hosts specific request confirmation
+//                            setViewHolderConfirmations(currentItem, 2);
+//                        }
+//                    });
+//                }
+//
+//
+//                //sets confirmed state for request 3
+//                if (isRequest3) {
+//                    holder.confirmRequest_3.setOnClickListener(new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View v) {
+//                            HostSessionData currentItem = mChavrutaSessionsAL.get(position);
+//
+//                            // sets and sends to db hosts specific request confirmation
+//                            setViewHolderConfirmations(currentItem, 3);
+//                        }
+//                    });
+//                }
+//
+//            }
+//            holder.sessionDate.setText(currentItem.getmSessionDate());
+//            holder.startTime.setText(currentItem.getmStartTime());
+//            holder.endTime.setText(currentItem.getmEndTime());
+//            String seferText = currentItem.getmSefer();
+//            if(seferText.length() >= 30){
+//                seferText = seferText.substring(0, 30) + "...";
+//            }
+//            holder.sefer.setText(seferText);
+//            holder.location.setText(currentItem.getmLocation());
+//            holder.itemView.setTag(position);
+//
+//
+//            holder.knurling.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    callback.getParentView();
+//                }
+//            });
+//    }
 
 
 

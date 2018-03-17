@@ -115,17 +115,17 @@ class OpenHostAdapter extends RecyclerView.Adapter<OpenHostAdapter.ViewHolder> {
                     userFirstName, userLastName);
 
             //check which request slot is availiable and pass name of db column to server for insert
-            if (currentItem.getMchavrutaRequest1().length() < 5) {
+            if (currentItem.getMchavrutaRequest1Id().length() < 5) {
                 requestSlotOpen = "chavruta_request_1";
                 requesterAvatarColumn = "chavruta_request_1_avatar";
                 requesterNameColumn = "chavruta_request_1_name";
                 holder.addHost.setImageResource(R.drawable.ib_add_match);
-            } else if (currentItem.getMchavrutaRequest2().length() < 5) {
+            } else if (currentItem.getMchavrutaRequest2Id().length() < 5) {
                 requestSlotOpen = "chavruta_request_2";
                 requesterAvatarColumn = "chavruta_request_2_avatar";
                 requesterNameColumn = "chavruta_request_2_name";
                 holder.addHost.setImageResource(R.drawable.ib_add_match);
-            } else if (currentItem.getMchavrutaRequest3().length() < 5) {
+            } else if (currentItem.getMchavrutaRequest3Id().length() < 5) {
                 requestSlotOpen = "chavruta_request_3";
                 requesterAvatarColumn = "chavruta_request_3_avatar";
                 requesterNameColumn = "chavruta_request_3_name";

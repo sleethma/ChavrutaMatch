@@ -2,21 +2,15 @@ package com.example.micha.chavrutamatch.Data;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.ConnectivityManager;
 import android.os.AsyncTask;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AlertDialog;
-import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.AddBio;
 import com.example.micha.chavrutamatch.ChavrutaMatch;
 import com.example.micha.chavrutamatch.HostSelect;
-import com.example.micha.chavrutamatch.MainActivity;
+import com.example.micha.chavrutamatch.MVPConstructs.MAContractMVP;
 import com.example.micha.chavrutamatch.R;
 import com.example.micha.chavrutamatch.Utils.ConnCheckUtil;
 
@@ -27,13 +21,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-
-import static com.example.micha.chavrutamatch.AcctLogin.UserDetails.LOG_TAG;
 
 /**
  * Created by micha on 7/29/2017.
@@ -41,20 +32,15 @@ import static com.example.micha.chavrutamatch.AcctLogin.UserDetails.LOG_TAG;
 
 public class ServerConnect extends AsyncTask<String, Void, String> {
     Context mContextRegister;
-    Boolean myChavruta;
-    public static boolean isConnectedToNetwork;
-    View mContextView;
+    public MAContractMVP.Presenter callback;
+    private Boolean myChavruta;
+    private static boolean isConnectedToNetwork;
     public static String jsonString;
 
     //postExecuteResponse: 0= no click/error; 1=registration; 2=get JSON
     int postExecuteResponse = 0;
 
-    public ServerConnect(Context context, View view) {
-        this.mContextRegister = context;
-        mContextView = view;
-    }
-
-    public ServerConnect(Context context) {
+       public ServerConnect(Context context) {
         this.mContextRegister = context;
     }
 
@@ -470,10 +456,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 //return jsonString to HostSelect.class if it is caller, else return it to MA
                 if (myChavruta) {
                     ChavrutaMatch.setMyChavrutaJsonString(jsonString);
-
-                    Intent intent = new Intent(this.mContextRegister, MainActivity.class);
-                    intent.putExtra("myChavrutaKey", "json set");
-                    mContextRegister.startActivity(intent);
+                    callback.returnAsyncResult(result);
 
                 } else {
                     ChavrutaMatch.setOpenHostsJsonString(jsonString);
