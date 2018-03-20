@@ -33,8 +33,8 @@ class OpenHostAdapter extends RecyclerView.Adapter<OpenHostAdapter.ViewHolder> {
     private static boolean mConfirmed = false;
     final private String USER_IMG_AVATAR_STRING = "999";
 
-    ArrayList<HostSessionData> mChavrutaSessionsAL;
-    List<Integer> avatarList = AvatarImgs.getAllAvatars();
+    private ArrayList<HostSessionData> mChavrutaSessionsAL;
+    private List<Integer> avatarList = AvatarImgs.getAllAvatars();
 
     private ListItemClickListener mOnClickListener;
 

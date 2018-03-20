@@ -7,15 +7,31 @@ import com.example.micha.chavrutamatch.Data.HostSessionData;
  */
 
 public interface MARepoContract {
-void setHostFullName(String text);
+    void setUsersFullName(String text);
+
     int getItemViewTypeIF(HostSessionData hsdRepo);
-    void setListItemHostAvatar();
-   void setCustomListItemHostAvatar();void setupHostsRequestersViews(String requesterName, int requesterNumber);
+
+    void setTemplateListItemAwaitingHostAvatar(String hostAvatarNumber);
+
+    void setCustomListItemAwaitingHostAvatar(byte[] hostCustomAvatar);
+
+    void setTemplateListItemHostAvatar();
+
+    void setCustomListItemHostAvatar();
+
+    void setupHostsRequestersViews(String requesterName, int requesterNumber);
+
     void setRequestButtonStatus(int requestNumber);
+
     void setHostRequestAvatar(byte[] customRequesterAvatar, String requester1AvatarNumber, int requesterNumber);
+
     void setOnClickListenerOnRequester(MARepoContract holder, final HostSessionData repoHSD, int requesterNumber);
+
     void setButtonToConfirmedState(String confirmButtonAction);
+
     void setDisplayIfRequesters(boolean hasRequesters);
+
     void setUserConfirmedStatus(boolean userIsConfirmed);
+
     void setViewItemData(HostSessionData repoHSD, int position);
 }

@@ -41,7 +41,6 @@ public class MAModule {
     }
 
     @Provides
-    @MAScope
     public ServerConnect providesServerConnect(){
         return new ServerConnect(maContext);
     }

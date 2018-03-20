@@ -16,7 +16,7 @@ import com.example.micha.chavrutamatch.DI.Modules.SharedPrefsModule;
  */
 
 public class ChavrutaMatch extends Application {
-
+    private  Context applicationContext = this;
     private ApplicationComponent applicationComponent;
 
     @Override
@@ -54,5 +54,9 @@ public class ChavrutaMatch extends Application {
 
     public static void setOpenHostsJsonString(String jsonString) {
         openHostsJsonString = jsonString;
+    }
+
+    public  Context getApplicationsContext(){
+        return applicationContext;
     }
 }

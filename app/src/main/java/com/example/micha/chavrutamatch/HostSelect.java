@@ -41,7 +41,7 @@ import butterknife.ButterKnife;
 
 public class HostSelect extends AppCompatActivity implements OpenHostAdapter.ListItemClickListener {
 
-    @BindView(R.id.iv_user_avatar)
+    @BindView(R.id.iv_awaiting_host_avatar)
     ImageView userPic;
     // @BindView(R.id.b_host_chavruta) ImageButton hostChavruta;
     @BindView(R.id.all_hosts_list_view)
@@ -102,8 +102,6 @@ public class HostSelect extends AppCompatActivity implements OpenHostAdapter.Lis
             //parses JSON entry
             parseJSONEntry();
         }
-
-
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         allHostsList.setLayoutManager(layoutManager);

@@ -3,7 +3,7 @@ package com.example.micha.chavrutamatch;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
-import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +25,7 @@ import com.example.micha.chavrutamatch.Utils.GlideApp;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.micha.chavrutamatch.AcctLogin.UserDetails.LOG_TAG;
 import static com.example.micha.chavrutamatch.AcctLogin.UserDetails.getUserCustomAvatarBase64ByteArray;
 
 /**
@@ -43,12 +44,13 @@ public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapte
     private ParentView callback = (ParentView) MainActivity.mContext;
     private MAContractMVP.Presenter presenter;
 
+    private int requesterNumber;
 
     //holds viewType for relevant listItem
     Boolean hostListItemView;
     Boolean awaitingConfirmView;
     private static ArrayList<HostSessionData> mChavrutaSessionsAL;
-    List<Integer> avatarList = AvatarImgs.getAllAvatars();
+    private List<Integer> avatarList = AvatarImgs.getAllAvatars();
 
     public OpenChavrutaAdapter(Context context, ArrayList<HostSessionData> chavrutaSessionsArrayList, MAContractMVP.Presenter presenter) {
         this.mContext = context;
@@ -68,13 +70,9 @@ public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapte
         //view is awaiting class confirmation by host
         if (viewType == 0) {
             layoutIdForListItem = R.layout.my_chavruta_list_item;
-            hostListItemView = false;
-            awaitingConfirmView = true;
             //view: user is hosting a class
         } else {
             layoutIdForListItem = R.layout.hosting_chavrutas_list_item;
-            hostListItemView = true;
-            awaitingConfirmView = false;
         }
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         View view = layoutInflater.inflate(layoutIdForListItem, parent, false);
@@ -83,8 +81,13 @@ public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapte
     }
 
     @Override
+    public int getItemViewType(int position) {
+        return presenter.getItemViewTypeFromPresenter(position);
+    }
+
+    @Override
     public void onBindViewHolder(OpenChavrutaAdapter.ViewHolder holder, int position) {
-        presenter.onBindToPresenter(holder, position);
+        presenter.onBindToPresenter(holder, position, holder.getItemViewType());
     }
 
     @Override
@@ -114,6 +117,7 @@ public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapte
         ImageButton addHost;
         FrameLayout noRequesterView;
         ImageView hostAvatar;
+        ImageView awaitingHostAvatar;
         ImageView knurling;
 
         public ViewHolder(View listItemView) {
@@ -145,11 +149,12 @@ public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapte
             chavrutaConfirmed = (Button) listItemView.findViewById(R.id.b_chavruta_confirmed);
             noRequesterView = (FrameLayout) listItemView.findViewById(R.id.fl_awaiting_requester);
             hostAvatar = (ImageView) listItemView.findViewById(R.id.iv_host_avatar);
+            awaitingHostAvatar = listItemView.findViewById(R.id.iv_awaiting_host_avatar);
             knurling = listItemView.findViewById(R.id.iv_knurling);
         }
 
         @Override
-        public void setHostRequestAvatar(byte[] customRequesterAvatar, String request1AvatarNumber, int requesterNumber) {
+        public void setHostRequestAvatar(byte[] customRequesterAvatar, String requestAvatarNumber, int requesterNumber) {
             ImageView currentAvatarView;
             if (requesterNumber == 1) {
                 currentAvatarView = confirmRequestAvatar_1;
@@ -168,7 +173,7 @@ public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapte
                         .into(currentAvatarView);
             } else {
                 currentAvatarView.setImageResource(avatarList.get(
-                        Integer.parseInt(request1AvatarNumber)));
+                        Integer.parseInt(requestAvatarNumber)));
             }
         }
 
@@ -222,27 +227,6 @@ public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapte
         }
 
         @Override
-        public void setCustomListItemHostAvatar() {
-            if (UserDetails.getHostAvatarUri() != null) {
-                GlideApp
-                        .with(mContext)
-                        .load(UserDetails.getHostAvatarUri())
-                        .centerCrop()
-                        .into(hostAvatar);
-            } else if (getUserCustomAvatarBase64ByteArray() != null) {
-                GlideApp
-                        .with(mContext)
-                        .asBitmap()
-                        .load(getUserCustomAvatarBase64ByteArray())
-                        .placeholder(R.drawable.ic_unknown_user)
-                        .centerCrop()
-                        .into(hostAvatar);
-                //otherwise use xml unknown profile image
-            }
-        }
-
-
-        @Override
         public void setUserConfirmedStatus(boolean userIsConfirmed) {
             if (userIsConfirmed) {
                 chavrutaConfirmed.setBackgroundResource(R.drawable.confirmed_rounded_corners);
@@ -267,13 +251,51 @@ public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapte
         }
 
         @Override
-        public void setListItemHostAvatar() {
-            hostAvatar.setImageResource(AvatarImgs.getAvatarNumberResId(
+        public void setTemplateListItemHostAvatar() {
+            awaitingHostAvatar.setImageResource(AvatarImgs.getAvatarNumberResId(
                     Integer.parseInt(UserDetails.getmUserAvatarNumberString())));
         }
 
         @Override
-        public void setHostFullName(String text) {
+        public void setCustomListItemAwaitingHostAvatar(byte[] hostCustomAvatar) {
+            GlideApp
+                    .with(mContext)
+                    .asBitmap()
+                    .load(hostCustomAvatar)
+                    .placeholder(R.drawable.ic_unknown_user)
+                    .centerCrop()
+                    .into(awaitingHostAvatar);
+        }
+
+        @Override
+        public void setTemplateListItemAwaitingHostAvatar(String hostAvatarNumber) {
+            awaitingHostAvatar.setImageResource(AvatarImgs.getAvatarNumberResId(
+                    Integer.parseInt(hostAvatarNumber)));
+        }
+
+        @Override
+        public void setCustomListItemHostAvatar() {
+            if (UserDetails.getHostAvatarUri() != null) {
+                GlideApp
+                        .with(mContext)
+                        .load(UserDetails.getHostAvatarUri())
+                        .centerCrop()
+                        .into(hostAvatar);
+            } else if (getUserCustomAvatarBase64ByteArray() != null) {
+                GlideApp
+                        .with(mContext)
+                        .asBitmap()
+                        .load(getUserCustomAvatarBase64ByteArray())
+                        .placeholder(R.drawable.ic_unknown_user)
+                        .centerCrop()
+                        .into(hostAvatar);
+                //otherwise use xml unknown profile image
+            }
+            hostAvatar.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        public void setUsersFullName(String text) {
             hostFullName.setText(text);
         }
 
@@ -287,13 +309,15 @@ public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapte
             } else {
                 return 0;
             }
-
         }
 
+
         @Override
-        public void setOnClickListenerOnRequester(final MARepoContract holder, final HostSessionData repoHSD, int requesterNumber) {
+        public void setOnClickListenerOnRequester(final MARepoContract holder, final HostSessionData repoHSD, final int requesterNumber) {
             //confirms or unconfirms requested view with color change indicator and db update
             Button requestButtonView;
+            setRequesterNumber(requesterNumber);
+
             switch (requesterNumber) {
                 case 1:
                     requestButtonView = confirmRequest_1;
@@ -301,15 +325,23 @@ public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapte
                 case 2:
                     requestButtonView = confirmRequest_2;
                     break;
-                default:
+                case 3:
                     requestButtonView = confirmRequest_3;
                     break;
+                default:
+                    return;
             }
+//            Integer mrequesterNumber = (Integer) requesterNumber;
+            requestButtonView.setTag(requestButtonView.getId(), requesterNumber);
             requestButtonView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                   int requesterNumber = (int) v.getTag(v.getId());
+//
+//                            // sets and sends to db hosts specific request confirmation
+//                            setViewHolderConfirmations(currentItem, 3);
                     // sets and sends to db hosts specific request confirmation
-                    presenter.setViewHolderConfirmations(repoHSD, holder, 1);
+                    presenter.setViewHolderConfirmations(repoHSD, holder, requesterNumber);
                 }
             });
         }
@@ -343,6 +375,14 @@ public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapte
                     break;
             }
         }
+    }
+
+    public int getRequesterNumber() {
+        return requesterNumber;
+    }
+
+    public void setRequesterNumber(int requesterNumber) {
+        this.requesterNumber = requesterNumber;
     }
 
     public void add(HostSessionData dataAddedFromJson) {
@@ -616,7 +656,7 @@ public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapte
 //
 //            final HostSessionData currentItem = mChavrutaSessionsAL.get(position);
 
-        //view is hosting a class
+//view is hosting a class
 //            if (holder.getItemViewType() == 1 ) {
 //                hostListItemView = true;
 //                awaitingConfirmView = false;

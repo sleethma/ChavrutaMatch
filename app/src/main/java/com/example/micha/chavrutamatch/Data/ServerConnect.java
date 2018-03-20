@@ -26,6 +26,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 
+import javax.inject.Inject;
+
 /**
  * Created by micha on 7/29/2017.
  */
@@ -36,12 +38,19 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
     private Boolean myChavruta;
     private static boolean isConnectedToNetwork;
     public static String jsonString;
+    @Inject
+    Context context;
 
     //postExecuteResponse: 0= no click/error; 1=registration; 2=get JSON
     int postExecuteResponse = 0;
 
+
        public ServerConnect(Context context) {
         this.mContextRegister = context;
+    }
+
+    @Inject
+    public ServerConnect() {
     }
 
     private ProgressDialog pDialog;
@@ -53,7 +62,6 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-//        isConnectedToNetwork = isNetworkAvailable();
         isConnectedToNetwork = ConnCheckUtil.isConnected(mContextRegister);
 
         pDialog = new ProgressDialog(mContextRegister);

@@ -9,7 +9,6 @@ import com.example.micha.chavrutamatch.MVPConstructs.Repos.MARepoContract;
 import com.example.micha.chavrutamatch.Utils.ChavrutaUtils;
 
 
-
 /**
  * Created by micha on 2/26/2018.
  */
@@ -17,6 +16,8 @@ import com.example.micha.chavrutamatch.Utils.ChavrutaUtils;
 public class MAPresenter implements MAContractMVP.Presenter {
 
     private final int HOST_VIEW = 1;
+    private final int TEMPLATE_AVATAR_LIST_SIZE = 10;
+    private final String CUSTOM_AVATAR_NUM = "999";
     private MAContractMVP.Model mainActivityModel;
     private MAContractMVP.View mainActivityView;
     private MAContractMVP.View mainActivityListView;
@@ -79,10 +80,10 @@ public class MAPresenter implements MAContractMVP.Presenter {
     }
 
     private void jsonStringToArrayList() {
-                mainActivityModel.parseJSONDataToArrayList(jsonString);
+        mainActivityModel.parseJSONDataToArrayList(jsonString);
         mainActivityView.setMyChavrutaAdapter(mainActivityModel.getMyChavrutasAL());
-        if(mainActivityModel.getMyChavrutasAL() != null && mainActivityModel.getMyChavrutasAL().size() > 0)
-        mainActivityView.displayRecyclerView();
+        if (mainActivityModel.getMyChavrutasAL() != null && mainActivityModel.getMyChavrutasAL().size() > 0)
+            mainActivityView.displayRecyclerView();
     }
 
     private void getJsonFromServer() {
@@ -98,18 +99,17 @@ public class MAPresenter implements MAContractMVP.Presenter {
         this.jsonString = jsonString;
         mainActivityModel.parseJSONDataToArrayList(jsonString);
         mainActivityView.setMyChavrutaAdapter(mainActivityModel.getMyChavrutasAL());
-        if(mainActivityModel.getMyChavrutasAL() != null && mainActivityModel.getMyChavrutasAL().size() > 0)
+        if (mainActivityModel.getMyChavrutasAL() != null && mainActivityModel.getMyChavrutasAL().size() > 0)
             mainActivityView.displayRecyclerView();
     }
 
     @Override
-    public void onBindToPresenter(MARepoContract holder, int position) {
+    public void onBindToPresenter(MARepoContract holder, int position, int viewType) {
         HostSessionData repoHSD = mainActivityModel.getMyChavrutasArrayListItem(position);
-        holder.setHostFullName(repoHSD.getmHostFirstName());
-        setHostAvatar(holder);
+        holder.setUsersFullName(repoHSD.getmHostFirstName());
 
         // @return 1: hostview, else awaitingConfirmView
-        int viewType = getItemViewType(repoHSD.getmHostId(), UserDetails.getmUserId());
+//        int viewType = holder.getItemViewType(repoHSD.getmHostId(), UserDetails.getmUserId());
 
         if (viewType == HOST_VIEW) {
             createHostView(holder, repoHSD);
@@ -119,12 +119,14 @@ public class MAPresenter implements MAContractMVP.Presenter {
         }
 
         holder.setViewItemData(repoHSD, position);
-
     }
 
-
-
-    private int getItemViewType(String hostId, String userId) {
+    @Override
+    public int getItemViewTypeFromPresenter(int position) {
+        //selects hostId or userId for inflation
+        String hostId = mainActivityModel.getMyChavrutasArrayListItem(position).getmHostId();
+        String userId = UserDetails.getmUserId();
+        // @return 1: hostview, else awaitingConfirmView
         if (hostId.equals(userId)) {
             return 1;
         } else {
@@ -132,29 +134,48 @@ public class MAPresenter implements MAContractMVP.Presenter {
         }
     }
 
+
     private void createAwaitingConfirmView(MARepoContract holder, HostSessionData repoHSD) {
         String learnerConfirmed = repoHSD.getmConfirmed();
         String userId = UserDetails.getmUserId();
         boolean userIsConfirmed = learnerConfirmed.equals(userId);
+        holder.setUserConfirmedStatus(userIsConfirmed);
 
         //sets user first last name after concatonation
         String hostNameConcat = ChavrutaUtils.createUserFirstLastName(
                 repoHSD.getmHostFirstName(), repoHSD.getmHostLastName());
-        holder.setHostFullName(hostNameConcat);
-
-        holder.setUserConfirmedStatus(userIsConfirmed);
+        holder.setUsersFullName(hostNameConcat);
+        setAwaitingHostAvatar(holder, repoHSD);
     }
 
     private void createHostView(MARepoContract holder, HostSessionData repoHSD) {
-        holder.setHostFullName(UserDetails.getmUserName());
+        holder.setUsersFullName(UserDetails.getmUserName());
         boolean hasRequesters = configureRequestersConfirmedStatus(holder, repoHSD);
         holder.setDisplayIfRequesters(hasRequesters);
+        setHostsAvatar(holder);
     }
 
-    private void setHostAvatar(MARepoContract holder) {
-        if (UserDetails.getmUserAvatarNumberString() != null &&
-                !UserDetails.getmUserAvatarNumberString().equals("999")) {
-            holder.setListItemHostAvatar();
+
+    private void setAwaitingHostAvatar(MARepoContract holder, HostSessionData repoHSD) {
+        String hostAvatarNumber;
+        if (repoHSD.getmHostAvatarNumber() != null) {
+            hostAvatarNumber = repoHSD.getmHostAvatarNumber();
+        } else {
+            return;
+        }
+        if (hostAvatarNumber.length() < TEMPLATE_AVATAR_LIST_SIZE) {
+            holder.setTemplateListItemAwaitingHostAvatar(hostAvatarNumber);
+        } else {
+            byte[] hostCustomAvatar = repoHSD.getmHostCustomAvatarByteArray();
+            holder.setCustomListItemAwaitingHostAvatar(hostCustomAvatar);
+        }
+
+    }
+
+    private void setHostsAvatar(MARepoContract holder) {
+        if (UserDetails.getmUserAvatarNumberString() != null) return;
+        if (UserDetails.getmUserAvatarNumberString().length() < TEMPLATE_AVATAR_LIST_SIZE) {
+            holder.setTemplateListItemHostAvatar();
         } else {
             holder.setCustomListItemHostAvatar();
         }
@@ -179,12 +200,14 @@ public class MAPresenter implements MAContractMVP.Presenter {
             setHostsRequestItem(holder, repoHSD, request1, 1);
             holder.setOnClickListenerOnRequester(holder, repoHSD, 1);
             hasRequesters = true;
-        } else if (isRequest2) {
+        }
+        if (isRequest2) {
             holder.setupHostsRequestersViews(chavrutaRequestName2, 2);
             setHostsRequestItem(holder, repoHSD, request2, 2);
             holder.setOnClickListenerOnRequester(holder, repoHSD, 2);
             hasRequesters = true;
-        } else if (isRequest3) {
+        }
+        if (isRequest3) {
             holder.setupHostsRequestersViews(chavrutaRequestName3, 3);
             setHostsRequestItem(holder, repoHSD, request3, 3);
             holder.setOnClickListenerOnRequester(holder, repoHSD, 3);
@@ -222,6 +245,7 @@ public class MAPresenter implements MAContractMVP.Presenter {
                 if (!repoHSD.requestOneConfirmed) {
                     repoHSD.setRequestConfirmed(true, 1);
                     repoHSD.setmConfirmed(repoHSD.getMchavrutaRequest1Id());
+
                     //set other request confirmations to false
                     repoHSD.setRequestConfirmed(false, 2);
                     repoHSD.setRequestConfirmed(false, 3);
@@ -245,10 +269,12 @@ public class MAPresenter implements MAContractMVP.Presenter {
                     //set other request confirmations to false
                     repoHSD.setRequestConfirmed(false, 1);
                     repoHSD.setRequestConfirmed(false, 3);
+                    holder.setButtonToConfirmedState("Requester 2 Confirmed");
 
                 } else {
                     repoHSD.setRequestConfirmed(false, 2);
                     repoHSD.setmConfirmed("0");
+                    holder.setButtonToConfirmedState("Requester 2 Not Confirmed");
                 }
                 break;
 
@@ -262,10 +288,11 @@ public class MAPresenter implements MAContractMVP.Presenter {
                     //set other request confirmations to false
                     repoHSD.setRequestConfirmed(false, 1);
                     repoHSD.setRequestConfirmed(false, 2);
-
+                    holder.setButtonToConfirmedState("Requester 3 Confirmed");
                 } else {
                     repoHSD.setRequestConfirmed(false, 3);
                     repoHSD.setmConfirmed("0");
+                    holder.setButtonToConfirmedState("Requester 3 Not Confirmed");
                 }
                 break;
 
@@ -274,17 +301,11 @@ public class MAPresenter implements MAContractMVP.Presenter {
         }
         //notify db of change in requester status for chavruta
         String chavrutaId = repoHSD.getmChavrutaId();
-        sendConfirmationtoDb(chavrutaId, repoHSD.getmConfirmed());
+        //todo: refactor with RxJava to circumvent Async using dagger issues
+        //sent to view as multiple Async cannot be injected here
+        mainActivityView.sendHostsConfirmationtoDb(chavrutaId, repoHSD.getmConfirmed());
     }
-
-    private void sendConfirmationtoDb(String chavrutaId, String requesterId) {
-        String confirmedChavrutaKey = "confirmChavrutaRequest";
-        serverConnectInstance.execute(confirmedChavrutaKey, chavrutaId, requesterId);
-    }
-
 }
-
-
 //
 //            myChavrutasArrayList = new ArrayList<>();
 //

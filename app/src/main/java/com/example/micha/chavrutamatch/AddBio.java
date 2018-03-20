@@ -1,17 +1,14 @@
 package com.example.micha.chavrutamatch;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -69,7 +66,7 @@ public class AddBio extends AppCompatActivity {
     EditText UserLastNameView;
     @BindView(R.id.et_user_bio)
     EditText UserBioView;
-    @BindView(R.id.iv_user_avatar)
+    @BindView(R.id.iv_awaiting_host_avatar)
     ImageView UserAvatarView;
     @BindView(R.id.ac_city_state)
     AutoCompleteTextView autoCompleteTextView;

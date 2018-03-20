@@ -27,6 +27,7 @@ import com.example.micha.chavrutamatch.DI.Components.MAComponent;
 import com.example.micha.chavrutamatch.DI.Modules.MAModule;
 import com.example.micha.chavrutamatch.Data.AvatarImgs;
 import com.example.micha.chavrutamatch.Data.HostSessionData;
+import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.example.micha.chavrutamatch.MVPConstructs.MAContractMVP;
 import com.example.micha.chavrutamatch.Utils.ConnCheckUtil;
 import com.example.micha.chavrutamatch.Utils.GlideApp;
@@ -344,6 +345,13 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
     public void displayRecyclerView() {
         myChavrutaListView.setVisibility(View.VISIBLE);
         noMatchView.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void sendHostsConfirmationtoDb(String chavrutaId, String requesterId) {
+        String confirmedChavrutaKey = "confirmChavrutaRequest";
+        ServerConnect confirmInDb = new ServerConnect(mContext);
+        confirmInDb.execute(confirmedChavrutaKey, chavrutaId, requesterId);
     }
 }
 

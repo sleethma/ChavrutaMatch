@@ -24,6 +24,9 @@ public interface MAContractMVP {
 
         void displayRecyclerView();
 
+        void sendHostsConfirmationtoDb(String chavrutaId, String requesterId);
+
+
     }
 
     interface Presenter {
@@ -40,9 +43,11 @@ public interface MAContractMVP {
         void returnAsyncResult(String output);
 
         //        void setMainActivityListView(RecyclerView listView);
-        void onBindToPresenter(MARepoContract holder, int position);
+        void onBindToPresenter(MARepoContract holder, int position, int viewType);
 
         void setViewHolderConfirmations(HostSessionData currentItem, MARepoContract holder, int requestClicked);
+
+        int getItemViewTypeFromPresenter(int position);
 
     }
 
