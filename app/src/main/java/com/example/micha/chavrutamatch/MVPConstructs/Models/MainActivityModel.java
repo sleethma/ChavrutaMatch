@@ -1,18 +1,14 @@
 package com.example.micha.chavrutamatch.MVPConstructs.Models;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.support.annotation.Nullable;
 import android.util.Base64;
 
 import com.example.micha.chavrutamatch.AcctLogin.AccountActivity;
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
-import com.example.micha.chavrutamatch.ChavrutaMatch;
 import com.example.micha.chavrutamatch.Data.HostSessionData;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.example.micha.chavrutamatch.MVPConstructs.MAContractMVP;
-import com.example.micha.chavrutamatch.MainActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -53,8 +49,14 @@ public class MainActivityModel implements MAContractMVP.Model {
         this.serverConnectInstance = serverConnectInstance;
     }
 
+    @Override
+    public boolean verifyCurrentUserDataSavedInSP() {
+        return (getStringDataFromSP("user name key") == null);
+    }
+
+    @Override
     public String getStringDataFromSP(String key) {
-        return sp.getString(key, "null");
+        return sp.getString(key, null);
     }
 
     @Override
@@ -92,8 +94,8 @@ public class MainActivityModel implements MAContractMVP.Model {
     }
 
     @Override
-    public boolean isVerifiedAsLoggedIn() {
-        return accountActivity.verifyAccount();
+    public void initAccountKit() {
+        accountActivity.setAccountKitAcct();
     }
 
     @Override
@@ -106,8 +108,10 @@ public class MainActivityModel implements MAContractMVP.Model {
         sp.edit().putString(key, value).apply();
     }
 
+
+
     @Override
-    public void getAllUserDetailsFromSP() {
+    public void setUserDataFromSPToModel() {
         //get info from newUserLogin if exists
         userPhoneNumber = getStringDataFromSP("user phone number key");
         userEmail = getStringDataFromSP("user email key");

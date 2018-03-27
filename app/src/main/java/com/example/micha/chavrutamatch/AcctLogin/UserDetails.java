@@ -14,6 +14,7 @@ public class UserDetails extends AppCompatActivity{
     public final static String LOG_TAG = LoginActivity.class.getSimpleName();
 
     private static String mUserId;
+    private static String currentUserId;
     private static String mUserPassword;
     private static String mUserName;
     private static String mUserAvatarNumberString= "0";
@@ -113,10 +114,6 @@ public class UserDetails extends AppCompatActivity{
         mUserCustomAvatarBase64ByteArray = Base64.decode(stringToDecode, Base64.DEFAULT);
     }
 
-    public static String getmUserId() {
-        return mUserId;
-    }
-
     public static void setUserCityState(String userCityState) {
         mUserCityState =userCityState;
     }
@@ -124,15 +121,28 @@ public class UserDetails extends AppCompatActivity{
     public static String getUserCityState(){
         return mUserCityState;
     }
+
     //sdk < 20 must have formatted url php string to succeed
     public static String getUserCallFormattedCityState(){
         String formattedCityState = mUserCityState.replaceAll(" ", "%20");
         return formattedCityState;
     }
-
     public static void setmUserId(String userId) {
         mUserId = userId;
     }
+
+    public static void setCurrentUserIdForThisSession(String userId) {
+        currentUserId = userId;
+    }
+
+    public static String getmUserId() {
+        return mUserId;
+    }
+
+    public static String getCurrentUserId() {
+        return currentUserId;
+    }
+
 
     public static String getmUserPhoneNumber() {
         return mUserPhoneNumber;

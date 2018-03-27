@@ -1,24 +1,11 @@
 package com.example.micha.chavrutamatch.AcctLogin;
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.micha.chavrutamatch.MVPConstructs.MAContractMVP;
-import com.example.micha.chavrutamatch.MVPConstructs.Models.MainActivityModel;
-import com.example.micha.chavrutamatch.MainActivity;
 import com.facebook.accountkit.Account;
 import com.facebook.accountkit.AccountKit;
 
-import com.example.micha.chavrutamatch.R;
 //import com.example.micha.chavrutamatch.Utils.FontHelper;
 import com.facebook.accountkit.AccountKitCallback;
 import com.facebook.accountkit.AccountKitError;
@@ -27,12 +14,7 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 
-import java.util.HashMap;
 import java.util.Locale;
-
-import javax.inject.Inject;
-
-import butterknife.BindView;
 
 
 /**
@@ -41,24 +23,14 @@ import butterknife.BindView;
 
 public class AccountActivity extends AppCompatActivity{
 
-    boolean isLoginSuccessful = false;
-    @Inject
-    Context context;
-
-
-
-    public boolean verifyAccount() {
+    public void setAccountKitAcct() {
 
         AccountKit.getCurrentAccount(new AccountKitCallback<Account>() {
             @Override
             public void onSuccess(final com.facebook.accountkit.Account account) {
                 // Get Account Kit ID
                 String accountKitId = account.getId();
-                UserDetails.setmUserId(accountKitId);
-
-//                                sp.edit().putString(context.getString(R.string.user_account_id_key), accountKitId).apply();
-
-//                sp.edit().putBoolean("new_user_key", false);
+                UserDetails.setCurrentUserIdForThisSession(accountKitId);
                 UserDetails.setNewUserKey(false);
 
                 PhoneNumber phoneNumber = account.getPhoneNumber();
@@ -76,18 +48,16 @@ public class AccountActivity extends AppCompatActivity{
                     UserDetails.setmUserEmail(emailString);
                     UserDetails.setLoginType("email");
                 }
-                setLoginSuccessful(true);
+//                setLoginSuccessful(true);
             }
 
             @Override
             public void onError(final AccountKitError error) {
                 Log.e(this.getClass().getSimpleName(), "AccountKit could not verify account");
-//                    Intent intent = new Intent(AccountActivity.this, LoginActivity.class);
-//                    startActivity(intent);
             }
         });
 
-        return getLoginSuccessful();
+//        return getLoginSuccessful();
     }
 
     private String formatPhoneNumber(String phoneNumber) {
@@ -102,11 +72,11 @@ public class AccountActivity extends AppCompatActivity{
         return phoneNumber;
     }
 
-    private void setLoginSuccessful(boolean isSuccessful){
-        isLoginSuccessful = isSuccessful;
-    }
+//    private void setLoginSuccessful(boolean isSuccessful){
+//        isLoginSuccessful = isSuccessful;
+//    }
 
-    private boolean getLoginSuccessful(){
-        return isLoginSuccessful;
-    }
+//    private boolean getLoginSuccessful(){
+//        return isLoginSuccessful;
+//    }
 }

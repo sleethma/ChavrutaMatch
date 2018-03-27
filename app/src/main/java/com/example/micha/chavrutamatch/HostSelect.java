@@ -248,7 +248,8 @@ public class HostSelect extends AppCompatActivity implements OpenHostAdapter.Lis
                     ObjectAnimator.ofFloat(flipToSide, "rotationY", 0).setDuration(FLIP_DURATION));
             set.start();
         } else {
-            currentSide.animate().rotationY(90).setDuration(FLIP_DURATION)
+            currentSide
+                    .animate().rotationY(90).setDuration(FLIP_DURATION)
                     .setListener(new AnimatorListenerAdapter() {
                         @Override
                         public void onAnimationEnd(Animator animation) {

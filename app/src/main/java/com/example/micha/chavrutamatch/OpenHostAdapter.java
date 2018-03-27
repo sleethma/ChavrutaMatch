@@ -30,7 +30,6 @@ class OpenHostAdapter extends RecyclerView.Adapter<OpenHostAdapter.ViewHolder> {
     private Context mContext;
     private String userId = UserDetails.getmUserId();
     //@var used to control swipe on delete Dialogue selection
-    private static boolean mConfirmed = false;
     final private String USER_IMG_AVATAR_STRING = "999";
 
     private ArrayList<HostSessionData> mChavrutaSessionsAL;
@@ -42,7 +41,6 @@ class OpenHostAdapter extends RecyclerView.Adapter<OpenHostAdapter.ViewHolder> {
     public interface ListItemClickListener {
         void onListItemClick(int clickedIndex, View v);
     }
-
 
     public OpenHostAdapter(Context context,
                            ArrayList<HostSessionData> chavrutaSessionsArrayList,

@@ -41,7 +41,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_type_select);
-        prefs = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE);
+       prefs = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE);
         AccessToken currentAccessToken = AccountKit.getCurrentAccessToken();
         if (currentAccessToken != null) {
             launchMainActivity();
@@ -69,9 +69,11 @@ public class LoginActivity extends AppCompatActivity {
                     editor.putBoolean("new_user_key", false);
                     editor.putString(getString(R.string.user_account_id_key), mUserId);
                     UserDetails.setmUserId(mUserId);
+                    UserDetails.setCurrentUserIdForThisSession(mUserId);
                     editor.apply();
                     launchAddBioActivity();
                 } else {
+                    UserDetails.setCurrentUserIdForThisSession(mUserId);
                     launchMainActivity();
                 }
             }
@@ -124,7 +126,6 @@ public class LoginActivity extends AppCompatActivity {
 
     private void launchAddBioActivity() {
         Intent intent = new Intent(this, AddBio.class);
-        intent.putExtra("add new user to db", true);
         startActivity(intent);
         finish();
     }

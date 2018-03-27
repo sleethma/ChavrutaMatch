@@ -26,17 +26,23 @@ public interface MAContractMVP {
 
         void sendHostsConfirmationtoDb(String chavrutaId, String requesterId);
 
+        void setOptionsMenu();
+
+//        void logout();
+
 
     }
 
     interface Presenter {
         void setMAView(View view);
 
+        void activateAccountKit();
+
         void testMVPToast();
 
         void setupToolbar();
 
-        void getAccountKit();
+        boolean isCurrentUserLoggedInToAccountKit();
 
         void getJsonChavrutaString();
 
@@ -55,11 +61,15 @@ public interface MAContractMVP {
     interface Model {
         void putStringDataInSP(String key, String value);
 
-        void getAllUserDetailsFromSP();
+        boolean verifyCurrentUserDataSavedInSP();
+
+        String getStringDataFromSP(String key);
+
+        void setUserDataFromSPToModel();
 
         void setAllSPValuesToUserDetails();
 
-        boolean isVerifiedAsLoggedIn();
+        void initAccountKit();
 
         void putBooleanDataInSP(String key, boolean value);
 
@@ -70,6 +80,5 @@ public interface MAContractMVP {
         HostSessionData getMyChavrutasArrayListItem(int position);
 
         ArrayList<HostSessionData> getMyChavrutasAL();
-
     }
 }

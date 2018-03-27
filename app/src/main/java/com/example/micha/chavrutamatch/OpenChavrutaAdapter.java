@@ -252,7 +252,7 @@ public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapte
 
         @Override
         public void setTemplateListItemHostAvatar() {
-            awaitingHostAvatar.setImageResource(AvatarImgs.getAvatarNumberResId(
+            hostAvatar.setImageResource(AvatarImgs.getAvatarNumberResId(
                     Integer.parseInt(UserDetails.getmUserAvatarNumberString())));
         }
 
@@ -291,7 +291,6 @@ public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapte
                         .into(hostAvatar);
                 //otherwise use xml unknown profile image
             }
-            hostAvatar.setVisibility(View.VISIBLE);
         }
 
         @Override

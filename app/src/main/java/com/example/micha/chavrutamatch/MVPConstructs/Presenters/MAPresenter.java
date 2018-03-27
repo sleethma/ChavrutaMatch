@@ -1,5 +1,7 @@
 package com.example.micha.chavrutamatch.MVPConstructs.Presenters;
 
+import android.util.Log;
+
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.ChavrutaMatch;
 import com.example.micha.chavrutamatch.Data.HostSessionData;
@@ -7,6 +9,7 @@ import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.example.micha.chavrutamatch.MVPConstructs.MAContractMVP;
 import com.example.micha.chavrutamatch.MVPConstructs.Repos.MARepoContract;
 import com.example.micha.chavrutamatch.Utils.ChavrutaUtils;
+import com.facebook.accountkit.AccountKit;
 
 
 /**
@@ -20,27 +23,32 @@ public class MAPresenter implements MAContractMVP.Presenter {
     private final String CUSTOM_AVATAR_NUM = "999";
     private MAContractMVP.Model mainActivityModel;
     private MAContractMVP.View mainActivityView;
-    private MAContractMVP.View mainActivityListView;
     private ServerConnect serverConnectInstance;
     private String jsonString;
 
     public MAPresenter(MAContractMVP.Model mainActivityModel) {
         this.mainActivityModel = mainActivityModel;
-        this.mainActivityModel.getAllUserDetailsFromSP();
+        verifyUserDataIsCurrent();
+        this.mainActivityModel.setUserDataFromSPToModel();
         this.mainActivityModel.setAllSPValuesToUserDetails();
+    }
+
+    public void verifyUserDataIsCurrent() {
+        String currentUserId = UserDetails.getmUserId();
+        String userIdInSP = mainActivityModel.getStringDataFromSP("user account id key");
+
+        if (currentUserId != userIdInSP) {
+            //todo: setup network helper network class to pull down userdetails from db if not in SP so device can access other account if logged out!
+//            ??networkHelperClass??.getCurrentUserDataFromDb();
+        } else {
+            return;
+        }
     }
 
     @Override
     public void setMAView(MAContractMVP.View view) {
         this.mainActivityView = view;
     }
-
-    //todo: delete below if not necessary
-//    @Override
-//    public void setMainActivityListView(RecyclerView listView) {
-//        mainActivityListView = listView;
-//    }
-
 
     @Override
     public void testMVPToast() {
@@ -52,21 +60,37 @@ public class MAPresenter implements MAContractMVP.Presenter {
     @Override
     public void setupToolbar() {
         mainActivityView.setToolbarUnderline();
+        mainActivityView.setOptionsMenu();
         mainActivityView.setUserAvatar();
     }
 
     @Override
-    public void getAccountKit() {
-        if (mainActivityModel.isVerifiedAsLoggedIn()) {
-            mainActivityModel.putStringDataInSP("user account id key", UserDetails.getmUserId());
-            mainActivityModel.putBooleanDataInSP("new_user_key", UserDetails.getNewUserKey());
-            mainActivityModel.putStringDataInSP("user phone number key", UserDetails.getmUserPhoneNumber());
-            mainActivityModel.putStringDataInSP("user email key", UserDetails.getmUserEmail());
-        } else {
-            if (mainActivityView != null) {
-                mainActivityView.sendToast("Fake Message");
+    public void activateAccountKit() {
+    mainActivityModel.initAccountKit();
+    }
+
+    @Override
+    public boolean isCurrentUserLoggedInToAccountKit() {
+        String currentUserLoginId;
+        boolean currentUserIsLoggedIn = false;
+        try{
+            currentUserLoginId = AccountKit.getCurrentAccessToken().getAccountId().toString();
+            if (UserDetails.getmUserId().equals(currentUserLoginId)) {
+                storeCurrentUserDataInSP();
+                currentUserIsLoggedIn = true;
             }
+        }catch (NullPointerException e){
+            Log.e(MAPresenter.class.getSimpleName().toString(), "user not logged in");
+            currentUserIsLoggedIn = false;
         }
+        return currentUserIsLoggedIn;
+    }
+
+    private void storeCurrentUserDataInSP() {
+        mainActivityModel.putStringDataInSP("user account id key", UserDetails.getmUserId());
+        mainActivityModel.putBooleanDataInSP("new_user_key", UserDetails.getNewUserKey());
+        mainActivityModel.putStringDataInSP("user phone number key", UserDetails.getmUserPhoneNumber());
+        mainActivityModel.putStringDataInSP("user email key", UserDetails.getmUserEmail());
     }
 
     @Override
@@ -80,10 +104,14 @@ public class MAPresenter implements MAContractMVP.Presenter {
     }
 
     private void jsonStringToArrayList() {
-        mainActivityModel.parseJSONDataToArrayList(jsonString);
-        mainActivityView.setMyChavrutaAdapter(mainActivityModel.getMyChavrutasAL());
-        if (mainActivityModel.getMyChavrutasAL() != null && mainActivityModel.getMyChavrutasAL().size() > 0)
-            mainActivityView.displayRecyclerView();
+        if (mainActivityModel.getMyChavrutasAL() != null) {
+            mainActivityModel.parseJSONDataToArrayList(jsonString);
+            mainActivityView.setMyChavrutaAdapter(mainActivityModel.getMyChavrutasAL());
+            if (mainActivityModel.getMyChavrutasAL().size() > 0)
+                mainActivityView.displayRecyclerView();
+        } else {
+            getJsonFromServer();
+        }
     }
 
     private void getJsonFromServer() {
@@ -109,8 +137,6 @@ public class MAPresenter implements MAContractMVP.Presenter {
         holder.setUsersFullName(repoHSD.getmHostFirstName());
 
         // @return 1: hostview, else awaitingConfirmView
-//        int viewType = holder.getItemViewType(repoHSD.getmHostId(), UserDetails.getmUserId());
-
         if (viewType == HOST_VIEW) {
             createHostView(holder, repoHSD);
             //view is awaiting hosts confirmation
@@ -157,24 +183,25 @@ public class MAPresenter implements MAContractMVP.Presenter {
 
 
     private void setAwaitingHostAvatar(MARepoContract holder, HostSessionData repoHSD) {
-        String hostAvatarNumber;
+        String awaitingHostAvatarNumber;
         if (repoHSD.getmHostAvatarNumber() != null) {
-            hostAvatarNumber = repoHSD.getmHostAvatarNumber();
+            awaitingHostAvatarNumber = repoHSD.getmHostAvatarNumber();
         } else {
             return;
         }
-        if (hostAvatarNumber.length() < TEMPLATE_AVATAR_LIST_SIZE) {
-            holder.setTemplateListItemAwaitingHostAvatar(hostAvatarNumber);
+        if (awaitingHostAvatarNumber.length() < TEMPLATE_AVATAR_LIST_SIZE) {
+            holder.setTemplateListItemAwaitingHostAvatar(awaitingHostAvatarNumber);
         } else {
-            byte[] hostCustomAvatar = repoHSD.getmHostCustomAvatarByteArray();
-            holder.setCustomListItemAwaitingHostAvatar(hostCustomAvatar);
+            byte[] awaitingHostCustomAvatar = repoHSD.getmHostCustomAvatarByteArray();
+            holder.setCustomListItemAwaitingHostAvatar(awaitingHostCustomAvatar);
         }
 
     }
 
     private void setHostsAvatar(MARepoContract holder) {
-        if (UserDetails.getmUserAvatarNumberString() != null) return;
-        if (UserDetails.getmUserAvatarNumberString().length() < TEMPLATE_AVATAR_LIST_SIZE) {
+        if (UserDetails.getmUserAvatarNumberString() == null) return;
+        String userAvatarNumberString = UserDetails.getmUserAvatarNumberString();
+        if (userAvatarNumberString.length() < TEMPLATE_AVATAR_LIST_SIZE && !userAvatarNumberString.equals(CUSTOM_AVATAR_NUM)) {
             holder.setTemplateListItemHostAvatar();
         } else {
             holder.setCustomListItemHostAvatar();
