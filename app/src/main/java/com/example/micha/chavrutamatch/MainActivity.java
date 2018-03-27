@@ -327,7 +327,6 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
     @Override
     public void setMyChavrutaAdapter(ArrayList<HostSessionData> myChavrutasArrayList) {
         myChavrutaListView.requestLayout();
-
         //attaches data source to adapter and displays list
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         myChavrutaListView.setLayoutManager(linearLayoutManager);
