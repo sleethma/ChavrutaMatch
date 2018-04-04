@@ -1,6 +1,7 @@
 package com.example.micha.chavrutamatch.MVPConstructs;
 
 
+import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.Data.HostSessionData;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.example.micha.chavrutamatch.MVPConstructs.Repos.MARepoContract;
@@ -62,6 +63,8 @@ public interface MAContractMVP {
         void putStringDataInSP(String key, String value);
 
         boolean verifyCurrentUserDataSavedInSP();
+
+        UserDetails getUserDetailsInstance();
 
         String getStringDataFromSP(String key);
 

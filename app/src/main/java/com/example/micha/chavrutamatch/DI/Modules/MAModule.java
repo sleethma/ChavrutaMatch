@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.example.micha.chavrutamatch.AcctLogin.AccountActivity;
+import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.DI.Scopes.MAScope;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.example.micha.chavrutamatch.MVPConstructs.MAContractMVP;
@@ -19,6 +20,7 @@ import dagger.Provides;
 /**
  * Created by micha on 2/26/2018.
  */
+
 @Module
 public class MAModule {
     Context maContext;
@@ -33,12 +35,12 @@ public class MAModule {
         return maContext;
     }
 
-
     @Provides
     @MAScope
     public AccountActivity providesAccountActivity(){
         return new AccountActivity();
     }
+
 
     @Provides
     public ServerConnect providesServerConnect(){

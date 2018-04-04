@@ -59,6 +59,9 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
     @Inject
     MAContractMVP.Presenter presenter;
 
+    @Inject
+    UserDetails userDetailsInstance;
+
     OpenChavrutaAdapter mAdapter;
 
     static ArrayList<HostSessionData> myChavrutasArrayList;
@@ -335,7 +338,7 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
         myChavrutaListView.addItemDecoration(new RecyclerViewListDecor(VERTICAL_LIST_ITEM_SPACE));
 
         myChavrutaListView.setHasFixedSize(true);
-        mAdapter = new OpenChavrutaAdapter(mContext, myChavrutasArrayList, presenter);
+        mAdapter = new OpenChavrutaAdapter(mContext, myChavrutasArrayList, presenter, userDetailsInstance);
         myChavrutaListView.setAdapter(mAdapter);
     }
 

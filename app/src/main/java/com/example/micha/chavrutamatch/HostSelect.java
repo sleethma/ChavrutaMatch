@@ -6,6 +6,7 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -16,7 +17,11 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.example.micha.chavrutamatch.AcctLogin.AccountActivity;
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
+import com.example.micha.chavrutamatch.DI.Components.DaggerMAComponent;
+import com.example.micha.chavrutamatch.DI.Components.MAComponent;
+import com.example.micha.chavrutamatch.DI.Modules.MAModule;
 import com.example.micha.chavrutamatch.Data.AvatarImgs;
 import com.example.micha.chavrutamatch.Data.HostSessionData;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
@@ -31,6 +36,8 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -62,28 +69,36 @@ public class HostSelect extends AppCompatActivity implements OpenHostAdapter.Lis
     String userId;
     //adds spacing b/n listitems
     private final int VERTICAL_LIST_ITEM_SPACE = 40;
-
+    private Context context;
     OpenHostAdapter mAdapter;
+
+    @Inject
+    public UserDetails userDetailsInstance;
+
+    public HostSelect(){
+        context = this;
+        (ChavrutaMatch.get(this).getApplicationComponent()).inject(this);
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.open_host_listview);
         ButterKnife.bind(this);
-        userId = UserDetails.getmUserId();
+        userId = userDetailsInstance.getmUserId();
         mContext = HostSelect.this;
 
         //sets HostImage in title bar
-        if (UserDetails.getmUserAvatarNumberString() != null &&
-                !UserDetails.getmUserAvatarNumberString().equals(USER_IMG_AVATAR)) {
+        if (userDetailsInstance.getmUserAvatarNumberString() != null &&
+                !userDetailsInstance.getmUserAvatarNumberString().equals(USER_IMG_AVATAR)) {
             userPic.setImageResource(AvatarImgs.getAvatarNumberResId(
-                    Integer.parseInt(UserDetails.getmUserAvatarNumberString())));
+                    Integer.parseInt(userDetailsInstance.getmUserAvatarNumberString())));
         } else {
 
             try {
                 GlideApp
                         .with(mContext)
-                        .load(UserDetails.getHostAvatarUri())
+                        .load(userDetailsInstance.getHostAvatarUri())
                         .placeholder(R.drawable.ic_unknown_user)
                         .circleCrop()
                         .into(userPic);
@@ -110,7 +125,7 @@ public class HostSelect extends AppCompatActivity implements OpenHostAdapter.Lis
         allHostsList.addItemDecoration(new RecyclerViewListDecor(VERTICAL_LIST_ITEM_SPACE));
 
         //attaches data source to adapter
-        mAdapter = new OpenHostAdapter(this, openHostArrayList, this);
+        mAdapter = new OpenHostAdapter(this, openHostArrayList, this, userDetailsInstance);
         allHostsList.setHasFixedSize(true);
 
         allHostsList.setAdapter(mAdapter);

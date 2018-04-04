@@ -3,14 +3,21 @@ package com.example.micha.chavrutamatch.DI.Components;
 import android.content.Context;
 
 import com.example.micha.chavrutamatch.AcctLogin.AccountActivity;
+import com.example.micha.chavrutamatch.AcctLogin.LoginActivity;
+import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
+import com.example.micha.chavrutamatch.AddBio;
 import com.example.micha.chavrutamatch.DI.Modules.MAModule;
 import com.example.micha.chavrutamatch.DI.Modules.SharedPrefsModule;
+import com.example.micha.chavrutamatch.DI.Modules.UserDetailsModule;
 import com.example.micha.chavrutamatch.DI.Scopes.MAScope;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
+import com.example.micha.chavrutamatch.HostSelect;
 import com.example.micha.chavrutamatch.MVPConstructs.MAContractMVP;
 import com.example.micha.chavrutamatch.MVPConstructs.Models.MainActivityModel;
 import com.example.micha.chavrutamatch.MVPConstructs.Presenters.MAPresenter;
 import com.example.micha.chavrutamatch.MainActivity;
+import com.example.micha.chavrutamatch.NewHost;
+import com.example.micha.chavrutamatch.OpenChavrutaAdapter;
 
 import dagger.Component;
 
@@ -22,7 +29,16 @@ import dagger.Component;
 @MAScope
 public interface MAComponent {
     void inject(MainActivity target);
+    void inject(MainActivityModel target);
     void inject(AccountActivity target);
+    void inject(LoginActivity target);
+
+    //added 4/3/2018
+    void inject(AddBio target);
+    void inject(ServerConnect target);
+    void inject(OpenChavrutaAdapter target);
+    void inject(NewHost target);
+
     //todo: check if below needed
     void inject(Context target);
 }

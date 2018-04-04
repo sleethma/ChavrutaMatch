@@ -1,11 +1,17 @@
 package com.example.micha.chavrutamatch.MVPConstructs.Models;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 
 import com.example.micha.chavrutamatch.AcctLogin.AccountActivity;
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
+import com.example.micha.chavrutamatch.ChavrutaMatch;
+import com.example.micha.chavrutamatch.DI.Components.DaggerMAComponent;
+import com.example.micha.chavrutamatch.DI.Components.MAComponent;
+import com.example.micha.chavrutamatch.DI.Modules.MAModule;
 import com.example.micha.chavrutamatch.Data.HostSessionData;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.example.micha.chavrutamatch.MVPConstructs.MAContractMVP;
@@ -22,7 +28,8 @@ import javax.inject.Inject;
  * Created by micha on 2/26/2018.
  */
 
-public class MainActivityModel implements MAContractMVP.Model {
+public class MainActivityModel extends AppCompatActivity implements MAContractMVP.Model {
+    Context context;
     private String jsonString;
     JSONObject jsonObject;
     JSONArray jsonArray;
@@ -33,20 +40,31 @@ public class MainActivityModel implements MAContractMVP.Model {
     private static String userId, userName, userFirstName, userLastName, userPhoneNumber,
             userEmail, userCityState, userCustomAvatarUriString, userImagePathString, userCustomAvatarBase64String,
             userBio;
-
     public SharedPreferences sp;
     AccountActivity accountActivity;
-
     ServerConnect serverConnectInstance;
 
+    @Inject
+    UserDetails userDetailsInstance;
 
     public ArrayList<HostSessionData> myChavrutasArrayList;
 
     @Inject
     public MainActivityModel(SharedPreferences sp, AccountActivity accountActivity, ServerConnect serverConnectInstance) {
+        context = this;
+        MAComponent maComponent = DaggerMAComponent.builder()
+                .mAModule(new MAModule(context))
+                .build();
+        maComponent.inject(this);
+
         this.sp = sp;
         this.accountActivity = accountActivity;
         this.serverConnectInstance = serverConnectInstance;
+
+    }
+    @Override
+    public UserDetails getUserDetailsInstance() {
+        return userDetailsInstance;
     }
 
     @Override
@@ -66,19 +84,19 @@ public class MainActivityModel implements MAContractMVP.Model {
 
     @Override
     public void setAllSPValuesToUserDetails() {
-        UserDetails.setmUserPhoneNumber(userPhoneNumber);
-        UserDetails.setmUserEmail(userEmail);
-        UserDetails.setmUserName(userName);
-        UserDetails.setmUserFirstName(userFirstName);
-        UserDetails.setmUserLastName(userLastName);
-        UserDetails.setmUserAvatarNumberString(userAvatarNumberString);
-        UserDetails.setmUserBio(userBio);
-        UserDetails.setmUserId(userId);
-        UserDetails.setmUserCustomAvatarUriString(userCustomAvatarUriString);
-        UserDetails.setmUserCustomAvatarBase64String(userCustomAvatarBase64String);
-        UserDetails.setUserCityState(userCityState);
-        UserDetails.setmUserCustomAvatarUri(mUserCustomAvatarUri);
-        UserDetails.setmUserCustomAvatarBase64ByteArray(mUserCustomAvatarBase64ByteArray);
+        userDetailsInstance.setmUserPhoneNumber(userPhoneNumber);
+        userDetailsInstance.setmUserEmail(userEmail);
+        userDetailsInstance.setmUserName(userName);
+        userDetailsInstance.setmUserFirstName(userFirstName);
+        userDetailsInstance.setmUserLastName(userLastName);
+        userDetailsInstance.setmUserAvatarNumberString(userAvatarNumberString);
+        userDetailsInstance.setmUserBio(userBio);
+        userDetailsInstance.setmUserId(userId);
+        userDetailsInstance.setmUserCustomAvatarUriString(userCustomAvatarUriString);
+        userDetailsInstance.setmUserCustomAvatarBase64String(userCustomAvatarBase64String);
+        userDetailsInstance.setUserCityState(userCityState);
+        userDetailsInstance.setmUserCustomAvatarUri(mUserCustomAvatarUri);
+        userDetailsInstance.setmUserCustomAvatarBase64ByteArray(mUserCustomAvatarBase64ByteArray);
     }
 
     public static void setByteArrayFromString(String stringToDecode) {
@@ -118,7 +136,10 @@ public class MainActivityModel implements MAContractMVP.Model {
         userName = getStringDataFromSP("user name key");
         userFirstName = getStringDataFromSP("user first name key");
         userLastName = getStringDataFromSP("user last name key");
+
         userAvatarNumberString = getStringDataFromSP("user avatar number key");
+        if(userAvatarNumberString == null)userAvatarNumberString = "0";
+
         userBio = getStringDataFromSP("user bio key");
         userId = getStringDataFromSP("user account id key");
         userCustomAvatarUriString = getStringDataFromSP("user custom avatar key");

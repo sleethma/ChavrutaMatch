@@ -9,6 +9,9 @@ import android.widget.Toast;
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.AddBio;
 import com.example.micha.chavrutamatch.ChavrutaMatch;
+import com.example.micha.chavrutamatch.DI.Components.DaggerMAComponent;
+import com.example.micha.chavrutamatch.DI.Components.MAComponent;
+import com.example.micha.chavrutamatch.DI.Modules.MAModule;
 import com.example.micha.chavrutamatch.HostSelect;
 import com.example.micha.chavrutamatch.MVPConstructs.MAContractMVP;
 import com.example.micha.chavrutamatch.R;
@@ -39,18 +42,28 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
     private static boolean isConnectedToNetwork;
     public static String jsonString;
     @Inject
-    Context context;
+    public Context context;
 
+    @Inject
+            public UserDetails userDetailsInstance;
     //postExecuteResponse: 0= no click/error; 1=registration; 2=get JSON
     int postExecuteResponse = 0;
 
 
        public ServerConnect(Context context) {
         this.mContextRegister = context;
+           MAComponent maComponent = DaggerMAComponent.builder()
+                   .mAModule(new MAModule(context))
+                   .build();
+           maComponent.inject(this);
     }
 
     @Inject
     public ServerConnect() {
+        MAComponent maComponent = DaggerMAComponent.builder()
+                .mAModule(new MAModule(context))
+                .build();
+        maComponent.inject(this);
     }
 
     private ProgressDialog pDialog;
@@ -83,7 +96,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
         if (chosenBkgdTaskCheck.equals("get UserDetails")) {
             try {
                 HttpURLConnection httpURLConnection;
-                String userID = UserDetails.getmUserId();
+                String userID = userDetailsInstance.getmUserId();
                 String getUserDetailsUrlString = "http://brightlightproductions.online/secure_get_json_user_details.php?user_id=" +
                         userID;
                 URL getUserDetailsUrl = new URL(getUserDetailsUrlString);
@@ -199,7 +212,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 if (chosenBkgdTaskCheck.equals("my chavrutas")) {
                     //designates caller from MA
                     myChavruta = true;
-                    String userID = UserDetails.getmUserId();
+                    String userID = userDetailsInstance.getmUserId();
 
 
                     String my_chavrutas_url = "http://brightlightproductions.online/secure_get_json_my_chavrutas.php?user_id=" +
@@ -207,7 +220,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                     URL jsonMyChavrutasURL = new URL(my_chavrutas_url);
                     httpURLConnection = (HttpURLConnection) jsonMyChavrutasURL.openConnection();
                 } else {
-                    String hostCityState = UserDetails.getUserCallFormattedCityState();
+                    String hostCityState = userDetailsInstance.getUserCallFormattedCityState();
                     String json_url = "http://brightlightproductions.online/secure_get_chavrutaJSON.php?host_city_state="+hostCityState;
                     URL jsonURL = new URL(json_url);
                     httpURLConnection = (HttpURLConnection) jsonURL.openConnection();

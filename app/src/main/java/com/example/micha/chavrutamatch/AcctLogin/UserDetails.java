@@ -82,8 +82,8 @@ public class UserDetails extends AppCompatActivity{
         return newUserKey;
     }
 
-    public static void setNewUserKey(boolean newUserKey) {
-        UserDetails.newUserKey = newUserKey;
+    public void setNewUserKey(boolean newUserKey) {
+        this.newUserKey = newUserKey;
     }
 
     public static void setLoginType(String loginType){
@@ -99,8 +99,8 @@ public class UserDetails extends AppCompatActivity{
         mContext = context;
     }
 
-    public static void setmUserAvatarNumberString(String mUserAvatarNumberString) {
-        UserDetails.mUserAvatarNumberString = mUserAvatarNumberString;
+    public  void setmUserAvatarNumberString(String mUserAvatarNumberString) {
+        this.mUserAvatarNumberString = mUserAvatarNumberString;
     }
     public static void setmUserCustomAvatarUriString(String UserCustomAvatarUriString){
         mUserCustomAvatarUriString = UserCustomAvatarUriString;
@@ -127,15 +127,15 @@ public class UserDetails extends AppCompatActivity{
         String formattedCityState = mUserCityState.replaceAll(" ", "%20");
         return formattedCityState;
     }
-    public static void setmUserId(String userId) {
+    public void setmUserId(String userId) {
         mUserId = userId;
     }
 
-    public static void setCurrentUserIdForThisSession(String userId) {
-        currentUserId = userId;
-    }
+//    public static void setCurrentUserIdForThisSession(String userId) {
+//        currentUserId = userId;
+//    }
 
-    public static String getmUserId() {
+    public  String getmUserId() {
         return mUserId;
     }
 
@@ -148,8 +148,8 @@ public class UserDetails extends AppCompatActivity{
         return mUserPhoneNumber;
     }
 
-    public static void setmUserPhoneNumber(String mUserPhoneNumber) {
-        UserDetails.mUserPhoneNumber = mUserPhoneNumber;
+    public void setmUserPhoneNumber(String mUserPhoneNumber) {
+        this.mUserPhoneNumber = mUserPhoneNumber;
     }
 
     public static Uri getHostAvatarUri(){
@@ -183,19 +183,19 @@ public class UserDetails extends AppCompatActivity{
     public static void setmUserName(String mUserName) {
         UserDetails.mUserName = mUserName;
     }
-    public static void setmUserFirstName(String mUserFirstName) {
-        UserDetails.mUserFirstName = mUserFirstName;
+    public  void setmUserFirstName(String mUserFirstName) {
+        this.mUserFirstName = mUserFirstName;
     }
-    public static void setmUserLastName(String mUserLastName) {
-        UserDetails.mUserLastName = mUserLastName;
+    public void setmUserLastName(String mUserLastName) {
+        this.mUserLastName = mUserLastName;
     }
 
     public static void setmUserBio(String mUserBio) {
         UserDetails.mUserBio = mUserBio;
     }
 
-    public static void setmUserPassword(String mUserPassword) {
-        UserDetails.mUserPassword = mUserPassword;
+    public void setmUserPassword(String mUserPassword) {
+        this.mUserPassword = mUserPassword;
     }
 
     public static void setmUserCityState(String mUserCityState) {
@@ -206,7 +206,7 @@ public class UserDetails extends AppCompatActivity{
         UserDetails.mUserCustomAvatarUri = mUserCustomAvatarUri;
     }
 
-    public static void setmUserCustomAvatarBase64String(String mUserCustomAvatarBase64String) {
+    public  void setmUserCustomAvatarBase64String(String mUserCustomAvatarBase64String) {
         UserDetails.mUserCustomAvatarBase64String = mUserCustomAvatarBase64String;
     }
 

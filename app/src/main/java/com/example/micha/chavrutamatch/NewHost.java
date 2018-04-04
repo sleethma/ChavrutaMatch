@@ -28,6 +28,9 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
+import com.example.micha.chavrutamatch.DI.Components.DaggerMAComponent;
+import com.example.micha.chavrutamatch.DI.Components.MAComponent;
+import com.example.micha.chavrutamatch.DI.Modules.MAModule;
 import com.example.micha.chavrutamatch.Data.AvatarImgs;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.example.micha.chavrutamatch.Utils.ChavrutaTextValidation;
@@ -39,6 +42,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -109,6 +114,18 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
     private boolean isBelowSDK24 = Build.VERSION.SDK_INT < 24;
     SharedPreferences sp;
     String NO_DATE = "Date?";
+    private Context context;
+
+    @Inject
+    public UserDetails userDetailsInstance;
+
+    public NewHost(){
+        context = this;
+        MAComponent maComponent = DaggerMAComponent.builder()
+                .mAModule(new MAModule(context))
+                .build();
+        maComponent.inject(this);
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -122,16 +139,16 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         if (sp.getString(getString(R.string.user_city_state_key), null) != null) {
             acCityState.setText(sp.getString(getString(R.string.user_city_state_key), null));
         }
-        if (UserDetails.getmUserAvatarNumberString() != null &&
-                !UserDetails.getmUserAvatarNumberString().equals("999")) {
+        if (userDetailsInstance.getmUserAvatarNumberString() != null &&
+                !userDetailsInstance.getmUserAvatarNumberString().equals("999")) {
             ivHostAvatar.setImageResource(AvatarImgs.getAvatarNumberResId(
-                    Integer.parseInt(UserDetails.getmUserAvatarNumberString())));
+                    Integer.parseInt(userDetailsInstance.getmUserAvatarNumberString())));
         } else {
 
             try {
                 GlideApp
                         .with(this)
-                        .load(UserDetails.getHostAvatarUri())
+                        .load(userDetailsInstance.getHostAvatarUri())
                         .placeholder(R.drawable.ic_unknown_user)
                         .circleCrop()
                         .into(ivHostAvatar);
@@ -147,8 +164,8 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         ibDate.setOnClickListener(this);
         ibHostIt.setOnClickListener(this);
         setCurrentDateVars();
-        mHostFirstName = UserDetails.getmUserFirstName();
-        mHostLastName = UserDetails.getmUserLastName();
+        mHostFirstName = userDetailsInstance.getmUserFirstName();
+        mHostLastName = userDetailsInstance.getmUserLastName();
 
         //auto moves edittext when softkeyboard called
         this.getWindow().setSoftInputMode(
@@ -365,11 +382,11 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         textValidationPass = textValidator.validateSeferInAddHost(mSefer);
         mLocation = etHostAddress.getText().toString();
         mHostCityState = acCityState.getText().toString();
-        mHostId = UserDetails.getmUserId();
-        mHostAvatarNumber = UserDetails.getmUserAvatarNumberString();
+        mHostId = userDetailsInstance.getmUserId();
+        mHostAvatarNumber = userDetailsInstance.getmUserAvatarNumberString();
         //@hostAvatarNumber: asign base64array for custom image, or avatar template number if template image
         if (mHostAvatarNumber.equals("999"))
-            mHostAvatarNumber = UserDetails.getUserAvatarBase64String();
+            mHostAvatarNumber = userDetailsInstance.getUserAvatarBase64String();
 
         String confirmed = "not confirmed";
         String chavrutaRequest1 = "None", chavrutaRequest2 = "None", chavrutaRequest3 = "None";

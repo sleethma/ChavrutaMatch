@@ -25,24 +25,18 @@ public class MAPresenter implements MAContractMVP.Presenter {
     private MAContractMVP.View mainActivityView;
     private ServerConnect serverConnectInstance;
     private String jsonString;
+    private String userIdInSP;
+    private UserDetails userDetailsInstance;
 
     public MAPresenter(MAContractMVP.Model mainActivityModel) {
         this.mainActivityModel = mainActivityModel;
-        verifyUserDataIsCurrent();
         this.mainActivityModel.setUserDataFromSPToModel();
         this.mainActivityModel.setAllSPValuesToUserDetails();
+        userDetailsInstance = mainActivityModel.getUserDetailsInstance();
     }
 
-    public void verifyUserDataIsCurrent() {
-        String currentUserId = UserDetails.getmUserId();
-        String userIdInSP = mainActivityModel.getStringDataFromSP("user account id key");
-
-        if (currentUserId != userIdInSP) {
-            //todo: setup network helper network class to pull down userdetails from db if not in SP so device can access other account if logged out!
-//            ??networkHelperClass??.getCurrentUserDataFromDb();
-        } else {
-            return;
-        }
+    public void replaceSPDataWithCurrentUserData() {
+        //todo: if currentUser is different from user in SP, pull down their data to device and store in SP
     }
 
     @Override
@@ -72,25 +66,28 @@ public class MAPresenter implements MAContractMVP.Presenter {
     @Override
     public boolean isCurrentUserLoggedInToAccountKit() {
         String currentUserLoginId;
+        String lastUserLoginId = userDetailsInstance.getmUserId();
+
         boolean currentUserIsLoggedIn = false;
         try{
             currentUserLoginId = AccountKit.getCurrentAccessToken().getAccountId().toString();
-            if (UserDetails.getmUserId().equals(currentUserLoginId)) {
+            if (lastUserLoginId.equals(currentUserLoginId)) {
                 storeCurrentUserDataInSP();
                 currentUserIsLoggedIn = true;
             }
         }catch (NullPointerException e){
             Log.e(MAPresenter.class.getSimpleName().toString(), "user not logged in");
             currentUserIsLoggedIn = false;
+            //do db query and parse in below EMPTY method
         }
         return currentUserIsLoggedIn;
     }
 
     private void storeCurrentUserDataInSP() {
-        mainActivityModel.putStringDataInSP("user account id key", UserDetails.getmUserId());
-        mainActivityModel.putBooleanDataInSP("new_user_key", UserDetails.getNewUserKey());
-        mainActivityModel.putStringDataInSP("user phone number key", UserDetails.getmUserPhoneNumber());
-        mainActivityModel.putStringDataInSP("user email key", UserDetails.getmUserEmail());
+        mainActivityModel.putStringDataInSP("user account id key", userDetailsInstance.getmUserId());
+        mainActivityModel.putBooleanDataInSP("new_user_key", userDetailsInstance.getNewUserKey());
+        mainActivityModel.putStringDataInSP("user phone number key", userDetailsInstance.getmUserPhoneNumber());
+        mainActivityModel.putStringDataInSP("user email key", userDetailsInstance.getmUserEmail());
     }
 
     @Override
@@ -151,7 +148,7 @@ public class MAPresenter implements MAContractMVP.Presenter {
     public int getItemViewTypeFromPresenter(int position) {
         //selects hostId or userId for inflation
         String hostId = mainActivityModel.getMyChavrutasArrayListItem(position).getmHostId();
-        String userId = UserDetails.getmUserId();
+        String userId = userDetailsInstance.getmUserId();
         // @return 1: hostview, else awaitingConfirmView
         if (hostId.equals(userId)) {
             return 1;
@@ -163,7 +160,7 @@ public class MAPresenter implements MAContractMVP.Presenter {
 
     private void createAwaitingConfirmView(MARepoContract holder, HostSessionData repoHSD) {
         String learnerConfirmed = repoHSD.getmConfirmed();
-        String userId = UserDetails.getmUserId();
+        String userId = userDetailsInstance.getmUserId();
         boolean userIsConfirmed = learnerConfirmed.equals(userId);
         holder.setUserConfirmedStatus(userIsConfirmed);
 
@@ -242,7 +239,6 @@ public class MAPresenter implements MAContractMVP.Presenter {
         }
         return hasRequesters;
     }
-
 
     private void setHostsRequestItem(MARepoContract holder, HostSessionData repoHSD, String requestNumbersId, int requestNumber) {
         String idOfConfirmedUser = repoHSD.getmConfirmed();
@@ -333,7 +329,6 @@ public class MAPresenter implements MAContractMVP.Presenter {
         mainActivityView.sendHostsConfirmationtoDb(chavrutaId, repoHSD.getmConfirmed());
     }
 }
-//
 //            myChavrutasArrayList = new ArrayList<>();
 //
 //            //add and remove views to display myChavrutas

@@ -28,7 +28,7 @@ class OpenHostAdapter extends RecyclerView.Adapter<OpenHostAdapter.ViewHolder> {
 
     //number of views adapter will hold
     private Context mContext;
-    private String userId = UserDetails.getmUserId();
+    private String userId;
     //@var used to control swipe on delete Dialogue selection
     final private String USER_IMG_AVATAR_STRING = "999";
 
@@ -44,10 +44,11 @@ class OpenHostAdapter extends RecyclerView.Adapter<OpenHostAdapter.ViewHolder> {
 
     public OpenHostAdapter(Context context,
                            ArrayList<HostSessionData> chavrutaSessionsArrayList,
-                           ListItemClickListener listItemClickListener) {
+                           ListItemClickListener listItemClickListener, UserDetails userDetailsInstance) {
         this.mContext = context;
         mChavrutaSessionsAL = chavrutaSessionsArrayList;
         mOnClickListener = listItemClickListener;
+        userId = userDetailsInstance.getmUserId();
 
         //calls so can access static user vars throughout adapter
 //        orderArrayByDate(mChavrutaSessionsAL);
@@ -174,7 +175,6 @@ class OpenHostAdapter extends RecyclerView.Adapter<OpenHostAdapter.ViewHolder> {
                         Toast.makeText(mContext, "Class Full:Check Back!", Toast.LENGTH_SHORT).show();
                         return;
                     }
-
                     String chavrutaId = currentItem.getmChavrutaId();
                     ServerConnect addHost = new ServerConnect(mContext);
                     addHost.execute("chavruta request", userId, chavrutaId, requestSlotOpen,

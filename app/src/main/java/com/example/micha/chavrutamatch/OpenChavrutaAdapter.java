@@ -25,6 +25,8 @@ import com.example.micha.chavrutamatch.Utils.GlideApp;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import static com.example.micha.chavrutamatch.AcctLogin.UserDetails.LOG_TAG;
 import static com.example.micha.chavrutamatch.AcctLogin.UserDetails.getUserCustomAvatarBase64ByteArray;
 
@@ -36,13 +38,14 @@ public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapte
 
     //number of views adapter will hold
     private Context mContext;
-    String userId = UserDetails.getmUserId();
+    String userId;
     private Context mainActivityContext;
     //@var used to control swipe on delete Dialogue selection
     private static boolean mConfirmed = false;
     //interface for getting MainActivity context
     private ParentView callback = (ParentView) MainActivity.mContext;
     private MAContractMVP.Presenter presenter;
+    private UserDetails userDetailsInstance;
 
     private int requesterNumber;
 
@@ -52,11 +55,13 @@ public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapte
     private static ArrayList<HostSessionData> mChavrutaSessionsAL;
     private List<Integer> avatarList = AvatarImgs.getAllAvatars();
 
-    public OpenChavrutaAdapter(Context context, ArrayList<HostSessionData> chavrutaSessionsArrayList, MAContractMVP.Presenter presenter) {
+    public OpenChavrutaAdapter(Context context, ArrayList<HostSessionData> chavrutaSessionsArrayList, MAContractMVP.Presenter presenter, UserDetails userDetailsInstance) {
         this.mContext = context;
         this.presenter = presenter;
         mChavrutaSessionsAL = chavrutaSessionsArrayList;
         mainActivityContext = MainActivity.mContext;
+        this.userDetailsInstance = userDetailsInstance;
+        userId = userDetailsInstance.getmUserId();
         //calls so can access static user vars throughout adapter
 //        orderArrayByDate(mChavrutaSessionsAL);
     }
@@ -253,7 +258,7 @@ public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapte
         @Override
         public void setTemplateListItemHostAvatar() {
             hostAvatar.setImageResource(AvatarImgs.getAvatarNumberResId(
-                    Integer.parseInt(UserDetails.getmUserAvatarNumberString())));
+                    Integer.parseInt(userDetailsInstance.getmUserAvatarNumberString())));
         }
 
         @Override
@@ -275,10 +280,10 @@ public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapte
 
         @Override
         public void setCustomListItemHostAvatar() {
-            if (UserDetails.getHostAvatarUri() != null) {
+            if (userDetailsInstance.getHostAvatarUri() != null) {
                 GlideApp
                         .with(mContext)
-                        .load(UserDetails.getHostAvatarUri())
+                        .load(userDetailsInstance.getHostAvatarUri())
                         .centerCrop()
                         .into(hostAvatar);
             } else if (getUserCustomAvatarBase64ByteArray() != null) {

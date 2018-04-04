@@ -13,6 +13,9 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.micha.chavrutamatch.AddBio;
+import com.example.micha.chavrutamatch.DI.Components.DaggerMAComponent;
+import com.example.micha.chavrutamatch.DI.Components.MAComponent;
+import com.example.micha.chavrutamatch.DI.Modules.MAModule;
 import com.example.micha.chavrutamatch.MainActivity;
 import com.example.micha.chavrutamatch.R;
 import com.facebook.accountkit.AccessToken;
@@ -21,6 +24,8 @@ import com.facebook.accountkit.AccountKitLoginResult;
 import com.facebook.accountkit.ui.AccountKitActivity;
 import com.facebook.accountkit.ui.AccountKitConfiguration;
 import com.facebook.accountkit.ui.LoginType;
+
+import javax.inject.Inject;
 
 /**
  * Created by micha on 8/19/2017.
@@ -31,17 +36,28 @@ public class LoginActivity extends AppCompatActivity {
     public static int APP_REQUEST_CODE = 1;
     public static boolean mIsConnected;
     SharedPreferences prefs;
-    private String mUserId;
+    private String currentUserId;
     private final String LOG_TAG = LoginActivity.class.getSimpleName();
+    Context context;
 
 
+    @Inject
+   public UserDetails userDetailsInstance;
+
+   public LoginActivity(){
+       context = this;
+       MAComponent maComponent = DaggerMAComponent.builder()
+               .mAModule(new MAModule(context))
+               .build();
+       maComponent.inject(this);
+   }
 
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_type_select);
-       prefs = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE);
+        prefs = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE);
         AccessToken currentAccessToken = AccountKit.getCurrentAccessToken();
         if (currentAccessToken != null) {
             launchMainActivity();
@@ -59,21 +75,21 @@ public class LoginActivity extends AppCompatActivity {
                 String toastMessage = loginResult.getError().getErrorType().getMessage();
                 Toast.makeText(this, toastMessage, Toast.LENGTH_LONG).show();
             } else if (loginResult.getAccessToken() != null) {
-                //on successful login and new user, proceed to the AddBio activity
-                Boolean newUser = prefs.getBoolean("new_user_key", true);
-                mUserId = loginResult.getAccessToken().getAccountId();
 
-                if (newUser) {
+                Boolean newUserOnThisDevice = true;
+                String lastUsedUserId = prefs.getString(getString(R.string.user_account_id_key), null);
+                currentUserId = loginResult.getAccessToken().getAccountId();
+                userDetailsInstance.setmUserId(currentUserId);
+                if(lastUsedUserId.equals(currentUserId)) newUserOnThisDevice = false;
+                if (newUserOnThisDevice) {
                     prefs = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE);
                     SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE).edit();
                     editor.putBoolean("new_user_key", false);
-                    editor.putString(getString(R.string.user_account_id_key), mUserId);
-                    UserDetails.setmUserId(mUserId);
-                    UserDetails.setCurrentUserIdForThisSession(mUserId);
+                    editor.putString(getString(R.string.user_account_id_key), currentUserId);
+                    userDetailsInstance.setmUserId(currentUserId);
                     editor.apply();
                     launchAddBioActivity();
                 } else {
-                    UserDetails.setCurrentUserIdForThisSession(mUserId);
                     launchMainActivity();
                 }
             }
@@ -125,6 +141,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void launchAddBioActivity() {
+        //todo: use network call to DB to determine if new user (!SharedPrefs) and populate data if not a true new ChavrutaMatch customer on complete send intent with jsonstring to AB.class if returning customer
         Intent intent = new Intent(this, AddBio.class);
         startActivity(intent);
         finish();

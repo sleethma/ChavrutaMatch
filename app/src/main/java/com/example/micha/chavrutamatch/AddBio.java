@@ -1,6 +1,7 @@
 package com.example.micha.chavrutamatch;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -23,6 +24,9 @@ import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
+import com.example.micha.chavrutamatch.DI.Components.DaggerMAComponent;
+import com.example.micha.chavrutamatch.DI.Components.MAComponent;
+import com.example.micha.chavrutamatch.DI.Modules.MAModule;
 import com.example.micha.chavrutamatch.Data.AvatarImgs;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.example.micha.chavrutamatch.Utils.ChavrutaTextValidation;
@@ -36,6 +40,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -90,7 +96,20 @@ public class AddBio extends AppCompatActivity {
     static boolean storeNewUserInDb = false;
     //checks if avatar chosen from AvatarSelectFragment
     boolean newCustomAvatarChosen = false;
+    Context context;
 
+    @Inject
+           public UserDetails userDetailsInstance;
+
+    public AddBio(){
+        context = this;
+        MAComponent maComponent = DaggerMAComponent.builder()
+                .mAModule(new MAModule(context))
+                .applicationComponent(ChavrutaMatch.get(this).getApplicationComponent())
+                .build();
+
+        maComponent.inject(this);
+    }
 
     //TODO: Add input validation using: https://www.androidhive.info/2015/09/android-material-design-floating-labels-for-edittext/
     @Override
@@ -99,8 +118,10 @@ public class AddBio extends AppCompatActivity {
         setContentView(R.layout.add_bio);
         ButterKnife.bind(this);
         mUserAvatarNumberString = "0";
-
         prefs = getSharedPreferences("user_data", MODE_PRIVATE);
+
+
+
         //incoming intents
         if (getIntent().getExtras() != null) {
             Intent incomingIntent = getIntent();
@@ -235,7 +256,7 @@ public class AddBio extends AppCompatActivity {
     //gets user bio info from server
     public void getUserBioDatafromDb() {
         // check to see if have an account in db
-        mUserId = UserDetails.getmUserId();
+        mUserId = userDetailsInstance.getmUserId();
         ServerConnect getUserDetailsFromDb = new ServerConnect(this);
         getUserDetailsFromDb.execute("get UserDetails", mUserId);
     }
@@ -321,7 +342,7 @@ public class AddBio extends AppCompatActivity {
         String userPostType;
         if (storeNewUserInDb) {
             userPostType = "new user post";
-            mUserId = UserDetails.getmUserId();
+            mUserId = userDetailsInstance.getmUserId();
             //reset static variable once user saves bio 1st time
             storeNewUserInDb = false;
         } else {
@@ -355,7 +376,7 @@ public class AddBio extends AppCompatActivity {
         }
         populateEditTextData(activityOnCreateType);
         //get user id if not in SP
-        if (mUserId == null) mUserId = UserDetails.getmUserId();
+        if (mUserId == null) mUserId = userDetailsInstance.getmUserId();
     }
 
     //sets user details from db call
