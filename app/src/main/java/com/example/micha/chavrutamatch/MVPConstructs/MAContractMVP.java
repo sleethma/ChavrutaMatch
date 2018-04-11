@@ -1,6 +1,8 @@
 package com.example.micha.chavrutamatch.MVPConstructs;
 
 
+import android.content.Context;
+
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.Data.HostSessionData;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
@@ -38,6 +40,8 @@ public interface MAContractMVP {
         void setMAView(View view);
 
         void activateAccountKit();
+
+        void getJsonFromServer();
 
         void testMVPToast();
 

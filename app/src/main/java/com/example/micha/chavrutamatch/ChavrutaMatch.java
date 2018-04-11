@@ -3,12 +3,14 @@ package com.example.micha.chavrutamatch;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.util.Log;
 
 import com.example.micha.chavrutamatch.DI.Components.ApplicationComponent;
 import com.example.micha.chavrutamatch.DI.Components.DaggerApplicationComponent;
+import com.example.micha.chavrutamatch.DI.Components.DaggerMAComponent;
+import com.example.micha.chavrutamatch.DI.Components.MAComponent;
 import com.example.micha.chavrutamatch.DI.Modules.ApplicationModule;
 import com.example.micha.chavrutamatch.DI.Modules.MAModule;
-import com.example.micha.chavrutamatch.DI.Modules.SharedPrefsModule;
 import com.example.micha.chavrutamatch.DI.Modules.UserDetailsModule;
 
 /**
@@ -19,6 +21,9 @@ import com.example.micha.chavrutamatch.DI.Modules.UserDetailsModule;
 public class ChavrutaMatch extends Application {
     private  Context applicationContext = this;
     private ApplicationComponent applicationComponent;
+    private MAComponent maComponent;
+
+
 
     @Override
     public void onCreate() {
@@ -29,14 +34,24 @@ public class ChavrutaMatch extends Application {
                 .userDetailsModule(new UserDetailsModule())
                 .build();
 
-        applicationComponent.inject(this);
+        maComponent = DaggerMAComponent.builder()
+                .mAModule(new MAModule(this))
+                .applicationComponent(applicationComponent)
+                .build();
     }
 
     public ApplicationComponent getApplicationComponent() {
         return applicationComponent;
     }
 
+    public  MAComponent getMAComponent() {
+        return maComponent;
+    }
+
+
+
     public static ChavrutaMatch get(Activity activity){
+        ChavrutaMatch testChavrutaMatch = (ChavrutaMatch) activity.getApplication();
         return (ChavrutaMatch) activity.getApplication();
     }
 
@@ -63,4 +78,6 @@ public class ChavrutaMatch extends Application {
     public  Context getApplicationsContext(){
         return applicationContext;
     }
+
+
 }

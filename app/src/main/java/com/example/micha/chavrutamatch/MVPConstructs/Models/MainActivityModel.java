@@ -1,14 +1,17 @@
 package com.example.micha.chavrutamatch.MVPConstructs.Models;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
+import android.util.Log;
 
 import com.example.micha.chavrutamatch.AcctLogin.AccountActivity;
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.ChavrutaMatch;
+import com.example.micha.chavrutamatch.DI.Components.ApplicationComponent;
 import com.example.micha.chavrutamatch.DI.Components.DaggerMAComponent;
 import com.example.micha.chavrutamatch.DI.Components.MAComponent;
 import com.example.micha.chavrutamatch.DI.Modules.MAModule;
@@ -41,25 +44,33 @@ public class MainActivityModel extends AppCompatActivity implements MAContractMV
             userEmail, userCityState, userCustomAvatarUriString, userImagePathString, userCustomAvatarBase64String,
             userBio;
     public SharedPreferences sp;
+//    @Inject
     AccountActivity accountActivity;
+//    @Inject
     ServerConnect serverConnectInstance;
 
-    @Inject
+//    @Inject
     UserDetails userDetailsInstance;
 
     public ArrayList<HostSessionData> myChavrutasArrayList;
 
     @Inject
-    public MainActivityModel(SharedPreferences sp, AccountActivity accountActivity, ServerConnect serverConnectInstance) {
-        context = this;
-        MAComponent maComponent = DaggerMAComponent.builder()
-                .mAModule(new MAModule(context))
-                .build();
-        maComponent.inject(this);
-
+    public MainActivityModel(Context appContext, SharedPreferences sp, UserDetails userDetailsInstance, ServerConnect serverConnectInstance, AccountActivity accountActivity) {
+//            ChavrutaMatch chavrutaMatchActivity = ChavrutaMatch.getMA;
+//            (ChavrutaMatch.get(this)).getMAComponent().inject(this);
         this.sp = sp;
         this.accountActivity = accountActivity;
-        this.serverConnectInstance = serverConnectInstance;
+            this. serverConnectInstance = serverConnectInstance;
+            this.userDetailsInstance = userDetailsInstance;
+
+//        ApplicationComponent applicationComponent = (ChavrutaMatch.get(this)).getApplicationComponent();
+//        MAComponent maComponent = DaggerMAComponent.builder()
+//                .mAModule(new MAModule(context))
+//                .applicationComponent(applicationComponent)
+//                .build();
+
+
+//        this.accountActivity = accountActivity;
 
     }
     @Override
@@ -79,7 +90,7 @@ public class MainActivityModel extends AppCompatActivity implements MAContractMV
 
     @Override
     public ServerConnect getServerConnectInstance() {
-        return serverConnectInstance;
+        return new ServerConnect(context, userDetailsInstance);
     }
 
     @Override

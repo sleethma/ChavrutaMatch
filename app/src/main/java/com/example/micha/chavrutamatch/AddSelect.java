@@ -13,6 +13,8 @@ import android.support.v7.widget.Toolbar;
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -27,8 +29,10 @@ public class AddSelect extends AppCompatActivity {
     @BindView(R.id.b_host_chavruta)
     ImageButton addHostButton;
     SharedPreferences sp;
-
     Context mContext;
+
+    @Inject
+    UserDetails userDetailsInstance;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -36,10 +40,12 @@ public class AddSelect extends AppCompatActivity {
         setContentView(R.layout.add_select);
         ButterKnife.bind(this);
         sp = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE);
+        mContext = AddSelect.this;
+
+        (ChavrutaMatch.get(this).getApplicationComponent()).inject(this);
 
         //get Context and send to UserDetails for SharedPreferences access
-        mContext = AddSelect.this;
-        UserDetails.setsApplicationContext(mContext);
+        userDetailsInstance.setsApplicationContext(mContext);
 
     }
 
@@ -48,9 +54,9 @@ public class AddSelect extends AppCompatActivity {
         if (isPrivacyPolicyChecked()) {
             //sets user city and state for ServerConnect call
             String userCityState = sp.getString(getString(R.string.user_city_state_key), null);
-            UserDetails.setUserCityState(userCityState);
+            userDetailsInstance.setUserCityState(userCityState);
             String getJSONKey = "getJSONKey";
-            ServerConnect getJSONFromServer = new ServerConnect(mContext);
+            ServerConnect getJSONFromServer = new ServerConnect(mContext, userDetailsInstance);
             getJSONFromServer.execute(getJSONKey);
         } else {
             returnToAddBio();

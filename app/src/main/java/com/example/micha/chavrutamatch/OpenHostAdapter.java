@@ -28,7 +28,6 @@ class OpenHostAdapter extends RecyclerView.Adapter<OpenHostAdapter.ViewHolder> {
 
     //number of views adapter will hold
     private Context mContext;
-    private String userId;
     //@var used to control swipe on delete Dialogue selection
     final private String USER_IMG_AVATAR_STRING = "999";
 
@@ -36,7 +35,7 @@ class OpenHostAdapter extends RecyclerView.Adapter<OpenHostAdapter.ViewHolder> {
     private List<Integer> avatarList = AvatarImgs.getAllAvatars();
 
     private ListItemClickListener mOnClickListener;
-
+    private UserDetails userDetailsInstance;
 
     public interface ListItemClickListener {
         void onListItemClick(int clickedIndex, View v);
@@ -48,8 +47,7 @@ class OpenHostAdapter extends RecyclerView.Adapter<OpenHostAdapter.ViewHolder> {
         this.mContext = context;
         mChavrutaSessionsAL = chavrutaSessionsArrayList;
         mOnClickListener = listItemClickListener;
-        userId = userDetailsInstance.getmUserId();
-
+        this.userDetailsInstance = userDetailsInstance;
         //calls so can access static user vars throughout adapter
 //        orderArrayByDate(mChavrutaSessionsAL);
     }
@@ -108,8 +106,8 @@ class OpenHostAdapter extends RecyclerView.Adapter<OpenHostAdapter.ViewHolder> {
 
             //gets users current avatar
             requesterAvatar = getRequesterAvatar();
-            String userFirstName = UserDetails.getmUserFirstName();
-            String userLastName = UserDetails.getmUserLastName();
+            String userFirstName = userDetailsInstance.getmUserFirstName();
+            String userLastName = userDetailsInstance.getmUserLastName();
             requesterName = ChavrutaUtils.createUserFirstLastName(
                     userFirstName, userLastName);
 
@@ -176,7 +174,8 @@ class OpenHostAdapter extends RecyclerView.Adapter<OpenHostAdapter.ViewHolder> {
                         return;
                     }
                     String chavrutaId = currentItem.getmChavrutaId();
-                    ServerConnect addHost = new ServerConnect(mContext);
+                    String userId = userDetailsInstance.getmUserId();
+                    ServerConnect addHost = new ServerConnect(mContext, userDetailsInstance);
                     addHost.execute("chavruta request", userId, chavrutaId, requestSlotOpen,
                             requesterAvatarColumn, requesterAvatar, requesterNameColumn, requesterName);
 
@@ -199,11 +198,11 @@ class OpenHostAdapter extends RecyclerView.Adapter<OpenHostAdapter.ViewHolder> {
 
     public String getRequesterAvatar() {
         String requesterAvatar;
-        if (UserDetails.getUserAvatarBase64String() != null &&
-                UserDetails.getmUserAvatarNumberString().equals(USER_IMG_AVATAR_STRING)) {
-            requesterAvatar = UserDetails.getUserAvatarBase64String();
+        if (userDetailsInstance.getUserAvatarBase64String() != null &&
+                userDetailsInstance.getmUserAvatarNumberString().equals(USER_IMG_AVATAR_STRING)) {
+            requesterAvatar = userDetailsInstance.getUserAvatarBase64String();
         } else {
-            requesterAvatar = UserDetails.getmUserAvatarNumberString();
+            requesterAvatar = userDetailsInstance.getmUserAvatarNumberString();
         }
         return requesterAvatar;
     }

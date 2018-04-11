@@ -9,11 +9,11 @@ import android.widget.Toast;
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.AddBio;
 import com.example.micha.chavrutamatch.ChavrutaMatch;
-import com.example.micha.chavrutamatch.DI.Components.DaggerMAComponent;
 import com.example.micha.chavrutamatch.DI.Components.MAComponent;
 import com.example.micha.chavrutamatch.DI.Modules.MAModule;
 import com.example.micha.chavrutamatch.HostSelect;
 import com.example.micha.chavrutamatch.MVPConstructs.MAContractMVP;
+import com.example.micha.chavrutamatch.MainActivity;
 import com.example.micha.chavrutamatch.R;
 import com.example.micha.chavrutamatch.Utils.ConnCheckUtil;
 
@@ -39,32 +39,28 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
     Context mContextRegister;
     public MAContractMVP.Presenter callback;
     private Boolean myChavruta;
-    private static boolean isConnectedToNetwork;
     public static String jsonString;
-    @Inject
+
+//    @Inject
     public Context context;
 
-    @Inject
-            public UserDetails userDetailsInstance;
+//    @Inject
+    public UserDetails userDetailsInstance;
     //postExecuteResponse: 0= no click/error; 1=registration; 2=get JSON
     int postExecuteResponse = 0;
 
-
-       public ServerConnect(Context context) {
-        this.mContextRegister = context;
-           MAComponent maComponent = DaggerMAComponent.builder()
-                   .mAModule(new MAModule(context))
-                   .build();
-           maComponent.inject(this);
-    }
-
     @Inject
-    public ServerConnect() {
-        MAComponent maComponent = DaggerMAComponent.builder()
-                .mAModule(new MAModule(context))
-                .build();
-        maComponent.inject(this);
+    public ServerConnect(Context context, UserDetails userDetailsInstance) {
+        this.mContextRegister = context;
+        this.userDetailsInstance = userDetailsInstance;
+        if(mContextRegister == null){
+            mContextRegister = MainActivity.mContext;
+        }
     }
+//    @Inject
+//    public ServerConnect() {
+//        (ChavrutaMatch.get(this).getApplicationComponent()).inject(this);
+//    }
 
     private ProgressDialog pDialog;
 
@@ -75,8 +71,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        isConnectedToNetwork = ConnCheckUtil.isConnected(mContextRegister);
-
+        boolean isConnectedToNetwork = ConnCheckUtil.isConnected(mContextRegister);
         pDialog = new ProgressDialog(mContextRegister);
         pDialog.setMessage("Loading Matches. Please wait...");
         pDialog.setIndeterminate(false);
@@ -221,7 +216,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                     httpURLConnection = (HttpURLConnection) jsonMyChavrutasURL.openConnection();
                 } else {
                     String hostCityState = userDetailsInstance.getUserCallFormattedCityState();
-                    String json_url = "http://brightlightproductions.online/secure_get_chavrutaJSON.php?host_city_state="+hostCityState;
+                    String json_url = "http://brightlightproductions.online/secure_get_chavrutaJSON.php?host_city_state=" + hostCityState;
                     URL jsonURL = new URL(json_url);
                     httpURLConnection = (HttpURLConnection) jsonURL.openConnection();
                     myChavruta = false;

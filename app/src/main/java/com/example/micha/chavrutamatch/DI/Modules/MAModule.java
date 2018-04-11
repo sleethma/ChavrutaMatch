@@ -25,6 +25,9 @@ import dagger.Provides;
 public class MAModule {
     Context maContext;
 
+   @Inject
+    UserDetails userDetailsInstance;
+
     public MAModule(Context context){
         this.maContext = context;
     }
@@ -37,22 +40,30 @@ public class MAModule {
 
     @Provides
     @MAScope
-    public AccountActivity providesAccountActivity(){
-        return new AccountActivity();
+    @Inject
+    public AccountActivity providesAccountActivity(UserDetails userDetailsInstance){
+        UserDetails testUserDetails = userDetailsInstance;
+        return new AccountActivity(userDetailsInstance);
     }
 
 
     @Provides
-    public ServerConnect providesServerConnect(){
-        return new ServerConnect(maContext);
+    @MAScope
+    @Inject
+    public ServerConnect providesServerConnectInstance(Context maContext, UserDetails userDetailsInstance){
+        return new ServerConnect(maContext, userDetailsInstance);
     }
 
+    //todo:does need to inject?
     //provides and constructs the Model instance when it is requested
     @Provides
     @MAScope
     @Inject
-    public MAContractMVP.Model providesMainActivityModel(SharedPreferences sp, AccountActivity accountActivity, ServerConnect serverConnect) {
-        return new MainActivityModel(sp, accountActivity, serverConnect);
+    public MAContractMVP.Model providesMainActivityModel(Context appContext, SharedPreferences sp,
+                                                         UserDetails userDetailsInstance,
+                                                         ServerConnect serverConnectInstance,
+                                                         AccountActivity accountActivity) {
+        return new MainActivityModel(appContext, sp, userDetailsInstance, serverConnectInstance, accountActivity);
     }
 
     //provides presenter concrete class object with model instance which is the implementation of the Presenter interface

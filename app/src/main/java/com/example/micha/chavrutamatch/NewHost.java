@@ -28,7 +28,6 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
-import com.example.micha.chavrutamatch.DI.Components.DaggerMAComponent;
 import com.example.micha.chavrutamatch.DI.Components.MAComponent;
 import com.example.micha.chavrutamatch.DI.Modules.MAModule;
 import com.example.micha.chavrutamatch.Data.AvatarImgs;
@@ -119,13 +118,7 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
     @Inject
     public UserDetails userDetailsInstance;
 
-    public NewHost(){
-        context = this;
-        MAComponent maComponent = DaggerMAComponent.builder()
-                .mAModule(new MAModule(context))
-                .build();
-        maComponent.inject(this);
-    }
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -133,6 +126,8 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         setContentView(R.layout.new_host_entry);
         ButterKnife.bind(this);
 
+        context = this;
+        (ChavrutaMatch.get(this).getApplicationComponent()).inject(this);
 
         //autopopulate location from SP
         sp = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE);
@@ -392,7 +387,7 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         String chavrutaRequest1 = "None", chavrutaRequest2 = "None", chavrutaRequest3 = "None";
         String newHost = "new host";
         if (textValidationPass) {
-            ServerConnect postToServer = new ServerConnect(this);
+            ServerConnect postToServer = new ServerConnect(this, userDetailsInstance);
             postToServer.execute(newHost, mHostFirstName, mHostLastName, mHostAvatarNumber, mSessionMessage, mSessionDate,
                     mStartTime, mEndTime, mSefer, mLocation, mHostCityState, mHostId, chavrutaRequest1, chavrutaRequest2, chavrutaRequest3, confirmed);
             Intent intent = new Intent(this, MainActivity.class);

@@ -6,6 +6,7 @@ import com.example.micha.chavrutamatch.AcctLogin.AccountActivity;
 import com.example.micha.chavrutamatch.AcctLogin.LoginActivity;
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.AddBio;
+import com.example.micha.chavrutamatch.ChavrutaMatch;
 import com.example.micha.chavrutamatch.DI.Modules.MAModule;
 import com.example.micha.chavrutamatch.DI.Modules.SharedPrefsModule;
 import com.example.micha.chavrutamatch.DI.Modules.UserDetailsModule;
@@ -25,20 +26,15 @@ import dagger.Component;
  * Created by micha on 2/28/2018.
  */
 
-@Component(modules = {MAModule.class, SharedPrefsModule.class}, dependencies = ApplicationComponent.class)
+@Component(dependencies = ApplicationComponent.class , modules = {MAModule.class, SharedPrefsModule.class})
 @MAScope
 public interface MAComponent {
-    void inject(MainActivity target);
+    Context context();
+
+
     void inject(MainActivityModel target);
     void inject(AccountActivity target);
-    void inject(LoginActivity target);
-
-    //added 4/3/2018
-    void inject(AddBio target);
-    void inject(ServerConnect target);
-    void inject(OpenChavrutaAdapter target);
-    void inject(NewHost target);
-
+    void inject(MainActivity target);
     //todo: check if below needed
     void inject(Context target);
 }

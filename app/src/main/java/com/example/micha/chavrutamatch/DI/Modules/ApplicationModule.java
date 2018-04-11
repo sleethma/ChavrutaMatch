@@ -4,6 +4,8 @@ import android.app.Application;
 import android.content.Context;
 
 import com.example.micha.chavrutamatch.DI.Scopes.AppScope;
+import com.example.micha.chavrutamatch.DI.Scopes.MAScope;
+import com.example.micha.chavrutamatch.Data.ServerConnect;
 
 import dagger.Module;
 import dagger.Provides;

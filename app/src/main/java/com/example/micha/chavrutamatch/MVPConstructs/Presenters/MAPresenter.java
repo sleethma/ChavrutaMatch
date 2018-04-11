@@ -111,7 +111,7 @@ public class MAPresenter implements MAContractMVP.Presenter {
         }
     }
 
-    private void getJsonFromServer() {
+    public void getJsonFromServer() {
         String myChavrutasKey = "my chavrutas";
         serverConnectInstance = mainActivityModel.getServerConnectInstance();
         serverConnectInstance.callback = this;

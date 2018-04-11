@@ -5,13 +5,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.example.micha.chavrutamatch.ChavrutaMatch;
+import com.example.micha.chavrutamatch.DI.Components.ApplicationComponent;
 import com.example.micha.chavrutamatch.DI.Components.DaggerMAComponent;
 import com.example.micha.chavrutamatch.DI.Components.MAComponent;
 import com.example.micha.chavrutamatch.DI.Modules.MAModule;
 import com.facebook.accountkit.Account;
 import com.facebook.accountkit.AccountKit;
-
-//import com.example.micha.chavrutamatch.Utils.FontHelper;
 import com.facebook.accountkit.AccountKitCallback;
 import com.facebook.accountkit.AccountKitError;
 import com.facebook.accountkit.PhoneNumber;
@@ -23,6 +22,8 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
+//import com.example.micha.chavrutamatch.Utils.FontHelper;
+
 
 /**
  * Created by micha on 8/20/2017.
@@ -30,16 +31,24 @@ import javax.inject.Inject;
 
 public class AccountActivity extends AppCompatActivity{
 
-    @Inject
+//    @Inject
     public UserDetails userDetailsInstance;
     private Context context;
 
-    public AccountActivity(){
+    @Inject
+    public AccountActivity(UserDetails userDetailsInstance){
+        this.userDetailsInstance = userDetailsInstance;
         context = this;
-        MAComponent maComponent = DaggerMAComponent.builder()
-                .mAModule(new MAModule(context))
-                .build();
-        maComponent.inject(this);
+
+
+//        ChavrutaMatch.get(this).getMAComponent().inject(this);
+
+//        ApplicationComponent appComponent = ((ChavrutaMatch.get(this)).getApplicationComponent());
+//        MAComponent maComponent = DaggerMAComponent.builder()
+//                .mAModule(new MAModule(this))
+//                .applicationComponent(appComponent)
+//                .build();
+//        maComponent.inject(this);
     }
 
     public void setAccountKitAcct() {

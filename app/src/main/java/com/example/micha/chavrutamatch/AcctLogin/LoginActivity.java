@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.micha.chavrutamatch.AddBio;
+import com.example.micha.chavrutamatch.ChavrutaMatch;
 import com.example.micha.chavrutamatch.DI.Components.DaggerMAComponent;
 import com.example.micha.chavrutamatch.DI.Components.MAComponent;
 import com.example.micha.chavrutamatch.DI.Modules.MAModule;
@@ -46,9 +47,7 @@ public class LoginActivity extends AppCompatActivity {
 
    public LoginActivity(){
        context = this;
-       MAComponent maComponent = DaggerMAComponent.builder()
-               .mAModule(new MAModule(context))
-               .build();
+       MAComponent maComponent = ChavrutaMatch.get(this).getMAComponent();
        maComponent.inject(this);
    }
 

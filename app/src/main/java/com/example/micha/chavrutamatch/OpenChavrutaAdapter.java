@@ -420,7 +420,7 @@ public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapte
             }
             String chavrutaId = currentItem.getmChavrutaId();
             String awaitingConfirmKey = "chavruta request";
-            ServerConnect dbAwaitingConfirmDelete = new ServerConnect(mainActivityContext);
+            ServerConnect dbAwaitingConfirmDelete = new ServerConnect(mainActivityContext, userDetailsInstance);
             dbAwaitingConfirmDelete.execute(awaitingConfirmKey, "0", chavrutaId, requesterNumber,
                     requesterAvatarColumn, "0", requesterNameColumn, "0");
 
@@ -428,7 +428,7 @@ public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapte
         } else {
             String deleteChavrutaKey = "delete chavruta";
             String chavrutaId = currentItem.getmChavrutaId();
-            ServerConnect deleteChavruta = new ServerConnect(mainActivityContext);
+            ServerConnect deleteChavruta = new ServerConnect(mainActivityContext, userDetailsInstance);
             deleteChavruta.execute(deleteChavrutaKey, chavrutaId);
         }
         mChavrutaSessionsAL.remove(indexToDelete);

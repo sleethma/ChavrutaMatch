@@ -6,7 +6,6 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -17,11 +16,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.example.micha.chavrutamatch.AcctLogin.AccountActivity;
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
-import com.example.micha.chavrutamatch.DI.Components.DaggerMAComponent;
-import com.example.micha.chavrutamatch.DI.Components.MAComponent;
-import com.example.micha.chavrutamatch.DI.Modules.MAModule;
 import com.example.micha.chavrutamatch.Data.AvatarImgs;
 import com.example.micha.chavrutamatch.Data.HostSessionData;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
@@ -75,18 +70,14 @@ public class HostSelect extends AppCompatActivity implements OpenHostAdapter.Lis
     @Inject
     public UserDetails userDetailsInstance;
 
-    public HostSelect(){
-        context = this;
-        (ChavrutaMatch.get(this).getApplicationComponent()).inject(this);
-    }
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.open_host_listview);
         ButterKnife.bind(this);
         userId = userDetailsInstance.getmUserId();
-        mContext = HostSelect.this;
+        context = this;
+        (ChavrutaMatch.get(this).getApplicationComponent()).inject(this);
 
         //sets HostImage in title bar
         if (userDetailsInstance.getmUserAvatarNumberString() != null &&
@@ -139,7 +130,7 @@ public class HostSelect extends AppCompatActivity implements OpenHostAdapter.Lis
                 startTime, endTime, sefer, location, hostCityState, hostId,
                 chavrutaRequest1, chavrutaRequest1Avatar, chavrutaRequest1Name,
                 chavrutaRequest2, chavrutaRequest2Avatar, chavrutaRequest2Name,
-                chavrutaRequest3, chavrutaRequest3Avatar, chavrutaRequest3Name, confirmed;
+                chavrutaRequest3,  chavrutaRequest3Avatar, chavrutaRequest3Name, confirmed;
         try {
 
             jsonObject = new JSONObject(jsonString);
@@ -199,7 +190,7 @@ public class HostSelect extends AppCompatActivity implements OpenHostAdapter.Lis
                                 .add(hostClassData);
                     } else {
                         //if class date passed, delete in db
-                        ServerConnect deletePassedClassFromDb = new ServerConnect(mContext);
+                        ServerConnect deletePassedClassFromDb = new ServerConnect(mContext, userDetailsInstance);
                         deletePassedClassFromDb.execute("delete chavruta", chavrutaId);
                     }
                 }

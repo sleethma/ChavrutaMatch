@@ -102,13 +102,7 @@ public class AddBio extends AppCompatActivity {
            public UserDetails userDetailsInstance;
 
     public AddBio(){
-        context = this;
-        MAComponent maComponent = DaggerMAComponent.builder()
-                .mAModule(new MAModule(context))
-                .applicationComponent(ChavrutaMatch.get(this).getApplicationComponent())
-                .build();
 
-        maComponent.inject(this);
     }
 
     //TODO: Add input validation using: https://www.androidhive.info/2015/09/android-material-design-floating-labels-for-edittext/
@@ -117,6 +111,17 @@ public class AddBio extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_bio);
         ButterKnife.bind(this);
+
+        context = this;
+        (ChavrutaMatch.get(this).getApplicationComponent()).inject(this);
+
+//        MAComponent maComponent = DaggerMAComponent.builder()
+//                .mAModule(new MAModule(context))
+//                .applicationComponent(ChavrutaMatch.get(this).getApplicationComponent())
+//                .build();
+//
+//        maComponent.inject(this);
+
         mUserAvatarNumberString = "0";
         prefs = getSharedPreferences("user_data", MODE_PRIVATE);
 
@@ -257,7 +262,7 @@ public class AddBio extends AppCompatActivity {
     public void getUserBioDatafromDb() {
         // check to see if have an account in db
         mUserId = userDetailsInstance.getmUserId();
-        ServerConnect getUserDetailsFromDb = new ServerConnect(this);
+        ServerConnect getUserDetailsFromDb = new ServerConnect(this, userDetailsInstance);
         getUserDetailsFromDb.execute("get UserDetails", mUserId);
     }
 
@@ -350,7 +355,7 @@ public class AddBio extends AppCompatActivity {
         }
 
 
-        ServerConnect postUserToServer = new ServerConnect(this);
+        ServerConnect postUserToServer = new ServerConnect(this, userDetailsInstance);
 
         postUserToServer.execute(userPost, mUserId, mUserName, mUserAvatarNumberString, mUserFirstName, mUserLastName,
                 mUserPhoneNumber, mUserEmail, mUserBio, mUserCityState, userPostType, mCustomUserAvatarBase64String);

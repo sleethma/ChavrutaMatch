@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.example.micha.chavrutamatch.AcctLogin.LoginActivity;
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
+import com.example.micha.chavrutamatch.DI.Components.ApplicationComponent;
 import com.example.micha.chavrutamatch.DI.Components.DaggerMAComponent;
 import com.example.micha.chavrutamatch.DI.Components.MAComponent;
 import com.example.micha.chavrutamatch.DI.Modules.MAModule;
@@ -57,21 +58,21 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
     View underlineToolbar;
 
     @Inject
-    MAContractMVP.Presenter presenter;
+    UserDetails userDetailsInstance;
 
     @Inject
-    UserDetails userDetailsInstance;
+    MAContractMVP.Presenter presenter;
+
 
     OpenChavrutaAdapter mAdapter;
 
     static ArrayList<HostSessionData> myChavrutasArrayList;
-    static Context mContext;
+    public static Context mContext;
     private static String jsonString;
 
     private final int VERTICAL_LIST_ITEM_SPACE = 40;
     // indicates user custom avatar used
     private final String CUSTOM_AVATAR = "999";
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,12 +81,12 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
         ButterKnife.bind(this);
         mContext = this;
 
-        MAComponent maComponent = DaggerMAComponent.builder()
-                .mAModule(new MAModule(mContext))
-                .applicationComponent(ChavrutaMatch.get(this).getApplicationComponent())
-                .build();
-
-        maComponent.inject(this);
+        ApplicationComponent appComponent = ((ChavrutaMatch.get(this)).getApplicationComponent());
+//        MAComponent maComponent = DaggerMAComponent.builder()
+//                .mAModule(new MAModule(this))
+//                .applicationComponent(appComponent)
+//                .build();
+        (ChavrutaMatch.get(this)).getMAComponent().inject(this);
 
         if (ConnCheckUtil.isConnected(mContext)) {
             presenter.activateAccountKit();
@@ -351,7 +352,7 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
     @Override
     public void sendHostsConfirmationtoDb(String chavrutaId, String requesterId) {
         String confirmedChavrutaKey = "confirmChavrutaRequest";
-        ServerConnect confirmInDb = new ServerConnect(mContext);
+        ServerConnect confirmInDb = new ServerConnect(mContext, userDetailsInstance);
         confirmInDb.execute(confirmedChavrutaKey, chavrutaId, requesterId);
     }
 }
