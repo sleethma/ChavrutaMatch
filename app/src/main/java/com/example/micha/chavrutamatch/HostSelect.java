@@ -6,6 +6,7 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -45,7 +46,6 @@ public class HostSelect extends AppCompatActivity implements OpenHostAdapter.Lis
 
     @BindView(R.id.iv_awaiting_host_avatar)
     ImageView userPic;
-    // @BindView(R.id.b_host_chavruta) ImageButton hostChavruta;
     @BindView(R.id.all_hosts_list_view)
     RecyclerView allHostsList;
     @BindView(R.id.ll_no_chavruta_hosts)
@@ -75,10 +75,10 @@ public class HostSelect extends AppCompatActivity implements OpenHostAdapter.Lis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.open_host_listview);
         ButterKnife.bind(this);
-        userId = userDetailsInstance.getmUserId();
-        context = this;
         (ChavrutaMatch.get(this).getApplicationComponent()).inject(this);
 
+        userId = userDetailsInstance.getmUserId();
+        context = this;
         //sets HostImage in title bar
         if (userDetailsInstance.getmUserAvatarNumberString() != null &&
                 !userDetailsInstance.getmUserAvatarNumberString().equals(USER_IMG_AVATAR)) {
@@ -87,9 +87,10 @@ public class HostSelect extends AppCompatActivity implements OpenHostAdapter.Lis
         } else {
 
             try {
+                Uri testUri = UserDetails.getHostAvatarUri();
                 GlideApp
-                        .with(mContext)
-                        .load(userDetailsInstance.getHostAvatarUri())
+                        .with(context)
+                        .load(UserDetails.getHostAvatarUri())
                         .placeholder(R.drawable.ic_unknown_user)
                         .circleCrop()
                         .into(userPic);
@@ -171,7 +172,7 @@ public class HostSelect extends AppCompatActivity implements OpenHostAdapter.Lis
                 //todo: refactor below block to fit flow
                 if (!sessionDate.contains(NO_DATE)) {
                     //determine a class date is in future
-                    classDatePassed = TimeStampConverter.classDatePassedAndDelete(mContext,
+                    classDatePassed = TimeStampConverter.classDatePassedAndDelete(context,
                             currentDateString, sessionDate);
                 } else {
                     classDatePassed = true;

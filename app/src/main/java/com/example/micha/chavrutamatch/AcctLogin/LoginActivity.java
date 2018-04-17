@@ -14,9 +14,7 @@ import android.widget.Toast;
 
 import com.example.micha.chavrutamatch.AddBio;
 import com.example.micha.chavrutamatch.ChavrutaMatch;
-import com.example.micha.chavrutamatch.DI.Components.DaggerMAComponent;
 import com.example.micha.chavrutamatch.DI.Components.MAComponent;
-import com.example.micha.chavrutamatch.DI.Modules.MAModule;
 import com.example.micha.chavrutamatch.MainActivity;
 import com.example.micha.chavrutamatch.R;
 import com.facebook.accountkit.AccessToken;
@@ -25,6 +23,8 @@ import com.facebook.accountkit.AccountKitLoginResult;
 import com.facebook.accountkit.ui.AccountKitActivity;
 import com.facebook.accountkit.ui.AccountKitConfiguration;
 import com.facebook.accountkit.ui.LoginType;
+
+import junit.framework.Assert;
 
 import javax.inject.Inject;
 
@@ -37,26 +37,19 @@ public class LoginActivity extends AppCompatActivity {
     public static int APP_REQUEST_CODE = 1;
     public static boolean mIsConnected;
     SharedPreferences prefs;
-    private String currentUserId;
     private final String LOG_TAG = LoginActivity.class.getSimpleName();
     Context context;
 
-
     @Inject
-   public UserDetails userDetailsInstance;
-
-   public LoginActivity(){
-       context = this;
-       MAComponent maComponent = ChavrutaMatch.get(this).getMAComponent();
-       maComponent.inject(this);
-   }
-
+    UserDetails userDetailsInstance;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_type_select);
         prefs = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE);
+        context = this;
+        ChavrutaMatch.get(this).getMAComponent().inject(this);
         AccessToken currentAccessToken = AccountKit.getCurrentAccessToken();
         if (currentAccessToken != null) {
             launchMainActivity();
@@ -74,18 +67,17 @@ public class LoginActivity extends AppCompatActivity {
                 String toastMessage = loginResult.getError().getErrorType().getMessage();
                 Toast.makeText(this, toastMessage, Toast.LENGTH_LONG).show();
             } else if (loginResult.getAccessToken() != null) {
-
                 Boolean newUserOnThisDevice = true;
                 String lastUsedUserId = prefs.getString(getString(R.string.user_account_id_key), null);
-                currentUserId = loginResult.getAccessToken().getAccountId();
-                userDetailsInstance.setmUserId(currentUserId);
-                if(lastUsedUserId.equals(currentUserId)) newUserOnThisDevice = false;
+                String currentUserId = loginResult.getAccessToken().getAccountId();
+//                userDetailsInstance.setmUserId(currentUserId);
+                if (lastUsedUserId.equals(currentUserId)) newUserOnThisDevice = false;
                 if (newUserOnThisDevice) {
                     prefs = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE);
                     SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE).edit();
                     editor.putBoolean("new_user_key", false);
                     editor.putString(getString(R.string.user_account_id_key), currentUserId);
-                    userDetailsInstance.setmUserId(currentUserId);
+//                    userDetailsInstance.setmUserId(currentUserId);
                     editor.apply();
                     launchAddBioActivity();
                 } else {
@@ -93,7 +85,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         }
-        Log.e(LOG_TAG,"request code failed on login");
+        Log.e(LOG_TAG, "request code failed on login");
     }
 
 
@@ -149,7 +141,7 @@ public class LoginActivity extends AppCompatActivity {
     private void internetCheck(Context context) {
         ConnectivityManager cm =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-
+        Assert.assertNotNull(cm);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         mIsConnected = activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();

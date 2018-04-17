@@ -51,7 +51,6 @@ public class ChavrutaMatch extends Application {
 
 
     public static ChavrutaMatch get(Activity activity){
-        ChavrutaMatch testChavrutaMatch = (ChavrutaMatch) activity.getApplication();
         return (ChavrutaMatch) activity.getApplication();
     }
 

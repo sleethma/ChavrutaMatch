@@ -42,7 +42,6 @@ public class MAModule {
     @MAScope
     @Inject
     public AccountActivity providesAccountActivity(UserDetails userDetailsInstance){
-        UserDetails testUserDetails = userDetailsInstance;
         return new AccountActivity(userDetailsInstance);
     }
 

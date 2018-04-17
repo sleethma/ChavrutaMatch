@@ -83,7 +83,6 @@ public class TimeStampConverter {
         DateFormat formatter = new SimpleDateFormat("MM-dd-yyyy");
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-
         Date current = null;
         Date dateOfClass = null;
         try {
@@ -93,9 +92,6 @@ public class TimeStampConverter {
             e.printStackTrace();
         }
         if(dateOfClass.before(current)) {
-            //todo: code to delete from db
-            Toast.makeText(context, "delete this class", Toast.LENGTH_SHORT).show();
-
             return true;
         }else {
             return false;

@@ -56,21 +56,11 @@ public class MainActivityModel extends AppCompatActivity implements MAContractMV
 
     @Inject
     public MainActivityModel(Context appContext, SharedPreferences sp, UserDetails userDetailsInstance, ServerConnect serverConnectInstance, AccountActivity accountActivity) {
-//            ChavrutaMatch chavrutaMatchActivity = ChavrutaMatch.getMA;
-//            (ChavrutaMatch.get(this)).getMAComponent().inject(this);
+
         this.sp = sp;
         this.accountActivity = accountActivity;
             this. serverConnectInstance = serverConnectInstance;
             this.userDetailsInstance = userDetailsInstance;
-
-//        ApplicationComponent applicationComponent = (ChavrutaMatch.get(this)).getApplicationComponent();
-//        MAComponent maComponent = DaggerMAComponent.builder()
-//                .mAModule(new MAModule(context))
-//                .applicationComponent(applicationComponent)
-//                .build();
-
-
-//        this.accountActivity = accountActivity;
 
     }
     @Override

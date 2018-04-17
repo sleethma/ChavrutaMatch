@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -14,6 +15,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -73,6 +75,32 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
     private final int VERTICAL_LIST_ITEM_SPACE = 40;
     // indicates user custom avatar used
     private final String CUSTOM_AVATAR = "999";
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.i(MainActivity.class.getSimpleName(), "onStart"+"was called!");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.i(MainActivity.class.getSimpleName(), "onPause"+"was called!");
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.i(MainActivity.class.getSimpleName(), "onStop"+"was called!");
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.i(MainActivity.class.getSimpleName(), "onDestroy" + "was called!");
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -303,7 +331,27 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
     @Override
     public void setUserAvatar() {
         //sets user avatar. @UserAvatarNumberString = "999" indicates avatar is user photo
-        if (UserDetails.getmUserAvatarNumberString() != null &&
+        if (userDetailsInstance.getmUserAvatarNumberString() != null &&
+                !userDetailsInstance.getmUserAvatarNumberString().equals("999")) {
+            userAvatar.setImageResource(AvatarImgs.getAvatarNumberResId(
+                    Integer.parseInt(userDetailsInstance.getmUserAvatarNumberString())));
+        } else {
+
+            try {
+                Uri testUri = UserDetails.getHostAvatarUri();
+                GlideApp
+                        .with(mContext)
+                        .load(UserDetails.getHostAvatarUri())
+                        .placeholder(R.drawable.ic_unknown_user)
+                        .circleCrop()
+                        .into(userAvatar);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+
+       /* if (UserDetails.getmUserAvatarNumberString() != null &&
                 !UserDetails.getmUserAvatarNumberString().equals("999")) {
             userAvatar.setImageResource(AvatarImgs.getAvatarNumberResId(
                     Integer.parseInt(UserDetails.getmUserAvatarNumberString())));
@@ -325,7 +373,7 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
                         .circleCrop()
                         .into(userAvatar);
             }
-        }
+        }*/
     }
 
     @Override

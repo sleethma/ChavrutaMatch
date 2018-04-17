@@ -31,7 +31,6 @@ import javax.inject.Inject;
 
 public class AccountActivity extends AppCompatActivity{
 
-//    @Inject
     public UserDetails userDetailsInstance;
     private Context context;
 
@@ -39,17 +38,7 @@ public class AccountActivity extends AppCompatActivity{
     public AccountActivity(UserDetails userDetailsInstance){
         this.userDetailsInstance = userDetailsInstance;
         context = this;
-
-
-//        ChavrutaMatch.get(this).getMAComponent().inject(this);
-
-//        ApplicationComponent appComponent = ((ChavrutaMatch.get(this)).getApplicationComponent());
-//        MAComponent maComponent = DaggerMAComponent.builder()
-//                .mAModule(new MAModule(this))
-//                .applicationComponent(appComponent)
-//                .build();
-//        maComponent.inject(this);
-    }
+}
 
     public void setAccountKitAcct() {
 

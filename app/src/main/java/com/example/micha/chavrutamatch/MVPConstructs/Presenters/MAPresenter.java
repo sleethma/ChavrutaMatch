@@ -101,14 +101,7 @@ public class MAPresenter implements MAContractMVP.Presenter {
     }
 
     private void jsonStringToArrayList() {
-        if (mainActivityModel.getMyChavrutasAL() != null) {
-            mainActivityModel.parseJSONDataToArrayList(jsonString);
-            mainActivityView.setMyChavrutaAdapter(mainActivityModel.getMyChavrutasAL());
-            if (mainActivityModel.getMyChavrutasAL().size() > 0)
-                mainActivityView.displayRecyclerView();
-        } else {
             getJsonFromServer();
-        }
     }
 
     public void getJsonFromServer() {
@@ -138,9 +131,8 @@ public class MAPresenter implements MAContractMVP.Presenter {
             createHostView(holder, repoHSD);
             //view is awaiting hosts confirmation
         } else {
-            createAwaitingConfirmView(holder, repoHSD);
+            setDataToAwaitingConfirmView(holder, repoHSD);
         }
-
         holder.setViewItemData(repoHSD, position);
     }
 
@@ -158,20 +150,26 @@ public class MAPresenter implements MAContractMVP.Presenter {
     }
 
 
-    private void createAwaitingConfirmView(MARepoContract holder, HostSessionData repoHSD) {
+    public void setDataToAwaitingConfirmView(MARepoContract holder, HostSessionData repoHSD) {
         String learnerConfirmed = repoHSD.getmConfirmed();
         String userId = userDetailsInstance.getmUserId();
         boolean userIsConfirmed = learnerConfirmed.equals(userId);
         holder.setUserConfirmedStatus(userIsConfirmed);
 
         //sets user first last name after concatonation
-        String hostNameConcat = ChavrutaUtils.createUserFirstLastName(
+        String hostNameConcat = createUserFirstLastName(
                 repoHSD.getmHostFirstName(), repoHSD.getmHostLastName());
         holder.setUsersFullName(hostNameConcat);
         setAwaitingHostAvatar(holder, repoHSD);
     }
 
-    private void createHostView(MARepoContract holder, HostSessionData repoHSD) {
+    public String createUserFirstLastName(String userFirstName, String userLastName) {
+        String lastInitial = userLastName.substring(0, 1);
+        String userFirstLastName = userFirstName + " " + lastInitial + ".";
+        return userFirstLastName;
+    }
+
+    public void createHostView(MARepoContract holder, HostSessionData repoHSD) {
         holder.setUsersFullName(UserDetails.getmUserName());
         boolean hasRequesters = configureRequestersConfirmedStatus(holder, repoHSD);
         holder.setDisplayIfRequesters(hasRequesters);
@@ -205,7 +203,7 @@ public class MAPresenter implements MAContractMVP.Presenter {
         }
     }
 
-    private boolean configureRequestersConfirmedStatus(MARepoContract holder, HostSessionData repoHSD) {
+    public boolean configureRequestersConfirmedStatus(MARepoContract holder, HostSessionData repoHSD) {
         boolean hasRequesters = false;
         String request1 = repoHSD.getMchavrutaRequest1Id();
         String request2 = repoHSD.getMchavrutaRequest2Id();

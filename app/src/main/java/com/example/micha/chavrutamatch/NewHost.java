@@ -139,7 +139,6 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
             ivHostAvatar.setImageResource(AvatarImgs.getAvatarNumberResId(
                     Integer.parseInt(userDetailsInstance.getmUserAvatarNumberString())));
         } else {
-
             try {
                 GlideApp
                         .with(this)
@@ -150,7 +149,6 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
         }
 
         ibStartTime.setOnClickListener(this);

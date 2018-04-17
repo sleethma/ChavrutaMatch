@@ -57,10 +57,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
             mContextRegister = MainActivity.mContext;
         }
     }
-//    @Inject
-//    public ServerConnect() {
-//        (ChavrutaMatch.get(this).getApplicationComponent()).inject(this);
-//    }
+
 
     private ProgressDialog pDialog;
 

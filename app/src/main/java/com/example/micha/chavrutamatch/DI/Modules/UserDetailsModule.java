@@ -7,12 +7,10 @@ import dagger.Provides;
 
 @Module
 public class UserDetailsModule {
-private UserDetails testUserDetails;
 
     @Provides
     @AppScope
      UserDetails providesUserDetails() {
-        testUserDetails = new UserDetails(null, null, null, null);
-        return testUserDetails;
+        return new UserDetails(null, null, null, null);
     }
 }
