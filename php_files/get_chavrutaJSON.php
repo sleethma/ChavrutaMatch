@@ -1,8 +1,8 @@
 <?php
 $host="localhost";
 $database="n5n0l7n9_ChavrutaHostEntry";
-$username="n5n0l7n9_sleethm";
-$password="SleethMasterUser00";
+$username="!userName";
+$password="!password";
 
 $con = mysqli_connect($host,$username,$password,$database);
 
