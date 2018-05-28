@@ -102,7 +102,6 @@ public class AddBio extends AppCompatActivity {
            public UserDetails userDetailsInstance;
 
     public AddBio(){
-
     }
 
     //TODO: Add input validation using: https://www.androidhive.info/2015/09/android-material-design-floating-labels-for-edittext/
@@ -114,13 +113,6 @@ public class AddBio extends AppCompatActivity {
 
         context = this;
         (ChavrutaMatch.get(this).getApplicationComponent()).inject(this);
-
-//        MAComponent maComponent = DaggerMAComponent.builder()
-//                .mAModule(new MAModule(context))
-//                .applicationComponent(ChavrutaMatch.get(this).getApplicationComponent())
-//                .build();
-//
-//        maComponent.inject(this);
 
         mUserAvatarNumberString = "0";
         prefs = getSharedPreferences("user_data", MODE_PRIVATE);

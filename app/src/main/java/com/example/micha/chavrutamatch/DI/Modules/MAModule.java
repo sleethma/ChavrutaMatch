@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import com.example.micha.chavrutamatch.AcctLogin.AccountActivity;
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.DI.Scopes.MAScope;
+import com.example.micha.chavrutamatch.Data.Http.MyChavrutaAPI;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.example.micha.chavrutamatch.MVPConstructs.MAContractMVP;
 import com.example.micha.chavrutamatch.MVPConstructs.Models.MainActivityModel;
@@ -25,23 +26,23 @@ import dagger.Provides;
 public class MAModule {
     Context maContext;
 
-   @Inject
+    @Inject
     UserDetails userDetailsInstance;
 
-    public MAModule(Context context){
+    public MAModule(Context context) {
         this.maContext = context;
     }
 
     @Provides
     @MAScope
-    Context providesAppContext(){
+    Context providesAppContext() {
         return maContext;
     }
 
     @Provides
     @MAScope
     @Inject
-    public AccountActivity providesAccountActivity(UserDetails userDetailsInstance){
+    public AccountActivity providesAccountActivity(UserDetails userDetailsInstance) {
         return new AccountActivity(userDetailsInstance);
     }
 
@@ -49,7 +50,7 @@ public class MAModule {
     @Provides
     @MAScope
     @Inject
-    public ServerConnect providesServerConnectInstance(Context maContext, UserDetails userDetailsInstance){
+    public ServerConnect providesServerConnectInstance(Context maContext, UserDetails userDetailsInstance) {
         return new ServerConnect(maContext, userDetailsInstance);
     }
 
@@ -61,17 +62,17 @@ public class MAModule {
     public MAContractMVP.Model providesMainActivityModel(Context appContext, SharedPreferences sp,
                                                          UserDetails userDetailsInstance,
                                                          ServerConnect serverConnectInstance,
-                                                         AccountActivity accountActivity) {
-        return new MainActivityModel(appContext, sp, userDetailsInstance, serverConnectInstance, accountActivity);
+                                                         AccountActivity accountActivity,
+                                                         MyChavrutaAPI myChavrutaAPI) {
+        return new MainActivityModel(appContext, sp, userDetailsInstance, serverConnectInstance, accountActivity, myChavrutaAPI);
     }
 
     //provides presenter concrete class object with model instance which is the implementation of the Presenter interface
     @Provides
     @MAScope
-    public MAContractMVP.Presenter providesMAPresenter(MAContractMVP.Model model){
-        return  new MAPresenter(model);
+    public MAContractMVP.Presenter providesMAPresenter(MAContractMVP.Model model) {
+        return new MAPresenter(model);
     }
-
 
 
 }

@@ -67,6 +67,7 @@ public class HostSessionData {
 
     public void setmHostCustomAvatarByteArray(String byteArrayToDecode){
         mHostCustomAvatarByteArray = Base64.decode(byteArrayToDecode, Base64.DEFAULT);
+        mHostCustomAvatarByteArray = Base64.decode(byteArrayToDecode, Base64.DEFAULT);
     }
 
     public byte[] getmHostCustomAvatarByteArray(){

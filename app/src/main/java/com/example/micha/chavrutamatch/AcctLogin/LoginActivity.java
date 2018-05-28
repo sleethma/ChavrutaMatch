@@ -70,14 +70,14 @@ public class LoginActivity extends AppCompatActivity {
                 Boolean newUserOnThisDevice = true;
                 String lastUsedUserId = prefs.getString(getString(R.string.user_account_id_key), null);
                 String currentUserId = loginResult.getAccessToken().getAccountId();
-//                userDetailsInstance.setmUserId(currentUserId);
-                if (lastUsedUserId.equals(currentUserId)) newUserOnThisDevice = false;
+                if (
+                prefs.getString(getString(R.string.user_account_id_key), null) != null &&
+                        lastUsedUserId.equals(currentUserId)) newUserOnThisDevice = false;
                 if (newUserOnThisDevice) {
                     prefs = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE);
                     SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE).edit();
                     editor.putBoolean("new_user_key", false);
                     editor.putString(getString(R.string.user_account_id_key), currentUserId);
-//                    userDetailsInstance.setmUserId(currentUserId);
                     editor.apply();
                     launchAddBioActivity();
                 } else {

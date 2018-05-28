@@ -9,7 +9,7 @@ import com.example.micha.chavrutamatch.Data.HostSessionData;
 public interface MARepoContract {
     void setUsersFullName(String text);
 
-    int getItemViewTypeIF(HostSessionData hsdRepo);
+    int getItemViewTypeIF(HostSessionData chavruta);
 
     void setTemplateListItemAwaitingHostAvatar(String hostAvatarNumber);
 
@@ -25,6 +25,8 @@ public interface MARepoContract {
 
     void setHostRequestAvatar(byte[] customRequesterAvatar, String requester1AvatarNumber, int requesterNumber);
 
+    void setOnClickListenerOnRequesterOpenChavruta(MARepoContract holder, final HostSessionData chavruta, int requesterNumber);
+
     void setOnClickListenerOnRequester(MARepoContract holder, final HostSessionData repoHSD, int requesterNumber);
 
     void setButtonToConfirmedState(String confirmButtonAction);
@@ -33,5 +35,9 @@ public interface MARepoContract {
 
     void setUserConfirmedStatus(boolean userIsConfirmed);
 
-    void setViewItemData(HostSessionData repoHSD, int position);
+    void setViewItemDataInMyChavruta(HostSessionData chavruta, int position);
+
+    void setViewItemDataInOpenChavruta(HostSessionData chavruta, int position);
+
+
 }

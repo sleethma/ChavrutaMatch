@@ -7,6 +7,7 @@ import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.AddBio;
 import com.example.micha.chavrutamatch.AddSelect;
 import com.example.micha.chavrutamatch.ChavrutaMatch;
+import com.example.micha.chavrutamatch.DI.Modules.ApiModule;
 import com.example.micha.chavrutamatch.DI.Modules.ApplicationModule;
 import com.example.micha.chavrutamatch.DI.Modules.MAModule;
 import com.example.micha.chavrutamatch.DI.Modules.UserDetailsModule;

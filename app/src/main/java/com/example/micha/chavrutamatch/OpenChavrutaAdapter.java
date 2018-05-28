@@ -3,7 +3,6 @@ package com.example.micha.chavrutamatch;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,9 +24,6 @@ import com.example.micha.chavrutamatch.Utils.GlideApp;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-
-import static com.example.micha.chavrutamatch.AcctLogin.UserDetails.LOG_TAG;
 import static com.example.micha.chavrutamatch.AcctLogin.UserDetails.getUserCustomAvatarBase64ByteArray;
 
 /**
@@ -183,16 +179,21 @@ public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapte
         }
 
         @Override
-        public void setViewItemData(HostSessionData repoHSD, int position) {
-            sessionDate.setText(repoHSD.getmSessionDate());
-            startTime.setText(repoHSD.getmStartTime());
-            endTime.setText(repoHSD.getmEndTime());
-            String seferText = repoHSD.getmSefer();
+        public void setViewItemDataInOpenChavruta(HostSessionData hsdRepo, int position) {
+            //todo: junk method: decouple in MVP contract
+        }
+
+        @Override
+        public void setViewItemDataInMyChavruta(HostSessionData chavruta, int position) {
+            sessionDate.setText(chavruta.getmSessionDate());
+            startTime.setText(chavruta.getmStartTime());
+            endTime.setText(chavruta.getmEndTime());
+            String seferText = chavruta.getmSefer();
             if (seferText.length() >= 30) {
                 seferText = seferText.substring(0, 30) + "...";
             }
             sefer.setText(seferText);
-            location.setText(repoHSD.getmLocation());
+            location.setText(chavruta.getmLocation());
             itemView.setTag(position);
 
 
@@ -304,9 +305,9 @@ public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapte
         }
 
         @Override
-        public int getItemViewTypeIF(HostSessionData hsdRepo) {
+        public int getItemViewTypeIF(HostSessionData chavruta) {
             //selects hostId or userId for inflation
-            String hostId = hsdRepo.getmHostId();
+            String hostId = chavruta.getmHostId();
             // @return 1: hostview, else awaitingConfirmView
             if (hostId.equals(userId)) {
                 return 1;
@@ -317,7 +318,7 @@ public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapte
 
 
         @Override
-        public void setOnClickListenerOnRequester(final MARepoContract holder, final HostSessionData repoHSD, final int requesterNumber) {
+        public void setOnClickListenerOnRequesterOpenChavruta(final MARepoContract holder, final HostSessionData chavruta, final int requesterNumber) {
             //confirms or unconfirms requested view with color change indicator and db update
             Button requestButtonView;
             setRequesterNumber(requesterNumber);
@@ -335,19 +336,21 @@ public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapte
                 default:
                     return;
             }
-//            Integer mrequesterNumber = (Integer) requesterNumber;
             requestButtonView.setTag(requestButtonView.getId(), requesterNumber);
-            requestButtonView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                   int requesterNumber = (int) v.getTag(v.getId());
-//
-//                            // sets and sends to db hosts specific request confirmation
-//                            setViewHolderConfirmations(currentItem, 3);
-                    // sets and sends to db hosts specific request confirmation
-                    presenter.setViewHolderConfirmations(repoHSD, holder, requesterNumber);
-                }
+            requestButtonView.setOnClickListener(v -> {
+               int requesterNumber1 = (int) v.getTag(v.getId());
+
+
+                // sets and sends to db hosts specific request confirmation
+                // setViewHolderConfirmations(currentItem, 3);
+                // sets and sends to db hosts specific request confirmation
+                presenter.setViewHolderConfirmations(chavruta, holder, requesterNumber1);
             });
+        }
+
+        @Override
+        public void setOnClickListenerOnRequester(MARepoContract holder, HostSessionData repoHSD, int requesterNumber) {
+            //this is a junk method utilized in MyChavrutaAdapter.class
         }
 
         @Override
@@ -709,7 +712,7 @@ public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapte
 //                //checks if custom user byte array extant from MA parsing
 //                if (currentHostAvatarNumberString != null &&
 //                        currentHostAvatarNumberString.length() > AvatarImgs.avatarImgList.size()) {
-//                    byte[] customHostAvatar = currentItem.getmHostCustomAvatarByteArray();
+//                    byte[] customHostAvatar = currentItem.getHostCustomAvatarByteArray();
 //                    GlideApp
 //                            .with(mContext)
 //                            .asBitmap()

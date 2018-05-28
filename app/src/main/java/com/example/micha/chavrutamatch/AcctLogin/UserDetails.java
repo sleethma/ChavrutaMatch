@@ -135,7 +135,7 @@ public class UserDetails extends AppCompatActivity{
 //        currentUserId = userId;
 //    }
 
-    public  String getmUserId() {
+    public static String getmUserId() {
         return mUserId;
     }
 

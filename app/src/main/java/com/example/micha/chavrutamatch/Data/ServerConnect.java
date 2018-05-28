@@ -58,9 +58,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
         }
     }
 
-
     private ProgressDialog pDialog;
-
 
     /**
      * Before starting background thread Show Progress Dialog
@@ -232,7 +230,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 bufferedReader.close();
                 inputStream.close();
                 httpURLConnection.disconnect();
-                postExecuteResponse = 2;
+                postExecuteResponse = 2 ;
                 jsonString = stringBuilder.toString().trim();
                 return jsonString;
 

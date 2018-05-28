@@ -1,7 +1,7 @@
 package com.example.micha.chavrutamatch.MVPConstructs;
 
 
-import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.Data.HostSessionData;
@@ -53,7 +53,10 @@ public interface MAContractMVP {
 
         void returnAsyncResult(String output);
 
-        //        void setMainActivityListView(RecyclerView listView);
+        void setMyChavrutaData();
+
+        void setMainActivityListView(RecyclerView listView);
+
         void onBindToPresenter(MARepoContract holder, int position, int viewType);
 
         void setViewHolderConfirmations(HostSessionData currentItem, MARepoContract holder, int requestClicked);
@@ -65,6 +68,10 @@ public interface MAContractMVP {
 
     interface Model {
         void putStringDataInSP(String key, String value);
+
+        void requestMyChavrutas();
+
+        void observableRequestMyChavrutas();
 
         boolean verifyCurrentUserDataSavedInSP();
 
@@ -87,5 +94,7 @@ public interface MAContractMVP {
         HostSessionData getMyChavrutasArrayListItem(int position);
 
         ArrayList<HostSessionData> getMyChavrutasAL();
+
+        void setCallback(MAContractMVP.Presenter presenter);
     }
 }

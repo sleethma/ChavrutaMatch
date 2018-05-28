@@ -31,6 +31,9 @@ import com.example.micha.chavrutamatch.DI.Components.MAComponent;
 import com.example.micha.chavrutamatch.DI.Modules.MAModule;
 import com.example.micha.chavrutamatch.Data.AvatarImgs;
 import com.example.micha.chavrutamatch.Data.HostSessionData;
+import com.example.micha.chavrutamatch.Data.Http.APIModels.MyChavrutas;
+import com.example.micha.chavrutamatch.Data.Http.APIModels.ServerResponse;
+import com.example.micha.chavrutamatch.Data.Http.MyChavrutaAPI;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.example.micha.chavrutamatch.MVPConstructs.MAContractMVP;
 import com.example.micha.chavrutamatch.Utils.ConnCheckUtil;
@@ -39,11 +42,15 @@ import com.example.micha.chavrutamatch.Utils.RecyclerViewListDecor;
 import com.facebook.accountkit.AccountKit;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static com.example.micha.chavrutamatch.AcctLogin.UserDetails.getUserCustomAvatarBase64ByteArray;
 
@@ -65,7 +72,6 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
     @Inject
     MAContractMVP.Presenter presenter;
 
-
     OpenChavrutaAdapter mAdapter;
 
     static ArrayList<HostSessionData> myChavrutasArrayList;
@@ -77,44 +83,16 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
     private final String CUSTOM_AVATAR = "999";
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        Log.i(MainActivity.class.getSimpleName(), "onStart"+"was called!");
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        Log.i(MainActivity.class.getSimpleName(), "onPause"+"was called!");
-
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        Log.i(MainActivity.class.getSimpleName(), "onStop"+"was called!");
-
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.i(MainActivity.class.getSimpleName(), "onDestroy" + "was called!");
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         mContext = this;
 
-        ApplicationComponent appComponent = ((ChavrutaMatch.get(this)).getApplicationComponent());
-//        MAComponent maComponent = DaggerMAComponent.builder()
-//                .mAModule(new MAModule(this))
-//                .applicationComponent(appComponent)
-//                .build();
+//        ApplicationComponent appComponent = ((ChavrutaMatch.get(this)).getApplicationComponent());
+
         (ChavrutaMatch.get(this)).getMAComponent().inject(this);
+
 
         if (ConnCheckUtil.isConnected(mContext)) {
             presenter.activateAccountKit();
@@ -126,14 +104,8 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
                 launchLoginActivity();
             }
 
-
             FloatingActionButton fab = findViewById(R.id.fab);
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    loadOnSelectActivity(view);
-                }
-            });
+            fab.setOnClickListener(view -> loadOnSelectActivity(view));
 
             new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
 
@@ -238,16 +210,13 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
                 .setTitle("Exit App?")
                 .setMessage("Are you sure you want to exit?")
                 .setNegativeButton(android.R.string.no, null)
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-
-                    public void onClick(DialogInterface arg0, int arg1) {
-                        Intent intent = new Intent(Intent.ACTION_MAIN);
-                        intent.addCategory(Intent.CATEGORY_HOME);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(intent);
-                        finish();
-                        System.exit(0);
-                    }
+                .setPositiveButton(android.R.string.yes, (arg0, arg1) -> {
+                    Intent intent = new Intent(Intent.ACTION_MAIN);
+                    intent.addCategory(Intent.CATEGORY_HOME);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                    finish();
+                    System.exit(0);
                 }).create().show();
     }
 
@@ -336,44 +305,25 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
             userAvatar.setImageResource(AvatarImgs.getAvatarNumberResId(
                     Integer.parseInt(userDetailsInstance.getmUserAvatarNumberString())));
         } else {
-
             try {
-                Uri testUri = UserDetails.getHostAvatarUri();
-                GlideApp
-                        .with(mContext)
-                        .load(UserDetails.getHostAvatarUri())
-                        .placeholder(R.drawable.ic_unknown_user)
-                        .circleCrop()
-                        .into(userAvatar);
+                if (UserDetails.getHostAvatarUri() != null) {
+                    GlideApp
+                            .with(mContext)
+                            .load(UserDetails.getHostAvatarUri())
+                            .placeholder(R.drawable.ic_unknown_user)
+                            .circleCrop()
+                            .into(userAvatar);
+                } else if (UserDetails.getUserCustomAvatarBase64ByteArray() != null) {
+                    GlideApp
+                            .with(mContext)
+                            .load(UserDetails.getUserCustomAvatarBase64ByteArray())
+                            .placeholder(R.drawable.ic_unknown_user)
+                            .into(userAvatar);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
         }
-
-       /* if (UserDetails.getmUserAvatarNumberString() != null &&
-                !UserDetails.getmUserAvatarNumberString().equals("999")) {
-            userAvatar.setImageResource(AvatarImgs.getAvatarNumberResId(
-                    Integer.parseInt(UserDetails.getmUserAvatarNumberString())));
-        } else {
-            //using custom avatar
-            //custom avatar was previously chosen
-            if (UserDetails.getHostAvatarUri() != null) {
-                GlideApp
-                        .with(mContext)
-                        .load(UserDetails.getHostAvatarUri())
-                        .circleCrop()
-                        .into(userAvatar);
-            } else if (getUserCustomAvatarBase64ByteArray() != null) {
-                GlideApp
-                        .with(mContext)
-                        .asBitmap()
-                        .load(getUserCustomAvatarBase64ByteArray())
-                        .placeholder(R.drawable.ic_unknown_user)
-                        .circleCrop()
-                        .into(userAvatar);
-            }
-        }*/
     }
 
     @Override
@@ -385,7 +335,6 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
 
         //add ItemDecoration
         myChavrutaListView.addItemDecoration(new RecyclerViewListDecor(VERTICAL_LIST_ITEM_SPACE));
-
         myChavrutaListView.setHasFixedSize(true);
         mAdapter = new OpenChavrutaAdapter(mContext, myChavrutasArrayList, presenter, userDetailsInstance);
         myChavrutaListView.setAdapter(mAdapter);

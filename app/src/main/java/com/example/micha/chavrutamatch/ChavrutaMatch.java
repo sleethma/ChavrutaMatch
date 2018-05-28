@@ -9,6 +9,7 @@ import com.example.micha.chavrutamatch.DI.Components.ApplicationComponent;
 import com.example.micha.chavrutamatch.DI.Components.DaggerApplicationComponent;
 import com.example.micha.chavrutamatch.DI.Components.DaggerMAComponent;
 import com.example.micha.chavrutamatch.DI.Components.MAComponent;
+import com.example.micha.chavrutamatch.DI.Modules.ApiModule;
 import com.example.micha.chavrutamatch.DI.Modules.ApplicationModule;
 import com.example.micha.chavrutamatch.DI.Modules.MAModule;
 import com.example.micha.chavrutamatch.DI.Modules.UserDetailsModule;
@@ -37,6 +38,7 @@ public class ChavrutaMatch extends Application {
         maComponent = DaggerMAComponent.builder()
                 .mAModule(new MAModule(this))
                 .applicationComponent(applicationComponent)
+                .apiModule(new ApiModule())
                 .build();
     }
 

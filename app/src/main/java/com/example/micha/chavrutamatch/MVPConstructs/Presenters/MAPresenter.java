@@ -1,5 +1,6 @@
 package com.example.micha.chavrutamatch.MVPConstructs.Presenters;
 
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
@@ -8,7 +9,6 @@ import com.example.micha.chavrutamatch.Data.HostSessionData;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.example.micha.chavrutamatch.MVPConstructs.MAContractMVP;
 import com.example.micha.chavrutamatch.MVPConstructs.Repos.MARepoContract;
-import com.example.micha.chavrutamatch.Utils.ChavrutaUtils;
 import com.facebook.accountkit.AccountKit;
 
 
@@ -100,6 +100,11 @@ public class MAPresenter implements MAContractMVP.Presenter {
         }
     }
 
+    @Override
+    public void setMainActivityListView(RecyclerView listView) {
+
+    }
+
     private void jsonStringToArrayList() {
             getJsonFromServer();
     }
@@ -107,7 +112,9 @@ public class MAPresenter implements MAContractMVP.Presenter {
     public void getJsonFromServer() {
         String myChavrutasKey = "my chavrutas";
         serverConnectInstance = mainActivityModel.getServerConnectInstance();
+//        mainActivityModel.observableRequestMyChavrutas();
         serverConnectInstance.callback = this;
+        mainActivityModel.setCallback(this);
         serverConnectInstance.execute(myChavrutasKey);
     }
 
@@ -122,18 +129,25 @@ public class MAPresenter implements MAContractMVP.Presenter {
     }
 
     @Override
+    public void setMyChavrutaData(){
+        mainActivityView.setMyChavrutaAdapter(mainActivityModel.getMyChavrutasAL());
+        if (mainActivityModel.getMyChavrutasAL() != null && mainActivityModel.getMyChavrutasAL().size() > 0)
+            mainActivityView.displayRecyclerView();
+    }
+
+    @Override
     public void onBindToPresenter(MARepoContract holder, int position, int viewType) {
-        HostSessionData repoHSD = mainActivityModel.getMyChavrutasArrayListItem(position);
-        holder.setUsersFullName(repoHSD.getmHostFirstName());
+        HostSessionData chavruta = mainActivityModel.getMyChavrutasArrayListItem(position);
+        holder.setUsersFullName(chavruta.getmHostFirstName());
 
         // @return 1: hostview, else awaitingConfirmView
         if (viewType == HOST_VIEW) {
-            createHostView(holder, repoHSD);
+            createHostView(holder, chavruta);
             //view is awaiting hosts confirmation
         } else {
-            setDataToAwaitingConfirmView(holder, repoHSD);
+            setDataToAwaitingConfirmView(holder, chavruta);
         }
-        holder.setViewItemData(repoHSD, position);
+        holder.setViewItemDataInMyChavruta(chavruta, position);
     }
 
     @Override
@@ -150,17 +164,17 @@ public class MAPresenter implements MAContractMVP.Presenter {
     }
 
 
-    public void setDataToAwaitingConfirmView(MARepoContract holder, HostSessionData repoHSD) {
-        String learnerConfirmed = repoHSD.getmConfirmed();
+    public void setDataToAwaitingConfirmView(MARepoContract holder, HostSessionData serverResponse) {
+        String learnerConfirmed = serverResponse.getmConfirmed();
         String userId = userDetailsInstance.getmUserId();
         boolean userIsConfirmed = learnerConfirmed.equals(userId);
         holder.setUserConfirmedStatus(userIsConfirmed);
 
         //sets user first last name after concatonation
         String hostNameConcat = createUserFirstLastName(
-                repoHSD.getmHostFirstName(), repoHSD.getmHostLastName());
+                serverResponse.getmHostFirstName(), serverResponse.getmHostLastName());
         holder.setUsersFullName(hostNameConcat);
-        setAwaitingHostAvatar(holder, repoHSD);
+        setAwaitingHostAvatar(holder, serverResponse);
     }
 
     public String createUserFirstLastName(String userFirstName, String userLastName) {
@@ -169,25 +183,25 @@ public class MAPresenter implements MAContractMVP.Presenter {
         return userFirstLastName;
     }
 
-    public void createHostView(MARepoContract holder, HostSessionData repoHSD) {
+    public void createHostView(MARepoContract holder, HostSessionData chavruta) {
         holder.setUsersFullName(UserDetails.getmUserName());
-        boolean hasRequesters = configureRequestersConfirmedStatus(holder, repoHSD);
+        boolean hasRequesters = configureRequestersConfirmedStatus(holder, chavruta);
         holder.setDisplayIfRequesters(hasRequesters);
         setHostsAvatar(holder);
     }
 
 
-    private void setAwaitingHostAvatar(MARepoContract holder, HostSessionData repoHSD) {
+    private void setAwaitingHostAvatar(MARepoContract holder, HostSessionData chavruta) {
         String awaitingHostAvatarNumber;
-        if (repoHSD.getmHostAvatarNumber() != null) {
-            awaitingHostAvatarNumber = repoHSD.getmHostAvatarNumber();
+        if (chavruta.getmHostAvatarNumber() != null) {
+            awaitingHostAvatarNumber = chavruta.getmHostAvatarNumber();
         } else {
             return;
         }
         if (awaitingHostAvatarNumber.length() < TEMPLATE_AVATAR_LIST_SIZE) {
             holder.setTemplateListItemAwaitingHostAvatar(awaitingHostAvatarNumber);
         } else {
-            byte[] awaitingHostCustomAvatar = repoHSD.getmHostCustomAvatarByteArray();
+            byte[] awaitingHostCustomAvatar = chavruta.getmHostCustomAvatarByteArray();
             holder.setCustomListItemAwaitingHostAvatar(awaitingHostCustomAvatar);
         }
 
@@ -203,14 +217,14 @@ public class MAPresenter implements MAContractMVP.Presenter {
         }
     }
 
-    public boolean configureRequestersConfirmedStatus(MARepoContract holder, HostSessionData repoHSD) {
+    public boolean configureRequestersConfirmedStatus(MARepoContract holder, HostSessionData chavruta) {
         boolean hasRequesters = false;
-        String request1 = repoHSD.getMchavrutaRequest1Id();
-        String request2 = repoHSD.getMchavrutaRequest2Id();
-        String request3 = repoHSD.getMchavrutaRequest3Id();
-        String chavrutaRequestName1 = repoHSD.getmChavrutaRequest1Name();
-        String chavrutaRequestName2 = repoHSD.getmChavrutaRequest2Name();
-        String chavrutaRequestName3 = repoHSD.getmChavrutaRequest3Name();
+        String request1 = chavruta.getMchavrutaRequest1Id();
+        String request2 = chavruta.getMchavrutaRequest2Id();
+        String request3 = chavruta.getMchavrutaRequest3Id();
+        String chavrutaRequestName1 = chavruta.getmChavrutaRequest1Name();
+        String chavrutaRequestName2 = chavruta.getmChavrutaRequest2Name();
+        String chavrutaRequestName3 = chavruta.getmChavrutaRequest3Name();
 
         Boolean isRequest1 = request1.length() > 5 ? true : false;
         Boolean isRequest2 = request2.length() > 5 ? true : false;
@@ -219,43 +233,45 @@ public class MAPresenter implements MAContractMVP.Presenter {
 
         if (isRequest1) {
             holder.setupHostsRequestersViews(chavrutaRequestName1, 1);
-            setHostsRequestItem(holder, repoHSD, request1, 1);
-            holder.setOnClickListenerOnRequester(holder, repoHSD, 1);
+            setHostsRequestItem(holder, chavruta, request1, 1);
+            holder.setOnClickListenerOnRequester(holder, chavruta, 1);
             hasRequesters = true;
         }
         if (isRequest2) {
             holder.setupHostsRequestersViews(chavrutaRequestName2, 2);
-            setHostsRequestItem(holder, repoHSD, request2, 2);
-            holder.setOnClickListenerOnRequester(holder, repoHSD, 2);
+            setHostsRequestItem(holder, chavruta, request2, 2);
+            holder.setOnClickListenerOnRequester(holder, chavruta, 2);
             hasRequesters = true;
         }
         if (isRequest3) {
             holder.setupHostsRequestersViews(chavrutaRequestName3, 3);
-            setHostsRequestItem(holder, repoHSD, request3, 3);
-            holder.setOnClickListenerOnRequester(holder, repoHSD, 3);
+            setHostsRequestItem(holder, chavruta, request3, 3);
+            holder.setOnClickListenerOnRequester(holder, chavruta, 3);
             hasRequesters = true;
         }
         return hasRequesters;
     }
 
-    private void setHostsRequestItem(MARepoContract holder, HostSessionData repoHSD, String requestNumbersId, int requestNumber) {
-        String idOfConfirmedUser = repoHSD.getmConfirmed();
+    private void setHostsRequestItem(MARepoContract holder, HostSessionData chavruta, String requestNumbersId, int requestNumber) {
+        String idOfConfirmedUser = chavruta.getmConfirmed();
         byte[] customRequesterAvatar = null;
 
         //if confirmed id of requester matches the chavrutas confirmed requester field
         if (idOfConfirmedUser.equals(requestNumbersId)) {
             holder.setRequestButtonStatus(requestNumber);
-            repoHSD.setRequestConfirmed(true, requestNumber);
+            chavruta.setRequestConfirmed(true, requestNumber);
         } else {
-            repoHSD.setRequestConfirmed(false, requestNumber);
+            chavruta.setRequestConfirmed(false, requestNumber);
         }
 
-        String requestAvatarNumber = repoHSD.getmChavrutaRequestAvatar(requestNumber);
+        String requestAvatarNumber = chavruta.getmChavrutaRequestAvatar(requestNumber);
         if (requestAvatarNumber.length() >= 3) {
             customRequesterAvatar = HostSessionData.getByteArrayFromString(requestAvatarNumber);
         }
         holder.setHostRequestAvatar(customRequesterAvatar, requestAvatarNumber, requestNumber);
     }
+
+
 
     //called when requester confirm button clicked
     @Override

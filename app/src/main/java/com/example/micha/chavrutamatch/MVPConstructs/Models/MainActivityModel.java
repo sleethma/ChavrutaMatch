@@ -1,6 +1,5 @@
 package com.example.micha.chavrutamatch.MVPConstructs.Models;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -10,12 +9,10 @@ import android.util.Log;
 
 import com.example.micha.chavrutamatch.AcctLogin.AccountActivity;
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
-import com.example.micha.chavrutamatch.ChavrutaMatch;
-import com.example.micha.chavrutamatch.DI.Components.ApplicationComponent;
-import com.example.micha.chavrutamatch.DI.Components.DaggerMAComponent;
-import com.example.micha.chavrutamatch.DI.Components.MAComponent;
-import com.example.micha.chavrutamatch.DI.Modules.MAModule;
 import com.example.micha.chavrutamatch.Data.HostSessionData;
+import com.example.micha.chavrutamatch.Data.Http.APIModels.MyChavrutas;
+import com.example.micha.chavrutamatch.Data.Http.APIModels.ServerResponse;
+import com.example.micha.chavrutamatch.Data.Http.MyChavrutaAPI;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.example.micha.chavrutamatch.MVPConstructs.MAContractMVP;
 
@@ -24,8 +21,17 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by micha on 2/26/2018.
@@ -33,6 +39,7 @@ import javax.inject.Inject;
 
 public class MainActivityModel extends AppCompatActivity implements MAContractMVP.Model {
     Context context;
+    public MAContractMVP.Presenter callback;
     private String jsonString;
     JSONObject jsonObject;
     JSONArray jsonArray;
@@ -43,26 +50,31 @@ public class MainActivityModel extends AppCompatActivity implements MAContractMV
     private static String userId, userName, userFirstName, userLastName, userPhoneNumber,
             userEmail, userCityState, userCustomAvatarUriString, userImagePathString, userCustomAvatarBase64String,
             userBio;
-    public SharedPreferences sp;
-//    @Inject
-    AccountActivity accountActivity;
-//    @Inject
-    ServerConnect serverConnectInstance;
+    private Disposable disposable;
 
-//    @Inject
+    public SharedPreferences sp;
+    AccountActivity accountActivity;
+    ServerConnect serverConnectInstance;
     UserDetails userDetailsInstance;
 
     public ArrayList<HostSessionData> myChavrutasArrayList;
+    public ArrayList<HostSessionData> myChavrutasArrayListNew;
 
     @Inject
-    public MainActivityModel(Context appContext, SharedPreferences sp, UserDetails userDetailsInstance, ServerConnect serverConnectInstance, AccountActivity accountActivity) {
+    MyChavrutaAPI myChavrutaAPI;
+
+    @Inject
+    public MainActivityModel(Context appContext, SharedPreferences sp, UserDetails userDetailsInstance,
+                             ServerConnect serverConnectInstance, AccountActivity accountActivity,
+                             MyChavrutaAPI myChavrutaAPI) {
 
         this.sp = sp;
         this.accountActivity = accountActivity;
-            this. serverConnectInstance = serverConnectInstance;
-            this.userDetailsInstance = userDetailsInstance;
-
+        this.serverConnectInstance = serverConnectInstance;
+        this.userDetailsInstance = userDetailsInstance;
+        this.myChavrutaAPI = myChavrutaAPI;
     }
+
     @Override
     public UserDetails getUserDetailsInstance() {
         return userDetailsInstance;
@@ -127,7 +139,91 @@ public class MainActivityModel extends AppCompatActivity implements MAContractMV
         sp.edit().putString(key, value).apply();
     }
 
+    @Override
+    public void requestMyChavrutas() {
+        String userId = UserDetails.getmUserId();
+        Call<MyChavrutas> call = myChavrutaAPI.getMyChavrutas(userId);
+        call.enqueue(new Callback<MyChavrutas>() {
 
+            @Override
+            public void onResponse(Call<MyChavrutas> call, Response<MyChavrutas> response) {
+                List<ServerResponse> myChavrutas = response.body().getMyChavrutasAL();
+                createHostSessionDataObjects(myChavrutas);
+            }
+
+            @Override
+            public void onFailure(Call<MyChavrutas> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
+
+    }
+
+    @Override
+    public void setCallback(MAContractMVP.Presenter presenter) {
+        callback = presenter;
+    }
+
+    @Override
+    public void observableRequestMyChavrutas() {
+
+        disposable = myChavrutaAPI.getMyChavrutasObservable(UserDetails.getmUserId())
+
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                //todo: this subscribes with map
+//                .flatMap((Function<MyChavrutas, Observable<ServerResponse>>) (MyChavrutas myChavrutas) -> {
+//                    for (ServerResponse chavruta : myChavrutas.getMyChavrutasAL()) {
+//                        Log.e(MainActivityModel.class.getSimpleName(), chavruta.getHostLastName());
+//                        classData.add(chavruta);
+//                        Thread.sleep(2000);
+//                    }
+//                    return Observable.fromIterable(classData);
+//                })
+//                .subscribe(myChavrutas -> {
+//                    Log.e(MainActivityModel.class.getSimpleName(), "from subscriber: " + classData.get(0).getChavrutaId());
+//                    createHostSessionDataObjects(classData);
+//                });
+                //todo: this subscribes w/o map
+                .subscribe(new Consumer<MyChavrutas>() {
+                    @Override
+                    public void accept(MyChavrutas myChavrutas) throws Exception {
+                        myChavrutasArrayListNew = (ArrayList) myChavrutas.getMyChavrutasAL();
+                        callback.setMyChavrutaData();
+                    }
+                });
+
+//                new Func1<MyChavrutas, rx.Observable<ServerResponse>>() {
+//                    @Override
+//                    public rx.Observable<ServerResponse> call(MyChavrutas myChavrutas) {
+//
+//                        return rx.Observable.from(myChavrutas.getMyChavrutasAL());
+//                    }
+//                }).flatMap(new Func1<ServerResponse, rx.Observable<String>>() {
+//            @Override
+//            public rx.Observable<String> call(ServerResponse serverResponse) {
+//
+//                return rx.Observable.just(serverResponse.getHostLastName());
+//
+//            }
+//        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<String>() {
+//            @Override
+//            public void onCompleted() {
+//
+//            }
+//
+//            @Override
+//            public void onError(Throwable e) {
+//
+//            }
+//
+//            @Override
+//            public void onNext(String s) {
+//
+//                System.out.println("From rx java: " + s);
+//            }
+//        });
+    }
 
     @Override
     public void setUserDataFromSPToModel() {
@@ -139,7 +235,7 @@ public class MainActivityModel extends AppCompatActivity implements MAContractMV
         userLastName = getStringDataFromSP("user last name key");
 
         userAvatarNumberString = getStringDataFromSP("user avatar number key");
-        if(userAvatarNumberString == null)userAvatarNumberString = "0";
+        if (userAvatarNumberString == null) userAvatarNumberString = "0";
 
         userBio = getStringDataFromSP("user bio key");
         userId = getStringDataFromSP("user account id key");
@@ -167,10 +263,9 @@ public class MainActivityModel extends AppCompatActivity implements MAContractMV
     @Override
     public void parseJSONDataToArrayList(String jsonString) {
         this.jsonString = jsonString;
-        String chavrutaId;
         ArrayList<HostSessionData> myChavrutasArrayList = new ArrayList<>();
 
-        String hostFirstName, hostLastName, hostAvatarNumber, sessionMessage, sessionDate,
+        String chavrutaId, hostFirstName, hostLastName, hostAvatarNumber, sessionMessage, sessionDate,
                 startTime, endTime, sefer, location, hostCityState, hostId,
                 chavrutaRequest1Id, chavrutaRequest1Avatar, chavrutaRequest1Name,
                 chavrutaRequest2Id, chavrutaRequest2Avatar, chavrutaRequest2Name,
@@ -227,5 +322,57 @@ public class MainActivityModel extends AppCompatActivity implements MAContractMV
     }
 
 
+    private void createHostSessionDataObjects(List<ServerResponse> myChavrutas) {
+
+        myChavrutasArrayList = new ArrayList<>();
+
+        String chavrutaId, hostFirstName, hostLastName, hostAvatarNumber, sessionMessage, sessionDate,
+                startTime, endTime, sefer, location, hostCityState, hostId,
+                chavrutaRequest1Id, chavrutaRequest1Avatar, chavrutaRequest1Name,
+                chavrutaRequest2Id, chavrutaRequest2Avatar, chavrutaRequest2Name,
+                chavrutaRequest3Id, chavrutaRequest3Avatar, chavrutaRequest3Name,
+                confirmed;
+
+        for (ServerResponse chavruta : myChavrutas) {
+            chavrutaId = chavruta.getChavrutaId();
+            hostFirstName = chavruta.getHostFirstName();
+            hostLastName = chavruta.getHostLastName();
+            hostAvatarNumber = chavruta.getHostAvatarNumber();
+            sessionMessage = chavruta.getSessionMessage();
+            sessionDate = chavruta.getSessionDate();
+            startTime = chavruta.getStartTime();
+            endTime = chavruta.getEndTime();
+            sefer = chavruta.getSefer();
+            location = chavruta.getLocation();
+            hostCityState = chavruta.getHostCityState();
+            hostId = chavruta.getHostId();
+            chavrutaRequest1Id = chavruta.getChavrutaRequest1();
+            chavrutaRequest1Avatar = chavruta.getChavrutaRequest1Avatar();
+            chavrutaRequest1Name = chavruta.getChavrutaRequest1Name();
+            chavrutaRequest2Id = chavruta.getChavrutaRequest2();
+            chavrutaRequest2Avatar = chavruta.getChavrutaRequest2Avatar();
+
+            chavrutaRequest2Name = chavruta.getChavrutaRequest2Name();
+            chavrutaRequest3Id = chavruta.getChavrutaRequest3();
+            chavrutaRequest3Avatar = chavruta.getChavrutaRequest3Avatar();
+            chavrutaRequest3Name = chavruta.getChavrutaRequest3Name();
+            confirmed = chavruta.getConfirmed();
+
+            //make user data object of UserDataSetter class
+            HostSessionData myChavrutaData = new HostSessionData(chavrutaId, hostFirstName,
+                    hostLastName, hostAvatarNumber, sessionMessage, sessionDate, startTime, endTime, sefer, location,
+                    hostCityState, hostId, chavrutaRequest1Id, chavrutaRequest2Id, chavrutaRequest3Id,
+                    chavrutaRequest1Avatar, chavrutaRequest1Name, chavrutaRequest2Avatar, chavrutaRequest2Name,
+                    chavrutaRequest3Avatar, chavrutaRequest3Name,
+                    confirmed);
+            this.myChavrutasArrayList.add(myChavrutaData);
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        disposable.dispose();
+    }
 }
 

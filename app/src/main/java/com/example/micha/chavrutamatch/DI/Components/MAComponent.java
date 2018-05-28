@@ -7,6 +7,7 @@ import com.example.micha.chavrutamatch.AcctLogin.LoginActivity;
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.AddBio;
 import com.example.micha.chavrutamatch.ChavrutaMatch;
+import com.example.micha.chavrutamatch.DI.Modules.ApiModule;
 import com.example.micha.chavrutamatch.DI.Modules.MAModule;
 import com.example.micha.chavrutamatch.DI.Modules.SharedPrefsModule;
 import com.example.micha.chavrutamatch.DI.Modules.UserDetailsModule;
@@ -26,11 +27,11 @@ import dagger.Component;
  * Created by micha on 2/28/2018.
  */
 
-@Component(dependencies = ApplicationComponent.class , modules = {MAModule.class, SharedPrefsModule.class})
+@Component(dependencies = ApplicationComponent.class , modules = {MAModule.class,
+        SharedPrefsModule.class, ApiModule.class})
 @MAScope
 public interface MAComponent {
     Context context();
-
 
     void inject(MainActivityModel target);
     void inject(AccountActivity target);
