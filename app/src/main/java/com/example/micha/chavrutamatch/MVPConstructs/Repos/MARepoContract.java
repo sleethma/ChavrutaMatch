@@ -1,6 +1,7 @@
 package com.example.micha.chavrutamatch.MVPConstructs.Repos;
 
 import com.example.micha.chavrutamatch.Data.HostSessionData;
+import com.example.micha.chavrutamatch.Data.Http.APIModels.ServerResponse;
 
 /**
  * Created by micha on 3/2/2018.
@@ -25,9 +26,7 @@ public interface MARepoContract {
 
     void setHostRequestAvatar(byte[] customRequesterAvatar, String requester1AvatarNumber, int requesterNumber);
 
-    void setOnClickListenerOnRequesterOpenChavruta(MARepoContract holder, final HostSessionData chavruta, int requesterNumber);
-
-    void setOnClickListenerOnRequester(MARepoContract holder, final HostSessionData repoHSD, int requesterNumber);
+    void setOnClickListenerOnRequester(MARepoContract holder, final ServerResponse chavruta, int requesterNumber);
 
     void setButtonToConfirmedState(String confirmButtonAction);
 
@@ -35,7 +34,7 @@ public interface MARepoContract {
 
     void setUserConfirmedStatus(boolean userIsConfirmed);
 
-    void setViewItemDataInMyChavruta(HostSessionData chavruta, int position);
+    void setViewItemDataInMyChavruta(ServerResponse chavruta, int position);
 
     void setViewItemDataInOpenChavruta(HostSessionData chavruta, int position);
 

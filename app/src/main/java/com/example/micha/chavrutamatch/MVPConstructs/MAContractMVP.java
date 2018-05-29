@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.Data.HostSessionData;
+import com.example.micha.chavrutamatch.Data.Http.APIModels.ServerResponse;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.example.micha.chavrutamatch.MVPConstructs.Repos.MARepoContract;
 
@@ -23,7 +24,9 @@ public interface MAContractMVP {
 
         void setUserAvatar();
 
-        void setMyChavrutaAdapter(ArrayList<HostSessionData> myChavrutasArrayList);
+        void setOldAdapter(ArrayList<HostSessionData> myChavrutasArrayList);
+
+        void setMyChavrutaAdapter(ArrayList<ServerResponse> myChavrutasArrayList);
 
         void displayRecyclerView();
 
@@ -51,6 +54,8 @@ public interface MAContractMVP {
 
         void getJsonChavrutaString();
 
+        void setGsonInModel();
+
         void returnAsyncResult(String output);
 
         void setMyChavrutaData();
@@ -59,7 +64,7 @@ public interface MAContractMVP {
 
         void onBindToPresenter(MARepoContract holder, int position, int viewType);
 
-        void setViewHolderConfirmations(HostSessionData currentItem, MARepoContract holder, int requestClicked);
+        void setViewHolderConfirmations(ServerResponse currentItem, MARepoContract holder, int requestClicked);
 
         int getItemViewTypeFromPresenter(int position);
 
@@ -91,10 +96,14 @@ public interface MAContractMVP {
 
         void parseJSONDataToArrayList(String jsonString);
 
-        HostSessionData getMyChavrutasArrayListItem(int position);
+        HostSessionData getOldMyChavrutasArrayListItem(int position);
 
-        ArrayList<HostSessionData> getMyChavrutasAL();
+        ServerResponse getMyChavrutasItem(int position);
 
-        void setCallback(MAContractMVP.Presenter presenter);
+        ArrayList<ServerResponse> getMyChavrutasAL();
+
+        ArrayList<HostSessionData> getOldAL();
+
+        void setCallbackToPresenter(MAContractMVP.Presenter presenter);
     }
 }

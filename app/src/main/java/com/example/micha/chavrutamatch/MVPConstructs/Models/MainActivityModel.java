@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
-import android.util.Log;
 
 import com.example.micha.chavrutamatch.AcctLogin.AccountActivity;
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
@@ -39,7 +38,7 @@ import retrofit2.Response;
 
 public class MainActivityModel extends AppCompatActivity implements MAContractMVP.Model {
     Context context;
-    public MAContractMVP.Presenter callback;
+    public MAContractMVP.Presenter callbackToPresenter;
     private String jsonString;
     JSONObject jsonObject;
     JSONArray jsonArray;
@@ -58,7 +57,7 @@ public class MainActivityModel extends AppCompatActivity implements MAContractMV
     UserDetails userDetailsInstance;
 
     public ArrayList<HostSessionData> myChavrutasArrayList;
-    public ArrayList<HostSessionData> myChavrutasArrayListNew;
+    public ArrayList<ServerResponse> myChavrutasAL;
 
     @Inject
     MyChavrutaAPI myChavrutaAPI;
@@ -160,8 +159,8 @@ public class MainActivityModel extends AppCompatActivity implements MAContractMV
     }
 
     @Override
-    public void setCallback(MAContractMVP.Presenter presenter) {
-        callback = presenter;
+    public void setCallbackToPresenter(MAContractMVP.Presenter presenter) {
+        callbackToPresenter = presenter;
     }
 
     @Override
@@ -187,9 +186,9 @@ public class MainActivityModel extends AppCompatActivity implements MAContractMV
                 //todo: this subscribes w/o map
                 .subscribe(new Consumer<MyChavrutas>() {
                     @Override
-                    public void accept(MyChavrutas myChavrutas) throws Exception {
-                        myChavrutasArrayListNew = (ArrayList) myChavrutas.getMyChavrutasAL();
-                        callback.setMyChavrutaData();
+                    public void accept(MyChavrutas myChavrutasList) throws Exception {
+                        myChavrutasAL = (ArrayList) myChavrutasList.getMyChavrutasAL();
+                        callbackToPresenter.setMyChavrutaData();
                     }
                 });
 
@@ -251,13 +250,23 @@ public class MainActivityModel extends AppCompatActivity implements MAContractMV
     }
 
     @Override
-    public ArrayList<HostSessionData> getMyChavrutasAL() {
+    public ArrayList<HostSessionData> getOldAL() {
         return myChavrutasArrayList;
     }
 
     @Override
-    public HostSessionData getMyChavrutasArrayListItem(int position) {
+    public ArrayList<ServerResponse> getMyChavrutasAL() {
+        return myChavrutasAL;
+    }
+
+    @Override
+    public HostSessionData getOldMyChavrutasArrayListItem(int position) {
         return myChavrutasArrayList.get(position);
+    }
+
+    @Override
+    public ServerResponse getMyChavrutasItem(int position) {
+        return myChavrutasAL.get(position);
     }
 
     @Override
@@ -351,7 +360,6 @@ public class MainActivityModel extends AppCompatActivity implements MAContractMV
             chavrutaRequest1Name = chavruta.getChavrutaRequest1Name();
             chavrutaRequest2Id = chavruta.getChavrutaRequest2();
             chavrutaRequest2Avatar = chavruta.getChavrutaRequest2Avatar();
-
             chavrutaRequest2Name = chavruta.getChavrutaRequest2Name();
             chavrutaRequest3Id = chavruta.getChavrutaRequest3();
             chavrutaRequest3Avatar = chavruta.getChavrutaRequest3Avatar();

@@ -98,7 +98,8 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
             presenter.activateAccountKit();
             //check if already logged in
             if (presenter.isCurrentUserLoggedInToAccountKit()) {
-                presenter.getJsonChavrutaString();
+//                presenter.getJsonChavrutaString();
+                presenter.setGsonInModel();
             } else {
                 AccountKit.logOut();
                 launchLoginActivity();
@@ -129,12 +130,7 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
         } else {
             alertUserToCheckConn();
         }
-        userAvatar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                loadProfile();
-            }
-        });
+        userAvatar.setOnClickListener(v -> loadProfile());
     }
 
     @Override
@@ -327,7 +323,22 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
     }
 
     @Override
-    public void setMyChavrutaAdapter(ArrayList<HostSessionData> myChavrutasArrayList) {
+    public void setOldAdapter(ArrayList<HostSessionData> myChavrutasArrayList) {
+        //todo: old and unnecessary?
+//        myChavrutaListView.requestLayout();
+//        //attaches data source to adapter and displays list
+//        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+//        myChavrutaListView.setLayoutManager(linearLayoutManager);
+//
+//        //add ItemDecoration
+//        myChavrutaListView.addItemDecoration(new RecyclerViewListDecor(VERTICAL_LIST_ITEM_SPACE));
+//        myChavrutaListView.setHasFixedSize(true);
+//        mAdapter = new OpenChavrutaAdapter(mContext, myChavrutasArrayList, presenter, userDetailsInstance);
+//        myChavrutaListView.setAdapter(mAdapter);
+    }
+
+    @Override
+    public void setMyChavrutaAdapter(ArrayList<ServerResponse> myChavrutasArrayList) {
         myChavrutaListView.requestLayout();
         //attaches data source to adapter and displays list
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);

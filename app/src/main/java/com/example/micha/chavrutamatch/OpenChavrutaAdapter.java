@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.Data.AvatarImgs;
 import com.example.micha.chavrutamatch.Data.HostSessionData;
+import com.example.micha.chavrutamatch.Data.Http.APIModels.ServerResponse;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.example.micha.chavrutamatch.MVPConstructs.MAContractMVP;
 import com.example.micha.chavrutamatch.MVPConstructs.Repos.MARepoContract;
@@ -34,12 +35,15 @@ public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapte
 
     //number of views adapter will hold
     private Context mContext;
-    String userId;
+    private String userId;
     private Context mainActivityContext;
     //@var used to control swipe on delete Dialogue selection
     private static boolean mConfirmed = false;
+
     //interface for getting MainActivity context
     private ParentView callback = (ParentView) MainActivity.mContext;
+
+
     private MAContractMVP.Presenter presenter;
     private UserDetails userDetailsInstance;
 
@@ -48,10 +52,10 @@ public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapte
     //holds viewType for relevant listItem
     Boolean hostListItemView;
     Boolean awaitingConfirmView;
-    private static ArrayList<HostSessionData> mChavrutaSessionsAL;
+    private static ArrayList<ServerResponse> mChavrutaSessionsAL;
     private List<Integer> avatarList = AvatarImgs.getAllAvatars();
 
-    public OpenChavrutaAdapter(Context context, ArrayList<HostSessionData> chavrutaSessionsArrayList, MAContractMVP.Presenter presenter, UserDetails userDetailsInstance) {
+    public OpenChavrutaAdapter(Context context, ArrayList<ServerResponse> chavrutaSessionsArrayList, MAContractMVP.Presenter presenter, UserDetails userDetailsInstance) {
         this.mContext = context;
         this.presenter = presenter;
         mChavrutaSessionsAL = chavrutaSessionsArrayList;
@@ -61,7 +65,6 @@ public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapte
         //calls so can access static user vars throughout adapter
 //        orderArrayByDate(mChavrutaSessionsAL);
     }
-
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -184,16 +187,16 @@ public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapte
         }
 
         @Override
-        public void setViewItemDataInMyChavruta(HostSessionData chavruta, int position) {
-            sessionDate.setText(chavruta.getmSessionDate());
-            startTime.setText(chavruta.getmStartTime());
-            endTime.setText(chavruta.getmEndTime());
-            String seferText = chavruta.getmSefer();
+        public void setViewItemDataInMyChavruta(ServerResponse chavruta, int position) {
+            sessionDate.setText(chavruta.getSessionDate());
+            startTime.setText(chavruta.getStartTime());
+            endTime.setText(chavruta.getEndTime());
+            String seferText = chavruta.getSefer();
             if (seferText.length() >= 30) {
                 seferText = seferText.substring(0, 30) + "...";
             }
             sefer.setText(seferText);
-            location.setText(chavruta.getmLocation());
+            location.setText(chavruta.getLocation());
             itemView.setTag(position);
 
 
@@ -295,7 +298,6 @@ public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapte
                         .placeholder(R.drawable.ic_unknown_user)
                         .centerCrop()
                         .into(hostAvatar);
-                //otherwise use xml unknown profile image
             }
         }
 
@@ -316,9 +318,8 @@ public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapte
             }
         }
 
-
         @Override
-        public void setOnClickListenerOnRequesterOpenChavruta(final MARepoContract holder, final HostSessionData chavruta, final int requesterNumber) {
+        public void setOnClickListenerOnRequester(final MARepoContract holder, final ServerResponse chavruta, final int requesterNumber) {
             //confirms or unconfirms requested view with color change indicator and db update
             Button requestButtonView;
             setRequesterNumber(requesterNumber);
@@ -348,10 +349,6 @@ public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapte
             });
         }
 
-        @Override
-        public void setOnClickListenerOnRequester(MARepoContract holder, HostSessionData repoHSD, int requesterNumber) {
-            //this is a junk method utilized in MyChavrutaAdapter.class
-        }
 
         @Override
         public void setButtonToConfirmedState(String confirmButtonAction) {
@@ -392,13 +389,13 @@ public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapte
         this.requesterNumber = requesterNumber;
     }
 
-    public void add(HostSessionData dataAddedFromJson) {
+    public void add(ServerResponse dataAddedFromJson) {
         mChavrutaSessionsAL.add(dataAddedFromJson);
     }
 
 
     public void deleteMyChavrutaArrayItemOnSwipe(int indexToDelete, int viewTypeToDelete) {
-        HostSessionData currentItem = mChavrutaSessionsAL.get(indexToDelete);
+        ServerResponse currentItem = mChavrutaSessionsAL.get(indexToDelete);
         //get either HostView or AwaitingConfirmView
         int itemViewType = viewTypeToDelete;
         //awaiting confirm view db delete
@@ -408,11 +405,11 @@ public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapte
             String requesterAvatarColumn;
             String requesterNameColumn;
 
-            if (userId.equals(currentItem.getMchavrutaRequest1Id())) {
+            if (userId.equals(currentItem.getChavrutaRequest1())) {
                 requesterNumber = "chavruta_request_1";
                 requesterAvatarColumn = "chavruta_request_1_avatar";
                 requesterNameColumn = "chavruta_request_1_name";
-            } else if (userId.equals(currentItem.getMchavrutaRequest2Id())) {
+            } else if (userId.equals(currentItem.getChavrutaRequest2())) {
                 requesterNumber = "chavruta_request_2";
                 requesterAvatarColumn = "chavruta_request_2_avatar";
                 requesterNameColumn = "chavruta_request_2_name";
@@ -421,7 +418,7 @@ public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapte
                 requesterAvatarColumn = "chavruta_request_3_avatar";
                 requesterNameColumn = "chavruta_request_3_name";
             }
-            String chavrutaId = currentItem.getmChavrutaId();
+            String chavrutaId = currentItem.getChavrutaId();
             String awaitingConfirmKey = "chavruta request";
             ServerConnect dbAwaitingConfirmDelete = new ServerConnect(mainActivityContext, userDetailsInstance);
             dbAwaitingConfirmDelete.execute(awaitingConfirmKey, "0", chavrutaId, requesterNumber,
@@ -430,7 +427,7 @@ public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapte
 
         } else {
             String deleteChavrutaKey = "delete chavruta";
-            String chavrutaId = currentItem.getmChavrutaId();
+            String chavrutaId = currentItem.getChavrutaId();
             ServerConnect deleteChavruta = new ServerConnect(mainActivityContext, userDetailsInstance);
             deleteChavruta.execute(deleteChavrutaKey, chavrutaId);
         }
@@ -451,7 +448,7 @@ public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapte
         void getParentView();
     }
 
-    public ArrayList<HostSessionData> getmChavrutaSessionsAL() {
+    public ArrayList<ServerResponse> getmChavrutaSessionsAL() {
         return mChavrutaSessionsAL;
     }
 }
@@ -918,7 +915,7 @@ public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapte
 //            holder.knurling.setOnClickListener(new View.OnClickListener() {
 //                @Override
 //                public void onClick(View v) {
-//                    callback.getParentView();
+//                    callbackToPresenter.getParentView();
 //                }
 //            });
 //    }
