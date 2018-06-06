@@ -2,6 +2,8 @@ package com.example.micha.chavrutamatch;
 
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.Data.HostSessionData;
+import com.example.micha.chavrutamatch.Data.Http.APIModels.MyChavrutas;
+import com.example.micha.chavrutamatch.Data.Http.APIModels.ServerResponse;
 import com.example.micha.chavrutamatch.MVPConstructs.Models.MainActivityModel;
 import com.example.micha.chavrutamatch.MVPConstructs.Presenters.MAPresenter;
 import com.example.micha.chavrutamatch.MVPConstructs.Repos.MARepoContract;
@@ -37,7 +39,9 @@ public class PresenterTest {
     @Mock
     private UserDetails mockUserDetailsInstance;
     @Mock
-    private HostSessionData mockHostSessionData;
+    private MyChavrutas mockMyChavrutas;
+    @Mock
+    private ServerResponse mockServerResponse;
     @Mock
     private MARepoContract mockHolder;
 
@@ -49,7 +53,7 @@ public class PresenterTest {
         when(mockMainActivityModel.getUserDetailsInstance()).thenReturn(mockUserDetailsInstance);
         presenter = new MAPresenter(mockMainActivityModel);
         presenter.setMAView(mockMainActivityView);
-        when(mockMainActivityModel.getMyChavrutasArrayListItem(anyInt())).thenReturn(mockHostSessionData);
+        when(mockMainActivityModel.getMyChavrutasArrayListItem(anyInt())).thenReturn(mockServerResponse);
 
 
     }
@@ -61,7 +65,7 @@ public class PresenterTest {
         String fakeHostId = "12345";
 
         //arrange
-        when(mockHostSessionData.getmHostId()).thenReturn(fakeHostId);
+        when(mockServerResponse.getHostId()).thenReturn(fakeHostId);
         when(mockUserDetailsInstance.getmUserId()).thenReturn(fakeUserId);
 
         //act

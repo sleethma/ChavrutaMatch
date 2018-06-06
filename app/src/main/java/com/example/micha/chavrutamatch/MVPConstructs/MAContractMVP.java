@@ -4,7 +4,6 @@ package com.example.micha.chavrutamatch.MVPConstructs;
 import android.support.v7.widget.RecyclerView;
 
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
-import com.example.micha.chavrutamatch.Data.HostSessionData;
 import com.example.micha.chavrutamatch.Data.Http.APIModels.ServerResponse;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.example.micha.chavrutamatch.MVPConstructs.Repos.MARepoContract;
@@ -24,8 +23,6 @@ public interface MAContractMVP {
 
         void setUserAvatar();
 
-        void setOldAdapter(ArrayList<HostSessionData> myChavrutasArrayList);
-
         void setMyChavrutaAdapter(ArrayList<ServerResponse> myChavrutasArrayList);
 
         void displayRecyclerView();
@@ -42,9 +39,9 @@ public interface MAContractMVP {
     interface Presenter {
         void setMAView(View view);
 
-        void activateAccountKit();
+        void setCurrentUserAccountKit();
 
-        void getJsonFromServer();
+//        void getJsonFromServer();
 
         void testMVPToast();
 
@@ -52,15 +49,9 @@ public interface MAContractMVP {
 
         boolean isCurrentUserLoggedInToAccountKit();
 
-        void getJsonChavrutaString();
-
         void setGsonInModel();
 
-        void returnAsyncResult(String output);
-
         void setMyChavrutaData();
-
-        void setMainActivityListView(RecyclerView listView);
 
         void onBindToPresenter(MARepoContract holder, int position, int viewType);
 
@@ -68,6 +59,7 @@ public interface MAContractMVP {
 
         int getItemViewTypeFromPresenter(int position);
 
+        void appCleanUp();
     }
 
 
@@ -96,13 +88,9 @@ public interface MAContractMVP {
 
         void parseJSONDataToArrayList(String jsonString);
 
-        HostSessionData getOldMyChavrutasArrayListItem(int position);
-
         ServerResponse getMyChavrutasItem(int position);
 
         ArrayList<ServerResponse> getMyChavrutasAL();
-
-        ArrayList<HostSessionData> getOldAL();
 
         void setCallbackToPresenter(MAContractMVP.Presenter presenter);
     }

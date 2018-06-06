@@ -1,6 +1,7 @@
 package com.example.micha.chavrutamatch.AcctLogin;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
@@ -9,6 +10,7 @@ import com.example.micha.chavrutamatch.DI.Components.ApplicationComponent;
 import com.example.micha.chavrutamatch.DI.Components.DaggerMAComponent;
 import com.example.micha.chavrutamatch.DI.Components.MAComponent;
 import com.example.micha.chavrutamatch.DI.Modules.MAModule;
+import com.example.micha.chavrutamatch.R;
 import com.facebook.accountkit.Account;
 import com.facebook.accountkit.AccountKit;
 import com.facebook.accountkit.AccountKitCallback;
@@ -29,26 +31,29 @@ import javax.inject.Inject;
  * Created by micha on 8/20/2017.
  */
 
-public class AccountActivity extends AppCompatActivity{
+public class AccountActivity extends AppCompatActivity {
 
     public UserDetails userDetailsInstance;
+    public static SharedPreferences sharedPreferences;
     private Context context;
 
     @Inject
-    public AccountActivity(UserDetails userDetailsInstance){
+    public AccountActivity(UserDetails userDetailsInstance, SharedPreferences sharedPreferences) {
         this.userDetailsInstance = userDetailsInstance;
+        this.sharedPreferences = sharedPreferences;
         context = this;
-}
+    }
 
     public void setAccountKitAcct() {
 
         AccountKit.getCurrentAccount(new AccountKitCallback<Account>() {
             @Override
             public void onSuccess(final com.facebook.accountkit.Account account) {
-                // Get Account Kit ID
-                String accountKitId = account.getId();
+                // Get and set Account Kit ID
+                String testAccountKitId = account.getId();
+                UserDetails.setmUserId(account.getId());
+                //sets so presenter can access and is aware of
                 PhoneNumber phoneNumber = account.getPhoneNumber();
-
 
                 if (account.getPhoneNumber() != null) {
                     // if the phone number is available, display it
@@ -62,7 +67,6 @@ public class AccountActivity extends AppCompatActivity{
                     userDetailsInstance.setmUserEmail(emailString);
                     userDetailsInstance.setLoginType("email");
                 }
-//                setLoginSuccessful(true);
             }
 
             @Override
@@ -70,8 +74,6 @@ public class AccountActivity extends AppCompatActivity{
                 Log.e(this.getClass().getSimpleName(), "AccountKit could not verify account");
             }
         });
-
-//        return getLoginSuccessful();
     }
 
     private String formatPhoneNumber(String phoneNumber) {
@@ -85,12 +87,4 @@ public class AccountActivity extends AppCompatActivity{
         }
         return phoneNumber;
     }
-
-//    private void setLoginSuccessful(boolean isSuccessful){
-//        isLoginSuccessful = isSuccessful;
-//    }
-
-//    private boolean getLoginSuccessful(){
-//        return isLoginSuccessful;
-//    }
 }

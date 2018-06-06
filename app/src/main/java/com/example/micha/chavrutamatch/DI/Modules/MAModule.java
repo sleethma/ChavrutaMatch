@@ -42,8 +42,8 @@ public class MAModule {
     @Provides
     @MAScope
     @Inject
-    public AccountActivity providesAccountActivity(UserDetails userDetailsInstance) {
-        return new AccountActivity(userDetailsInstance);
+    public AccountActivity providesAccountActivity(UserDetails userDetailsInstance, SharedPreferences sharedPreferences) {
+        return new AccountActivity(userDetailsInstance, sharedPreferences);
     }
 
 

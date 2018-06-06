@@ -286,4 +286,8 @@ public class ServerResponse {
         mHostCustomAvatarByteArray = Base64.decode(byteArrayToDecode, Base64.DEFAULT);
     }
 
+    public static byte[] getByteArrayFromString(String stringToDecode){
+        return Base64.decode(stringToDecode, Base64.DEFAULT);
+    }
+
 }

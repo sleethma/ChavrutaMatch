@@ -28,9 +28,6 @@ class OpenHostAdapter extends RecyclerView.Adapter<OpenHostAdapter.ViewHolder> {
 
     //number of views adapter will hold
     private Context mContext;
-    //@var used to control swipe on delete Dialogue selection
-    final private String USER_IMG_AVATAR_STRING = "999";
-
     private ArrayList<HostSessionData> mChavrutaSessionsAL;
     private List<Integer> avatarList = AvatarImgs.getAllAvatars();
 
@@ -81,12 +78,12 @@ class OpenHostAdapter extends RecyclerView.Adapter<OpenHostAdapter.ViewHolder> {
         public ViewHolder(View listItemView) {
             super(listItemView);
             hostFullName = listItemView.findViewById(R.id.host_full_name);
-            sessionDate =  listItemView.findViewById(R.id.session_date);
+            sessionDate = listItemView.findViewById(R.id.session_date);
             startTime = listItemView.findViewById(R.id.start_time);
-            endTime =  listItemView.findViewById(R.id.end_time);
+            endTime = listItemView.findViewById(R.id.end_time);
             sefer = listItemView.findViewById(R.id.session_sefer);
             location = listItemView.findViewById(R.id.location);
-            addHost =  listItemView.findViewById(R.id.ib_add_match);
+            addHost = listItemView.findViewById(R.id.ib_add_match);
             hostUserName = listItemView.findViewById(R.id.host_user_name);
             hostAvatar = listItemView.findViewById(R.id.iv_host_avatar);
             sessionMessage = listItemView.findViewById(R.id.cardBack);
@@ -137,7 +134,7 @@ class OpenHostAdapter extends RecyclerView.Adapter<OpenHostAdapter.ViewHolder> {
             //sets chavrutahosts avatar
             String currentHostAvatarNumberString = currentItem.getmHostAvatarNumber();
 
-            //sets user first last name after concatonation
+            //sets user first last name after concatenation
             holder.hostUserName.setText(ChavrutaUtils.createUserFirstLastName(
                     currentItem.getmHostFirstName(), currentItem.getmHostLastName()));
             if (currentHostAvatarNumberString != null &&
@@ -159,29 +156,25 @@ class OpenHostAdapter extends RecyclerView.Adapter<OpenHostAdapter.ViewHolder> {
             holder.sefer.setText(currentItem.getmSefer());
             holder.location.setText(currentItem.getmLocation());
             String seferText = currentItem.getmSefer();
-            if(seferText.length() > 30){
+            if (seferText.length() > 30) {
                 seferText = seferText.substring(0, 27) + "...";
             }
             holder.sefer.setText(seferText);
             holder.sessionMessage.setText(currentItem.getmSessionMessage());
 
             //sends requester's info to db as requesting class
-            holder.addHost.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (requestSlotOpen.equals("0")) {
-                        Toast.makeText(mContext, "Class Full:Check Back!", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    String chavrutaId = currentItem.getmChavrutaId();
-                    String userId = userDetailsInstance.getmUserId();
-                    ServerConnect addHost = new ServerConnect(mContext, userDetailsInstance);
-                    addHost.execute("chavruta request", userId, chavrutaId, requestSlotOpen,
-                            requesterAvatarColumn, requesterAvatar, requesterNameColumn, requesterName);
-
-                    Intent intent = new Intent(mContext, MainActivity.class);
-                    mContext.startActivity(intent);
+            holder.addHost.setOnClickListener(v -> {
+                if (requestSlotOpen.equals("0")) {
+                    Toast.makeText(mContext, "Class Full:Check Back!", Toast.LENGTH_SHORT).show();
+                    return;
                 }
+                String chavrutaId = currentItem.getmChavrutaId();
+                String userId = UserDetails.getmUserId();
+                ServerConnect addHost = new ServerConnect(mContext, userDetailsInstance);
+                addHost.execute("chavruta request", userId, chavrutaId, requestSlotOpen,
+                        requesterAvatarColumn, requesterAvatar, requesterNameColumn, requesterName);
+                Intent intent = new Intent(mContext, MainActivity.class);
+                mContext.startActivity(intent);
             });
         }
 
@@ -196,13 +189,15 @@ class OpenHostAdapter extends RecyclerView.Adapter<OpenHostAdapter.ViewHolder> {
         mChavrutaSessionsAL.add(dataAddedFromJson);
     }
 
-    public String getRequesterAvatar() {
+    private String getRequesterAvatar() {
         String requesterAvatar;
-        if (userDetailsInstance.getUserAvatarBase64String() != null &&
-                userDetailsInstance.getmUserAvatarNumberString().equals(USER_IMG_AVATAR_STRING)) {
-            requesterAvatar = userDetailsInstance.getUserAvatarBase64String();
+        final String USER_IMG_AVATAR_STRING = "999";
+
+        if (UserDetails.getUserAvatarBase64String() != null &&
+                UserDetails.getmUserAvatarNumberString().equals(USER_IMG_AVATAR_STRING)) {
+            requesterAvatar = UserDetails.getUserAvatarBase64String();
         } else {
-            requesterAvatar = userDetailsInstance.getmUserAvatarNumberString();
+            requesterAvatar = UserDetails.getmUserAvatarNumberString();
         }
         return requesterAvatar;
     }

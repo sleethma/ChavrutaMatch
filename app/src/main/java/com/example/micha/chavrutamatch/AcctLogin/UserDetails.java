@@ -6,16 +6,19 @@ import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 
+import io.reactivex.annotations.Nullable;
+
 /**
  * Created by micha on 8/23/2017.
  */
 
 public class UserDetails extends AppCompatActivity{
-    public final static String LOG_TAG = LoginActivity.class.getSimpleName();
 
     private static String mUserId;
     private static String currentUserId;
     private static String mUserPassword;
+    private static String userAccountKitId;
+
     private static String mUserName;
     private static String mUserAvatarNumberString= "0";
     private static String mUserFirstName;
@@ -32,7 +35,6 @@ public class UserDetails extends AppCompatActivity{
     private  static byte[] mUserCustomAvatarBase64ByteArray;
     private static String mUserBio;
     public static String mUserLoginType = "none";
-
     private static boolean newUserKey;
 
     public UserDetails(String id, String password, String phoneNumber, String email
@@ -44,6 +46,7 @@ public class UserDetails extends AppCompatActivity{
     }
 
     //sets all user data from AddBio.class
+
     public static void setAllUserDataFromAddBio(String...param){
          mUserName=param[0];
          mUserAvatarNumberString=param[1];
@@ -55,115 +58,114 @@ public class UserDetails extends AppCompatActivity{
         mUserCustomAvatarUriString = param[7];
     }
 
-    public static void  setUserDetailsFromSP(Context context){
-        SharedPreferences prefs = context.getSharedPreferences("user_data", MODE_PRIVATE);
-
-        //get info from newUserLogin if exists
-        mUserPhoneNumber = prefs.getString("user phone number key", null);
-        mUserEmail = prefs.getString("user email key", null);
-        mUserName = prefs.getString("user name key", null);
-        mUserFirstName = prefs.getString("user first name key", null);
-        mUserLastName = prefs.getString("user last name key", null);
-        mUserAvatarNumberString = prefs.getString("user avatar number key", "0");
-        mUserBio = prefs.getString("user bio key", null);
-        mUserId = prefs.getString("user account id key", null);
-        mUserCustomAvatarUriString = prefs.getString("user custom avatar key", "none");
-        mUserCustomAvatarBase64String = prefs.getString("user avatar base 64 key", "none");
-        mUserCityState = prefs.getString("user city state key", null);
-
-        //convert String to Uri and save in @this
-        if(mUserCustomAvatarUriString != null) {
-            mUserCustomAvatarUri = Uri.parse(mUserCustomAvatarUriString);
-            setByteArrayFromString(mUserCustomAvatarBase64String);
-        }
-    }
-
+//    public static void  setUserDetailsFromSP(Context context){
     public static boolean getNewUserKey() {
         return newUserKey;
     }
 
+    //    }
     public void setNewUserKey(boolean newUserKey) {
         this.newUserKey = newUserKey;
     }
 
+    //        }
     public static void setLoginType(String loginType){
         mUserLoginType = loginType;
     }
 
+    //            setByteArrayFromString(mUserCustomAvatarBase64String);
     public static String getUserAvatarBase64String(){
         return mUserCustomAvatarBase64String;
     }
 
+    //            mUserCustomAvatarUri = Uri.parse(mUserCustomAvatarUriString);
     //gets application context
+
+    //        if(mUserCustomAvatarUriString != null) {
     public static void setsApplicationContext(Context context){
         mContext = context;
     }
-
+    //        //convert String to Uri and save in @this
     public  void setmUserAvatarNumberString(String mUserAvatarNumberString) {
         this.mUserAvatarNumberString = mUserAvatarNumberString;
     }
+
+    //
     public static void setmUserCustomAvatarUriString(String UserCustomAvatarUriString){
         mUserCustomAvatarUriString = UserCustomAvatarUriString;
     }
-
+    //        mUserCityState = prefs.getString("user city state key", null);
     public static byte[] getUserCustomAvatarBase64ByteArray(){
         return mUserCustomAvatarBase64ByteArray;
     }
 
+    //        mUserCustomAvatarBase64String = prefs.getString("user avatar base 64 key", "none");
     public static void setByteArrayFromString(String stringToDecode){
         mUserCustomAvatarBase64ByteArray = Base64.decode(stringToDecode, Base64.DEFAULT);
     }
 
+    //        mUserCustomAvatarUriString = prefs.getString("user custom avatar key", "none");
     public static void setUserCityState(String userCityState) {
         mUserCityState =userCityState;
     }
 
+    //        mUserId = prefs.getString("user account id key", null);
     public static String getUserCityState(){
         return mUserCityState;
     }
 
+    //        mUserBio = prefs.getString("user bio key", null);
     //sdk < 20 must have formatted url php string to succeed
+
+    //        mUserAvatarNumberString = prefs.getString("user avatar number key", "0");
     public static String getUserCallFormattedCityState(){
-        String formattedCityState = mUserCityState.replaceAll(" ", "%20");
-        return formattedCityState;
+        return mUserCityState.replaceAll(" ", "%20");
     }
-    public void setmUserId(String userId) {
+    //        mUserLastName = prefs.getString("user last name key", null);
+    @Nullable
+    public static void setmUserId(String userId) {
         mUserId = userId;
     }
+    //        mUserFirstName = prefs.getString("user first name key", null);
 
-//    public static void setCurrentUserIdForThisSession(String userId) {
-//        currentUserId = userId;
-//    }
-
+    //        mUserName = prefs.getString("user name key", null);
     public static String getmUserId() {
         return mUserId;
     }
 
+    //    }
     public static String getCurrentUserId() {
         return currentUserId;
     }
 
+    //        currentUserId = userId;
 
+    //    public static void setCurrentUserIdForThisSession(String userId) {
     public static String getmUserPhoneNumber() {
         return mUserPhoneNumber;
     }
 
+    //        mUserEmail = prefs.getString("user email key", null);
     public void setmUserPhoneNumber(String mUserPhoneNumber) {
         this.mUserPhoneNumber = mUserPhoneNumber;
     }
 
+    //        mUserPhoneNumber = prefs.getString("user phone number key", null);
     public static Uri getHostAvatarUri(){
         return mUserCustomAvatarUri;
     }
 
+    //        //get info from newUserLogin if exists
     public static String getmUserEmail() {
         return mUserEmail;
     }
 
+    //
     public static void setmUserEmail(String mUserEmail) {
         UserDetails.mUserEmail = mUserEmail;
     }
 
+    //        SharedPreferences prefs = context.getSharedPreferences("user_data", MODE_PRIVATE);
     public static String getmUserName() {
         return mUserName;
     }
@@ -183,13 +185,13 @@ public class UserDetails extends AppCompatActivity{
     public static void setmUserName(String mUserName) {
         UserDetails.mUserName = mUserName;
     }
+
     public  void setmUserFirstName(String mUserFirstName) {
         this.mUserFirstName = mUserFirstName;
     }
     public void setmUserLastName(String mUserLastName) {
         this.mUserLastName = mUserLastName;
     }
-
     public static void setmUserBio(String mUserBio) {
         UserDetails.mUserBio = mUserBio;
     }
@@ -214,5 +216,11 @@ public class UserDetails extends AppCompatActivity{
         UserDetails.mUserCustomAvatarBase64ByteArray = mUserCustomAvatarBase64ByteArray;
     }
 
+    public static   String getUserAccountKitId() {
+        return userAccountKitId;
+    }
 
+    public static void setUserAccountKitId(String userId) {
+        userAccountKitId = userId;
+    }
 }

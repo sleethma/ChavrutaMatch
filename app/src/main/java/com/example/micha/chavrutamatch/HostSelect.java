@@ -6,7 +6,6 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -87,7 +86,6 @@ public class HostSelect extends AppCompatActivity implements OpenHostAdapter.Lis
         } else {
 
             try {
-                Uri testUri = UserDetails.getHostAvatarUri();
                 GlideApp
                         .with(context)
                         .load(UserDetails.getHostAvatarUri())

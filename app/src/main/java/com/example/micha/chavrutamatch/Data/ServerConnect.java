@@ -9,8 +9,6 @@ import android.widget.Toast;
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
 import com.example.micha.chavrutamatch.AddBio;
 import com.example.micha.chavrutamatch.ChavrutaMatch;
-import com.example.micha.chavrutamatch.DI.Components.MAComponent;
-import com.example.micha.chavrutamatch.DI.Modules.MAModule;
 import com.example.micha.chavrutamatch.HostSelect;
 import com.example.micha.chavrutamatch.MVPConstructs.MAContractMVP;
 import com.example.micha.chavrutamatch.MainActivity;
@@ -37,23 +35,23 @@ import javax.inject.Inject;
 
 public class ServerConnect extends AsyncTask<String, Void, String> {
     Context mContextRegister;
-    public MAContractMVP.Presenter callback;
+    private MAContractMVP.Presenter callback;
     private Boolean myChavruta;
-    public static String jsonString;
+    private static String jsonString;
 
-//    @Inject
+    //    @Inject
     public Context context;
 
-//    @Inject
+    //    @Inject
     public UserDetails userDetailsInstance;
     //postExecuteResponse: 0= no click/error; 1=registration; 2=get JSON
-    int postExecuteResponse = 0;
+    private int postExecuteResponse = 0;
 
     @Inject
     public ServerConnect(Context context, UserDetails userDetailsInstance) {
         this.mContextRegister = context;
         this.userDetailsInstance = userDetailsInstance;
-        if(mContextRegister == null){
+        if (mContextRegister == null) {
             mContextRegister = MainActivity.mContext;
         }
     }
@@ -230,12 +228,10 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 bufferedReader.close();
                 inputStream.close();
                 httpURLConnection.disconnect();
-                postExecuteResponse = 2 ;
+                postExecuteResponse = 2;
                 jsonString = stringBuilder.toString().trim();
                 return jsonString;
 
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -366,8 +362,6 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 inputStream.close();
                 postExecuteResponse = 4;
                 return "Request Sent to Db";
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -464,17 +458,11 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 Toast.makeText(mContextRegister, newClassReg, Toast.LENGTH_LONG).show();
                 break;
             case 2:
-                //return jsonString to HostSelect.class if it is caller, else return it to MA
-                if (myChavruta) {
-                    ChavrutaMatch.setMyChavrutaJsonString(jsonString);
-                    callback.returnAsyncResult(result);
-
-                } else {
-                    ChavrutaMatch.setOpenHostsJsonString(jsonString);
-                    Intent intent = new Intent(this.mContextRegister, HostSelect.class);
-                    intent.putExtra("jsonKey", "json set");
-                    mContextRegister.startActivity(intent);
-                }
+                //return jsonString to HostSelect.class if it is caller
+                ChavrutaMatch.setOpenHostsJsonString(jsonString);
+                Intent intent = new Intent(this.mContextRegister, HostSelect.class);
+                intent.putExtra("jsonKey", "json set");
+                mContextRegister.startActivity(intent);
                 pDialog.dismiss();
                 break;
             case 3:
@@ -494,9 +482,9 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 pDialog.dismiss();
                 break;
             case 6:
-                Intent intent = new Intent(this.mContextRegister, AddBio.class);
-                intent.putExtra("user_data_json_string", jsonString);
-                mContextRegister.startActivity(intent);
+                Intent intentToAddBio = new Intent(this.mContextRegister, AddBio.class);
+                intentToAddBio.putExtra("user_data_json_string", jsonString);
+                mContextRegister.startActivity(intentToAddBio);
                 pDialog.dismiss();
                 break;
             case 7:

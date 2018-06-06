@@ -114,6 +114,8 @@ public class AddBio extends AppCompatActivity {
         context = this;
         (ChavrutaMatch.get(this).getApplicationComponent()).inject(this);
 
+        mUserId = userDetailsInstance.getmUserId();
+        String testUserId = UserDetails.getmUserId();
         mUserAvatarNumberString = "0";
         prefs = getSharedPreferences("user_data", MODE_PRIVATE);
 
@@ -153,7 +155,7 @@ public class AddBio extends AppCompatActivity {
                 updateBio = incomingIntent.getExtras().getBoolean("update_bio");
                 populateUserDataFromSP("no new custom avatar selected");
 
-                //if first login on a new device, db call is returned with user acct data
+                //if userdata not in device, db call is returned with user acct data
             } else if (incomingIntent.getExtras().getString("user_data_json_string") != null) {
                 jsonString = incomingIntent.getExtras().getString("user_data_json_string");
                 parseUserDetailsFromDB(jsonString);
@@ -166,6 +168,7 @@ public class AddBio extends AppCompatActivity {
         } else {
             //if userFirstName in SP == null then user has not used current device,
             // then check db for user details, else load from Shared Preferences
+            //todo: check which is being used and get info from db if necessary
             if (prefs.getString(getString(R.string.user_first_name_key), null) != null) {
                 populateUserDataFromSP("no new custom avatar selected");
             } else {
@@ -176,14 +179,11 @@ public class AddBio extends AppCompatActivity {
         this.getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
-        UserAvatarView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getBaseContext(), AvatarSelectMasterList.class);
-                intent.putExtra("update_bio", updateBio);
-                startActivity(intent);
-                startActivity(intent);
-            }
+        UserAvatarView.setOnClickListener(v -> {
+            Intent intent = new Intent(getBaseContext(), AvatarSelectMasterList.class);
+            intent.putExtra("update_bio", updateBio);
+            startActivity(intent);
+            startActivity(intent);
         });
         //set auto-complete for closest US city
         ChavrutaUtils cu = new ChavrutaUtils();
@@ -200,8 +200,6 @@ public class AddBio extends AppCompatActivity {
 
         //check to see if user consented to privacy policy
         if(!prefs.getBoolean(getString(R.string.user_priv_policy_consent),false)) {
-            //todo:remove commented out below and replace
-//            UserDetails.setmUserAvatarNumberString("0");
             displayUserConsent();
         }
 
@@ -253,7 +251,6 @@ public class AddBio extends AppCompatActivity {
     //gets user bio info from server
     public void getUserBioDatafromDb() {
         // check to see if have an account in db
-        mUserId = userDetailsInstance.getmUserId();
         ServerConnect getUserDetailsFromDb = new ServerConnect(this, userDetailsInstance);
         getUserDetailsFromDb.execute("get UserDetails", mUserId);
     }
@@ -339,7 +336,7 @@ public class AddBio extends AppCompatActivity {
         String userPostType;
         if (storeNewUserInDb) {
             userPostType = "new user post";
-            mUserId = userDetailsInstance.getmUserId();
+            mUserId = UserDetails.getmUserId();
             //reset static variable once user saves bio 1st time
             storeNewUserInDb = false;
         } else {

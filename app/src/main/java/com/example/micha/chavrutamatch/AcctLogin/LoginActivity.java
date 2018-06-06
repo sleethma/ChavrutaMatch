@@ -14,7 +14,6 @@ import android.widget.Toast;
 
 import com.example.micha.chavrutamatch.AddBio;
 import com.example.micha.chavrutamatch.ChavrutaMatch;
-import com.example.micha.chavrutamatch.DI.Components.MAComponent;
 import com.example.micha.chavrutamatch.MainActivity;
 import com.example.micha.chavrutamatch.R;
 import com.facebook.accountkit.AccessToken;
@@ -70,22 +69,25 @@ public class LoginActivity extends AppCompatActivity {
                 Boolean newUserOnThisDevice = true;
                 String lastUsedUserId = prefs.getString(getString(R.string.user_account_id_key), null);
                 String currentUserId = loginResult.getAccessToken().getAccountId();
-                if (
-                prefs.getString(getString(R.string.user_account_id_key), null) != null &&
-                        lastUsedUserId.equals(currentUserId)) newUserOnThisDevice = false;
-                if (newUserOnThisDevice) {
-                    prefs = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE);
+                UserDetails.setmUserId(currentUserId);
+                //todo: uncomment below if need to check if new user logging in!
+
+//                if (lastUsedUserId != null &&
+//                        lastUsedUserId.equals(currentUserId)) newUserOnThisDevice = false;
+/*                if (newUserOnThisDevice) {
                     SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE).edit();
                     editor.putBoolean("new_user_key", false);
+                    UserDetails.setmUserId(currentUserId);
                     editor.putString(getString(R.string.user_account_id_key), currentUserId);
                     editor.apply();
-                    launchAddBioActivity();
-                } else {
+                    launchAddBioActivityForNewUser();
+                } else {*/
                     launchMainActivity();
-                }
+//                }
             }
+        }else {
+            Log.e(LOG_TAG, "request code failed on login");
         }
-        Log.e(LOG_TAG, "request code failed on login");
     }
 
 
@@ -131,9 +133,14 @@ public class LoginActivity extends AppCompatActivity {
         finish();
     }
 
-    private void launchAddBioActivity() {
-        //todo: use network call to DB to determine if new user (!SharedPrefs) and populate data if not a true new ChavrutaMatch customer on complete send intent with jsonstring to AB.class if returning customer
+    private void launchAddBioActivityForNewUser() {
         Intent intent = new Intent(this, AddBio.class);
+        startActivity(intent);
+        finish();
+    }
+    private void launchMainActivityForPreviousUser() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("user_data_json_string",ChavrutaMatch.getMyChavrutaJsonString());
         startActivity(intent);
         finish();
     }

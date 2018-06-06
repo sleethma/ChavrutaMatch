@@ -165,7 +165,6 @@ public class MainActivityModel extends AppCompatActivity implements MAContractMV
 
     @Override
     public void observableRequestMyChavrutas() {
-
         disposable = myChavrutaAPI.getMyChavrutasObservable(UserDetails.getmUserId())
 
                 .subscribeOn(Schedulers.io())
@@ -184,44 +183,10 @@ public class MainActivityModel extends AppCompatActivity implements MAContractMV
 //                    createHostSessionDataObjects(classData);
 //                });
                 //todo: this subscribes w/o map
-                .subscribe(new Consumer<MyChavrutas>() {
-                    @Override
-                    public void accept(MyChavrutas myChavrutasList) throws Exception {
-                        myChavrutasAL = (ArrayList) myChavrutasList.getMyChavrutasAL();
-                        callbackToPresenter.setMyChavrutaData();
-                    }
+                .subscribe(myChavrutasList -> {
+                    myChavrutasAL = (ArrayList) myChavrutasList.getMyChavrutasAL();
+                    callbackToPresenter.setMyChavrutaData();
                 });
-
-//                new Func1<MyChavrutas, rx.Observable<ServerResponse>>() {
-//                    @Override
-//                    public rx.Observable<ServerResponse> call(MyChavrutas myChavrutas) {
-//
-//                        return rx.Observable.from(myChavrutas.getMyChavrutasAL());
-//                    }
-//                }).flatMap(new Func1<ServerResponse, rx.Observable<String>>() {
-//            @Override
-//            public rx.Observable<String> call(ServerResponse serverResponse) {
-//
-//                return rx.Observable.just(serverResponse.getHostLastName());
-//
-//            }
-//        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<String>() {
-//            @Override
-//            public void onCompleted() {
-//
-//            }
-//
-//            @Override
-//            public void onError(Throwable e) {
-//
-//            }
-//
-//            @Override
-//            public void onNext(String s) {
-//
-//                System.out.println("From rx java: " + s);
-//            }
-//        });
     }
 
     @Override
@@ -250,18 +215,8 @@ public class MainActivityModel extends AppCompatActivity implements MAContractMV
     }
 
     @Override
-    public ArrayList<HostSessionData> getOldAL() {
-        return myChavrutasArrayList;
-    }
-
-    @Override
     public ArrayList<ServerResponse> getMyChavrutasAL() {
         return myChavrutasAL;
-    }
-
-    @Override
-    public HostSessionData getOldMyChavrutasArrayListItem(int position) {
-        return myChavrutasArrayList.get(position);
     }
 
     @Override

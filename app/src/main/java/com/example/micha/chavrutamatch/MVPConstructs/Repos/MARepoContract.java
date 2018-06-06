@@ -1,6 +1,5 @@
 package com.example.micha.chavrutamatch.MVPConstructs.Repos;
 
-import com.example.micha.chavrutamatch.Data.HostSessionData;
 import com.example.micha.chavrutamatch.Data.Http.APIModels.ServerResponse;
 
 /**
@@ -10,7 +9,6 @@ import com.example.micha.chavrutamatch.Data.Http.APIModels.ServerResponse;
 public interface MARepoContract {
     void setUsersFullName(String text);
 
-    int getItemViewTypeIF(HostSessionData chavruta);
 
     void setTemplateListItemAwaitingHostAvatar(String hostAvatarNumber);
 
@@ -35,8 +33,5 @@ public interface MARepoContract {
     void setUserConfirmedStatus(boolean userIsConfirmed);
 
     void setViewItemDataInMyChavruta(ServerResponse chavruta, int position);
-
-    void setViewItemDataInOpenChavruta(HostSessionData chavruta, int position);
-
 
 }
