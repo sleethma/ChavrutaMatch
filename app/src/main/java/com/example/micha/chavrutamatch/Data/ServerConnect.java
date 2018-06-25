@@ -467,6 +467,8 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 //register new host successful
                 String newClassReg = mContextRegister.getString(R.string.new_class_reg);
                 Toast.makeText(mContextRegister, newClassReg, Toast.LENGTH_LONG).show();
+                Intent intentMA = new Intent(this.mContextRegister, MainActivity.class);
+                mContextRegister.startActivity(intentMA);
                 break;
             case 2:
                 //return jsonString to HostSelect.class if it is caller

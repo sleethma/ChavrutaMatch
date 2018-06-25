@@ -51,7 +51,7 @@ public class PresenterTest {
         when(mockMainActivityModel.getUserDetailsInstance()).thenReturn(mockUserDetailsInstance);
         presenter = new MAPresenter(mockMainActivityModel);
         presenter.setMAView(mockMainActivityView);
-        when(mockMainActivityModel.getMyChavrutasArrayListItem(anyInt())).thenReturn(mockServerResponse);
+        when(mockMainActivityModel.getMyChavrutasItem(anyInt())).thenReturn(mockServerResponse);
 
 
     }
@@ -70,7 +70,7 @@ public class PresenterTest {
         int actualValue = presenter.getItemViewTypeFromPresenter(fakePosition);
 
         //assert
-        verify(mockMainActivityModel, times(1)).getMyChavrutasArrayListItem(anyInt());
+        verify(mockMainActivityModel, times(1)).getMyChavrutasItem(anyInt());
         verify(mockUserDetailsInstance, times(1)).getUserId();
         assertEquals(expectedValue, actualValue);
     }

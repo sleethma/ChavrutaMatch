@@ -388,8 +388,9 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
             ServerConnect postToServer = new ServerConnect(this, userDetailsInstance);
             postToServer.execute(newHost, mHostFirstName, mHostLastName, mHostAvatarNumber, mSessionMessage, mSessionDate,
                     mStartTime, mEndTime, mSefer, mLocation, mHostCityState, mHostId, chavrutaRequest1, chavrutaRequest2, chavrutaRequest3, confirmed);
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
+            //todo: @intent: commented out b/c refresh handled in background action
+//            Intent intent = new Intent(this, MainActivity.class);
+//            startActivity(intent);
             finish();
         } else {
             Toast.makeText(this, "Please input sefer of 3-30 characters", Toast.LENGTH_LONG).show();

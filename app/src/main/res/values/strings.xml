@@ -27,7 +27,7 @@
     <string name="user_name_key">user name key</string>
     <string name="user_city_state_key">user city state key</string>
     //string form of uri from custom avatar
-    <string name="custom_user_avatar_string_uri_key">user custom avatar key</string>
+    <string name="custom_user_avatar_string_uri_key">user custom avatar Uri key</string>
 
 
     //add a bio activity

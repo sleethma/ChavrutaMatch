@@ -229,7 +229,7 @@ public class MainActivityModel extends AppCompatActivity implements MAContractMV
 
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(myChavrutasList -> {
+                .subscribe((MyChavrutas myChavrutasList) -> {
                     myChavrutasAL = (ArrayList) myChavrutasList.getMyChavrutasAL();
                     callbackToPresenter.setMyChavrutaData();
                 });
@@ -251,12 +251,12 @@ public class MainActivityModel extends AppCompatActivity implements MAContractMV
         userId = getStringDataFromSP("user account id key");
         userCustomAvatarUriString = getStringDataFromSP("user custom avatar key");
         userCustomAvatarBase64String = getStringDataFromSP("user avatar base 64 key");
+        setByteArrayFromString(userCustomAvatarBase64String);
         userCityState = getStringDataFromSP("user city state key");
 
         //convert String to Uri, covertToByteArray and save in @this
         if (userCustomAvatarUriString != null) {
             mUserCustomAvatarUri = Uri.parse(userCustomAvatarUriString);
-            setByteArrayFromString(userCustomAvatarBase64String);
         }
     }
 

@@ -446,10 +446,10 @@ public class AddBio extends AppCompatActivity {
         //clear sp if current avatar string not custom
         if (mUserAvatarNumberString.equals(CUSTOM_AVATAR_NUMBER_STRING)) {
             editor.putString(getString(R.string.custom_user_avatar_string_uri_key), mCustomUserAvatarUriString);
+            editor.putString(getString(R.string.user_avatar_base_64_key), mCustomUserAvatarBase64String);
         } else {
             editor.putString(getString(R.string.custom_user_avatar_string_uri_key), null);
         }
-        editor.putString(getString(R.string.user_avatar_base_64_key), mCustomUserAvatarBase64String);
         editor.apply();
     }
 
