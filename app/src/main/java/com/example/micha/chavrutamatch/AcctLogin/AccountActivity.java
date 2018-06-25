@@ -5,12 +5,6 @@ import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import com.example.micha.chavrutamatch.ChavrutaMatch;
-import com.example.micha.chavrutamatch.DI.Components.ApplicationComponent;
-import com.example.micha.chavrutamatch.DI.Components.DaggerMAComponent;
-import com.example.micha.chavrutamatch.DI.Components.MAComponent;
-import com.example.micha.chavrutamatch.DI.Modules.MAModule;
-import com.example.micha.chavrutamatch.R;
 import com.facebook.accountkit.Account;
 import com.facebook.accountkit.AccountKit;
 import com.facebook.accountkit.AccountKitCallback;
@@ -50,8 +44,7 @@ public class AccountActivity extends AppCompatActivity {
             @Override
             public void onSuccess(final com.facebook.accountkit.Account account) {
                 // Get and set Account Kit ID
-                String testAccountKitId = account.getId();
-                UserDetails.setmUserId(account.getId());
+                userDetailsInstance.setUserId(account.getId());
                 //sets so presenter can access and is aware of
                 PhoneNumber phoneNumber = account.getPhoneNumber();
 

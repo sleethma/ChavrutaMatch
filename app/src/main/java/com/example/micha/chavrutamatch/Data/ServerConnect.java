@@ -3,7 +3,9 @@ package com.example.micha.chavrutamatch.Data;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
@@ -13,7 +15,8 @@ import com.example.micha.chavrutamatch.HostSelect;
 import com.example.micha.chavrutamatch.MVPConstructs.MAContractMVP;
 import com.example.micha.chavrutamatch.MainActivity;
 import com.example.micha.chavrutamatch.R;
-import com.example.micha.chavrutamatch.Utils.ConnCheckUtil;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -29,6 +32,8 @@ import java.net.URLEncoder;
 
 import javax.inject.Inject;
 
+import static android.content.Context.MODE_PRIVATE;
+
 /**
  * Created by micha on 7/29/2017.
  */
@@ -36,6 +41,7 @@ import javax.inject.Inject;
 public class ServerConnect extends AsyncTask<String, Void, String> {
     Context mContextRegister;
     private MAContractMVP.Presenter callback;
+    private MAContractMVP.Model callbackToModel;
     private Boolean myChavruta;
     private static String jsonString;
 
@@ -44,6 +50,8 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
 
     //    @Inject
     public UserDetails userDetailsInstance;
+
+
     //postExecuteResponse: 0= no click/error; 1=registration; 2=get JSON
     private int postExecuteResponse = 0;
 
@@ -64,14 +72,17 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        boolean isConnectedToNetwork = ConnCheckUtil.isConnected(mContextRegister);
+//todo: context issue in class prevents @ConnCheckUtil below from working?
+//        boolean isConnectedToNetwork = ConnCheckUtil.isConnected();
         pDialog = new ProgressDialog(mContextRegister);
         pDialog.setMessage("Loading Matches. Please wait...");
         pDialog.setIndeterminate(false);
         pDialog.setCancelable(false);
-        if (isConnectedToNetwork) {
-            pDialog.show();
-        }
+//        if (isConnectedToNetwork) {
+//            pDialog.show();
+//        }
+        pDialog.show();
+
     }
 
     @Override
@@ -84,7 +95,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
         if (chosenBkgdTaskCheck.equals("get UserDetails")) {
             try {
                 HttpURLConnection httpURLConnection;
-                String userID = userDetailsInstance.getmUserId();
+                String userID = userDetailsInstance.getUserId();
                 String getUserDetailsUrlString = "http://brightlightproductions.online/secure_get_json_user_details.php?user_id=" +
                         userID;
                 URL getUserDetailsUrl = new URL(getUserDetailsUrlString);
@@ -200,7 +211,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 if (chosenBkgdTaskCheck.equals("my chavrutas")) {
                     //designates caller from MA
                     myChavruta = true;
-                    String userID = userDetailsInstance.getmUserId();
+                    String userID = userDetailsInstance.getUserId();
 
 
                     String my_chavrutas_url = "http://brightlightproductions.online/secure_get_json_my_chavrutas.php?user_id=" +
@@ -467,6 +478,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 break;
             case 3:
                 //new user data input successful
+                Toast.makeText(mContextRegister, "Your Info Updated", Toast.LENGTH_LONG).show();
                 pDialog.dismiss();
                 break;
             case 4:
@@ -482,9 +494,14 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 pDialog.dismiss();
                 break;
             case 6:
-                Intent intentToAddBio = new Intent(this.mContextRegister, AddBio.class);
-                intentToAddBio.putExtra("user_data_json_string", jsonString);
-                mContextRegister.startActivity(intentToAddBio);
+                boolean isEmptyJsonString = jsonString.length() > 20;
+                if (isEmptyJsonString) {
+                    callbackToModel.handlePreviousUserDetailsServerCallback(jsonString);
+                }else { //todo: dont think below block necessary, if not...sp.getBoolean above not necessary!
+                    Intent intentToAddBio = new Intent(this.mContextRegister, AddBio.class);
+                    intentToAddBio.putExtra("user_data_json_string", jsonString);
+                    mContextRegister.startActivity(intentToAddBio);
+                }
                 pDialog.dismiss();
                 break;
             case 7:
@@ -495,5 +512,9 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 break;
         }
         postExecuteResponse = 0;
+    }
+
+    public void setCallbackToModel(MAContractMVP.Model callback) {
+        this.callbackToModel = callback;
     }
 }

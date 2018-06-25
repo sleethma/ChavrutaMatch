@@ -24,9 +24,6 @@ import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
-import com.example.micha.chavrutamatch.DI.Components.DaggerMAComponent;
-import com.example.micha.chavrutamatch.DI.Components.MAComponent;
-import com.example.micha.chavrutamatch.DI.Modules.MAModule;
 import com.example.micha.chavrutamatch.Data.AvatarImgs;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.example.micha.chavrutamatch.Utils.ChavrutaTextValidation;
@@ -114,8 +111,7 @@ public class AddBio extends AppCompatActivity {
         context = this;
         (ChavrutaMatch.get(this).getApplicationComponent()).inject(this);
 
-        mUserId = userDetailsInstance.getmUserId();
-        String testUserId = UserDetails.getmUserId();
+        mUserId = userDetailsInstance.getUserId();
         mUserAvatarNumberString = "0";
         prefs = getSharedPreferences("user_data", MODE_PRIVATE);
 
@@ -161,7 +157,6 @@ public class AddBio extends AppCompatActivity {
                 parseUserDetailsFromDB(jsonString);
             } else if (incomingIntent.getBooleanExtra("add new user to db", false)) {
                 storeNewUserInDb = incomingIntent.getBooleanExtra("add new user to db", false);
-
                 //@var will be used if template avatar selected
                 updateBio = true;
             }
@@ -233,11 +228,11 @@ public class AddBio extends AppCompatActivity {
                 newUserName, newUserPhoneNumber, newUserEmail, newUserAvatarNumberString, newProfImgUser, newUserCityState);
 
         if (bioDataChanged) {
-            UserDetails.setAllUserDataFromAddBio(newUserName, newUserAvatarNumberString,
+            userDetailsInstance.setAllAddBioUserDataToUserDetails(newUserName, newUserAvatarNumberString,
                     newUserFirstName, newUserLastName, newUserPhoneNumber, newUserEmail, newUserCityState,
-                    newCustomUserAvatarString);
+                    newCustomUserAvatarString, newUserBio);
             if (mCustomUserAvatarBase64String != null)
-                UserDetails.setByteArrayFromString(mCustomUserAvatarBase64String);
+                userDetailsInstance.setByteArrayFromString(mCustomUserAvatarBase64String);
 
             saveAddBioDataToSP();
             postUserBio();
@@ -277,16 +272,16 @@ public class AddBio extends AppCompatActivity {
             bioDataChanged = true;
         }
         if (mUserPhoneNumber == null || !mUserPhoneNumber.equals(newUserPhoneNumber) &&
-                !UserDetails.mUserLoginType.equals("phone")) {
+                !userDetailsInstance.userLoginType.equals("phone")) {
             mUserPhoneNumber = newUserPhoneNumber;
             bioDataChanged = true;
         }
         if (mUserEmail == null || !mUserEmail.equals(newUserEmail) &&
-                !UserDetails.mUserLoginType.equals("email")) {
+                !userDetailsInstance.userLoginType.equals("email")) {
             mUserEmail = newUserEmail;
             bioDataChanged = true;
         }
-        if (mUserAvatarNumberString == null || !UserDetails.getmUserAvatarNumberString().equals(newUserAvatarNumberString)) {
+        if (mUserAvatarNumberString == null || !userDetailsInstance.getmUserAvatarNumberString().equals(newUserAvatarNumberString)) {
             mUserAvatarNumberString = newUserAvatarNumberString;
             bioDataChanged = true;
         }
@@ -323,7 +318,7 @@ public class AddBio extends AppCompatActivity {
             //Custom avatar not newly selected
         } else if (mCustomUserAvatarUriString != null &&
                 newUserAvatarNumberString.equals(CUSTOM_AVATAR_NUMBER_STRING)) {
-            mCustomUserAvatarBase64String = UserDetails.getUserAvatarBase64String();
+            mCustomUserAvatarBase64String = userDetailsInstance.getUserAvatarBase64String();
         } else {
             mCustomUserAvatarBase64String = "none";
         }
@@ -336,7 +331,7 @@ public class AddBio extends AppCompatActivity {
         String userPostType;
         if (storeNewUserInDb) {
             userPostType = "new user post";
-            mUserId = UserDetails.getmUserId();
+            mUserId = userDetailsInstance.getUserId();
             //reset static variable once user saves bio 1st time
             storeNewUserInDb = false;
         } else {
@@ -361,7 +356,7 @@ public class AddBio extends AppCompatActivity {
         mUserBio = prefs.getString(getString(R.string.user_bio_key), null);
         mUserId = prefs.getString(getString(R.string.user_account_id_key), null);
         mUserCityState = prefs.getString(getString(R.string.user_city_state_key), null);
-        String userAvatarNumberString = UserDetails.getmUserAvatarNumberString();
+        String userAvatarNumberString = userDetailsInstance.getmUserAvatarNumberString();
         // if user selected a new custom avatar, don't populate from SP
         if (activityOnCreateType.equals("no new custom avatar selected")) {
             mCustomUserAvatarUriString = prefs.getString(
@@ -370,7 +365,7 @@ public class AddBio extends AppCompatActivity {
         }
         populateEditTextData(activityOnCreateType);
         //get user id if not in SP
-        if (mUserId == null) mUserId = userDetailsInstance.getmUserId();
+        if (mUserId == null) mUserId = userDetailsInstance.getUserId();
     }
 
     //sets user details from db call
@@ -411,8 +406,8 @@ public class AddBio extends AppCompatActivity {
 
         //set avatar image if not just chosen
         if (activityOnCreateType.equals("no new custom avatar selected")) {
-            String userAvatarNumberString = UserDetails.getmUserAvatarNumberString();
-            Uri userAvatarUri = UserDetails.getHostAvatarUri();
+            String userAvatarNumberString = userDetailsInstance.getmUserAvatarNumberString();
+            Uri userAvatarUri = userDetailsInstance.getHostAvatarUri();
 
             mUserAvatarNumberString = userAvatarNumberString;
             mNewProfImgUri = userAvatarUri;
@@ -436,11 +431,10 @@ public class AddBio extends AppCompatActivity {
                 getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE).edit();
 
         //only save email/phone if user did not use that info to login
-        if (!UserDetails.mUserLoginType.equals("email"))
+        if (!userDetailsInstance.userLoginType.equals("email"))
             editor.putString(getString(R.string.user_email_key), mUserEmail);
-        if (!UserDetails.mUserLoginType.equals("phone"))
+        if (!userDetailsInstance.userLoginType.equals("phone"))
             editor.putString(getString(R.string.user_phone_key), mUserPhoneNumber);
-
 
         editor.putString(getString(R.string.user_name_key), mUserName);
         editor.putString(getString(R.string.user_first_name_key), mUserFirstName);
@@ -516,7 +510,7 @@ public class AddBio extends AppCompatActivity {
         UserPhoneView.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                if(UserDetails.mUserLoginType.equals("phone")){
+                if(userDetailsInstance.userLoginType.equals("phone")){
                     Toast.makeText(AddBio.this, CANNOT_EDIT, Toast.LENGTH_SHORT).show();
                 }
             }
@@ -540,7 +534,7 @@ public class AddBio extends AppCompatActivity {
         UserEmailView.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                if(UserDetails.mUserLoginType.equals("email")){
+                if(userDetailsInstance.userLoginType.equals("email")){
                     Toast.makeText(AddBio.this, CANNOT_EDIT, Toast.LENGTH_SHORT).show();
                 }
             }

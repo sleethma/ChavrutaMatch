@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.example.micha.chavrutamatch.AddBio;
 import com.example.micha.chavrutamatch.ChavrutaMatch;
 import com.example.micha.chavrutamatch.MainActivity;
 import com.example.micha.chavrutamatch.R;
@@ -46,9 +45,9 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_type_select);
+        ChavrutaMatch.get(this).getMAComponent().inject(this);
         prefs = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE);
         context = this;
-        ChavrutaMatch.get(this).getMAComponent().inject(this);
         AccessToken currentAccessToken = AccountKit.getCurrentAccessToken();
         if (currentAccessToken != null) {
             launchMainActivity();
@@ -66,27 +65,23 @@ public class LoginActivity extends AppCompatActivity {
                 String toastMessage = loginResult.getError().getErrorType().getMessage();
                 Toast.makeText(this, toastMessage, Toast.LENGTH_LONG).show();
             } else if (loginResult.getAccessToken() != null) {
-                Boolean newUserOnThisDevice = true;
                 String lastUsedUserId = prefs.getString(getString(R.string.user_account_id_key), null);
                 String currentUserId = loginResult.getAccessToken().getAccountId();
-                UserDetails.setmUserId(currentUserId);
-                //todo: uncomment below if need to check if new user logging in!
+                userDetailsInstance.setUserId(currentUserId);
 
-//                if (lastUsedUserId != null &&
-//                        lastUsedUserId.equals(currentUserId)) newUserOnThisDevice = false;
-/*                if (newUserOnThisDevice) {
-                    SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE).edit();
-                    editor.putBoolean("new_user_key", false);
-                    UserDetails.setmUserId(currentUserId);
-                    editor.putString(getString(R.string.user_account_id_key), currentUserId);
-                    editor.apply();
-                    launchAddBioActivityForNewUser();
-                } else {*/
+                //todo: when logging in, should past user ever have to login? (is below state necessary?)
+                //if user data already current in SP
+                if (lastUsedUserId != null &&
+                        lastUsedUserId.equals(currentUserId)) {
                     launchMainActivity();
-//                }
+                } else {
+                    //user data needs to pull from db
+                    updateSPForNewUser(currentUserId);
+                    launchMainActivityForPreviousUser();
+                }
+            } else {
+                Log.e(LOG_TAG, "request code failed on login");
             }
-        }else {
-            Log.e(LOG_TAG, "request code failed on login");
         }
     }
 
@@ -133,14 +128,15 @@ public class LoginActivity extends AppCompatActivity {
         finish();
     }
 
-    private void launchAddBioActivityForNewUser() {
-        Intent intent = new Intent(this, AddBio.class);
-        startActivity(intent);
-        finish();
+    private void updateSPForNewUser(String currentUserId){
+        SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.user_data_file), MODE_PRIVATE).edit();
+        editor.putString(getString(R.string.user_account_id_key), currentUserId);
+        editor.apply();
     }
+
     private void launchMainActivityForPreviousUser() {
         Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra("user_data_json_string",ChavrutaMatch.getMyChavrutaJsonString());
+        intent.putExtra("get_user_data",true);
         startActivity(intent);
         finish();
     }

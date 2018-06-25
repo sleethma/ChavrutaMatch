@@ -31,7 +31,7 @@ public interface MAContractMVP {
 
         void setOptionsMenu();
 
-//        void logout();
+        void replaceAvatar();
 
 
     }
@@ -42,8 +42,6 @@ public interface MAContractMVP {
         void setCurrentUserAccountKit();
 
 //        void getJsonFromServer();
-
-        void testMVPToast();
 
         void setupToolbar();
 
@@ -60,11 +58,19 @@ public interface MAContractMVP {
         int getItemViewTypeFromPresenter(int position);
 
         void appCleanUp();
+
+        void getUserDataAttempt();
+
+        void setUserDataToSession();
+
+        void refreshMaAvatarIfNeeded();
     }
 
 
     interface Model {
         void putStringDataInSP(String key, String value);
+
+        void checkModelForUserData();
 
         void requestMyChavrutas();
 
@@ -78,7 +84,7 @@ public interface MAContractMVP {
 
         void setUserDataFromSPToModel();
 
-        void setAllSPValuesToUserDetails();
+        void setMAModelValuesToUserDetails();
 
         void initAccountKit();
 
@@ -93,5 +99,7 @@ public interface MAContractMVP {
         ArrayList<ServerResponse> getMyChavrutasAL();
 
         void setCallbackToPresenter(MAContractMVP.Presenter presenter);
-    }
+
+        void handlePreviousUserDetailsServerCallback(String userDataJsonString);
+        }
 }

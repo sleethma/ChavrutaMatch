@@ -4,6 +4,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -14,6 +16,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -75,16 +78,29 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
 
         (ChavrutaMatch.get(this)).getMAComponent().inject(this);
 
-
         if (ConnCheckUtil.isConnected(mContext)) {
             //sets userId in UserDetails if user logged in
+
             presenter.setCurrentUserAccountKit();
+
+
             //if logged in than proceed to main activity
             if (presenter.isCurrentUserLoggedInToAccountKit()) {
-                presenter.setGsonInModel();
+                try {
+                    //intent sent when user logs in but db for current user data needed
+                    if (getIntent().hasExtra("get_user_data")) {
+                        presenter.getUserDataAttempt();
+                    }else{
+                        //user data already stored in SP
+                        presenter.setUserDataToSession();
+                    }
+                } catch (Exception e) {
+                    e.getStackTrace();
+                } finally {
+                    //sets user's chavruta data
+                    presenter.setGsonInModel();
+                }
             } else {
-                prepForLogout();
-                AccountKit.logOut();
                 launchLoginActivity();
             }
 
@@ -114,6 +130,11 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
             alertUserToCheckConn();
         }
         userAvatar.setOnClickListener(v -> loadProfile());
+    }
+
+    @Override
+    public void replaceAvatar() {
+        setUserAvatar();
     }
 
     @Override
@@ -169,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
         return super.onOptionsItemSelected(item);
     }
 
-    private void prepForLogout(){
+    private void prepForLogout() {
         //clears UserDetails for account switching on subsequent log-in
         presenter.appCleanUp();
 
@@ -290,17 +311,17 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
                     Integer.parseInt(userDetailsInstance.getmUserAvatarNumberString())));
         } else {
             try {
-                if (UserDetails.getHostAvatarUri() != null) {
+                if (userDetailsInstance.getHostAvatarUri() != null) {
                     GlideApp
                             .with(mContext)
-                            .load(UserDetails.getHostAvatarUri())
+                            .load(userDetailsInstance.getHostAvatarUri())
                             .placeholder(R.drawable.ic_unknown_user)
                             .circleCrop()
                             .into(userAvatar);
-                } else if (UserDetails.getUserCustomAvatarBase64ByteArray() != null) {
+                } else if (userDetailsInstance.getUserCustomAvatarBase64ByteArray() != null) {
                     GlideApp
                             .with(mContext)
-                            .load(UserDetails.getUserCustomAvatarBase64ByteArray())
+                            .load(userDetailsInstance.getUserCustomAvatarBase64ByteArray())
                             .placeholder(R.drawable.ic_unknown_user)
                             .into(userAvatar);
                 }

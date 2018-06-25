@@ -76,7 +76,7 @@ public class HostSelect extends AppCompatActivity implements OpenHostAdapter.Lis
         ButterKnife.bind(this);
         (ChavrutaMatch.get(this).getApplicationComponent()).inject(this);
 
-        userId = userDetailsInstance.getmUserId();
+        userId = userDetailsInstance.getUserId();
         context = this;
         //sets HostImage in title bar
         if (userDetailsInstance.getmUserAvatarNumberString() != null &&
@@ -88,7 +88,7 @@ public class HostSelect extends AppCompatActivity implements OpenHostAdapter.Lis
             try {
                 GlideApp
                         .with(context)
-                        .load(UserDetails.getHostAvatarUri())
+                        .load(userDetailsInstance.getHostAvatarUri())
                         .placeholder(R.drawable.ic_unknown_user)
                         .circleCrop()
                         .into(userPic);

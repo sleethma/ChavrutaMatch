@@ -51,8 +51,6 @@
     <string name="underline_your_hosting"><u>You\'re Hosting</u></string>
     <string name="alphanumeric_input">ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890- .!?,:/ </string>
     <string name="alphanumeric_address_input">ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890?.#!- ,:/ </string>
-
-
     <string name="user_avatar_base_64_key">user avatar base 64 key</string>
     <string name="new_user_registered">New User Registered!</string>
     <string name="class_unreg">Class Unregistered!</string>
@@ -64,6 +62,5 @@
     <string name="info_swipe_to_unregister">Swipe to Unregister Class</string>
     <string name="host_a_chavruta_session">Host a Chavruta Session</string>
     <string name="my_chavrutas">My Chavrutas</string>
-
-
+    <string name="get_db_from_server">Get Db From Server</string>
 </resources>

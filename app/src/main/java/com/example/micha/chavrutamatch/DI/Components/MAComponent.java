@@ -38,4 +38,5 @@ public interface MAComponent {
     void inject(MainActivity target);
     //todo: check if below needed
     void inject(Context target);
+    void inject(LoginActivity target);
 }

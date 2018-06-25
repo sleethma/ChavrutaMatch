@@ -26,7 +26,6 @@ import java.util.List;
 
 import io.reactivex.annotations.Nullable;
 
-import static com.example.micha.chavrutamatch.AcctLogin.UserDetails.getUserCustomAvatarBase64ByteArray;
 
 /**
  * Created by micha on 7/22/2017.
@@ -62,7 +61,7 @@ public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapte
         mChavrutaSessionsAL = chavrutaSessionsArrayList;
         mainActivityContext = MainActivity.mContext;
         this.userDetailsInstance = userDetailsInstance;
-        userId = userDetailsInstance.getmUserId();
+        userId = userDetailsInstance.getUserId();
         //calls so can access static user vars throughout adapter
 //        orderArrayByDate(mChavrutaSessionsAL);
     }
@@ -281,11 +280,11 @@ public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapte
                         .load(userDetailsInstance.getHostAvatarUri())
                         .centerCrop()
                         .into(hostAvatar);
-            } else if (getUserCustomAvatarBase64ByteArray() != null) {
+            } else if (userDetailsInstance.getUserCustomAvatarBase64ByteArray() != null) {
                 GlideApp
                         .with(mContext)
                         .asBitmap()
-                        .load(getUserCustomAvatarBase64ByteArray())
+                        .load(userDetailsInstance.getUserCustomAvatarBase64ByteArray())
                         .placeholder(R.drawable.ic_unknown_user)
                         .centerCrop()
                         .into(hostAvatar);

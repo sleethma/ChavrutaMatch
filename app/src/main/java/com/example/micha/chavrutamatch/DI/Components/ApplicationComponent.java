@@ -36,7 +36,6 @@ public interface ApplicationComponent {
     void inject(AddBio target);
     void inject(ServerConnect target);
     void inject(NewHost target);
-    void inject(LoginActivity target);
     void inject(AddSelect target);
 
 

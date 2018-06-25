@@ -169,7 +169,7 @@ class OpenHostAdapter extends RecyclerView.Adapter<OpenHostAdapter.ViewHolder> {
                     return;
                 }
                 String chavrutaId = currentItem.getmChavrutaId();
-                String userId = UserDetails.getmUserId();
+                String userId = userDetailsInstance.getUserId();
                 ServerConnect addHost = new ServerConnect(mContext, userDetailsInstance);
                 addHost.execute("chavruta request", userId, chavrutaId, requestSlotOpen,
                         requesterAvatarColumn, requesterAvatar, requesterNameColumn, requesterName);
@@ -193,11 +193,11 @@ class OpenHostAdapter extends RecyclerView.Adapter<OpenHostAdapter.ViewHolder> {
         String requesterAvatar;
         final String USER_IMG_AVATAR_STRING = "999";
 
-        if (UserDetails.getUserAvatarBase64String() != null &&
-                UserDetails.getmUserAvatarNumberString().equals(USER_IMG_AVATAR_STRING)) {
-            requesterAvatar = UserDetails.getUserAvatarBase64String();
+        if (userDetailsInstance.getUserAvatarBase64String() != null &&
+                userDetailsInstance.getmUserAvatarNumberString().equals(USER_IMG_AVATAR_STRING)) {
+            requesterAvatar = userDetailsInstance.getUserAvatarBase64String();
         } else {
-            requesterAvatar = UserDetails.getmUserAvatarNumberString();
+            requesterAvatar = userDetailsInstance.getmUserAvatarNumberString();
         }
         return requesterAvatar;
     }

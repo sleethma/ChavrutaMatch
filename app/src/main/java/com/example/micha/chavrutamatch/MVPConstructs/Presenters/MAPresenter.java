@@ -1,13 +1,9 @@
 package com.example.micha.chavrutamatch.MVPConstructs.Presenters;
 
-import android.util.Log;
-
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
-import com.example.micha.chavrutamatch.Data.HostSessionData;
 import com.example.micha.chavrutamatch.Data.Http.APIModels.ServerResponse;
 import com.example.micha.chavrutamatch.MVPConstructs.MAContractMVP;
 import com.example.micha.chavrutamatch.MVPConstructs.Repos.MARepoContract;
-import com.facebook.accountkit.AccountKit;
 
 import io.reactivex.annotations.Nullable;
 
@@ -26,25 +22,18 @@ public class MAPresenter implements MAContractMVP.Presenter {
 
     public MAPresenter(MAContractMVP.Model mainActivityModel) {
         this.mainActivityModel = mainActivityModel;
-        this.mainActivityModel.setUserDataFromSPToModel();
-        this.mainActivityModel.setAllSPValuesToUserDetails();
         userDetailsInstance = mainActivityModel.getUserDetailsInstance();
     }
 
-    public void replaceSPDataWithCurrentUserData() {
-        //todo: if currentUser is different from user in SP, pull down their data to device and store in SP
+    @Override
+    public void setUserDataToSession(){
+        mainActivityModel.setUserDataFromSPToModel();
+        mainActivityModel.setMAModelValuesToUserDetails();
     }
 
     @Override
     public void setMAView(MAContractMVP.View view) {
         this.mainActivityView = view;
-    }
-
-    @Override
-    public void testMVPToast() {
-        if (mainActivityView != null) {
-            mainActivityView.sendToast("Fake Message");
-        }
     }
 
     @Override
@@ -60,12 +49,30 @@ public class MAPresenter implements MAContractMVP.Presenter {
     }
 
     @Override
+    public void getUserDataAttempt() {
+        mainActivityModel.checkModelForUserData();
+    }
+
+    @Override
+    public void refreshMaAvatarIfNeeded() {
+        //todo: below commented out because need write to only replace if userAvatarNum in UD in SP !equal UD && UD!=null
+//        String avatarNumFromSP = mainActivityModel.getStringDataFromSP("user avatar number key");
+//        String avatarNumFromSession = userDetailsInstance.getmUserAvatarNumberString();
+//        boolean exchangeAvatarNeededInUI = avatarNumFromSP !=null && avatarNumFromSession !=null &&  !avatarNumFromSession.equals(avatarNumFromSP);
+//        if(exchangeAvatarNeededInUI){
+//        mainActivityView.replaceAvatar();
+//        }
+                mainActivityView.replaceAvatar();
+    }
+
+    @Override
     public boolean isCurrentUserLoggedInToAccountKit() {
         boolean currentUserIsLoggedIn = false;
-        String  testUserDetailId = UserDetails.getmUserId();
-        if (UserDetails.getmUserId() != null) {
+        if (userDetailsInstance.getUserId() != null) {
             currentUserIsLoggedIn = true;
         }
+
+
         //todo: delete if below assurance is not necessary
 //        String lastUserLoginId = UserDetails.getmUserId();
 //
@@ -87,7 +94,7 @@ public class MAPresenter implements MAContractMVP.Presenter {
     }
 
     private void storeCurrentUserDataInSP() {
-        mainActivityModel.putStringDataInSP("user account id key", userDetailsInstance.getmUserId());
+        mainActivityModel.putStringDataInSP("user account id key", userDetailsInstance.getUserId());
         //todo: delete @getNewUserKey() below
 //        mainActivityModel.putBooleanDataInSP("new_user_key", userDetailsInstance.getNewUserKey());
         mainActivityModel.putStringDataInSP("user phone number key", userDetailsInstance.getmUserPhoneNumber());
@@ -97,8 +104,8 @@ public class MAPresenter implements MAContractMVP.Presenter {
 
     @Override
     public void setGsonInModel() {
-        mainActivityModel.observableRequestMyChavrutas();
         mainActivityModel.setCallbackToPresenter(this);
+        mainActivityModel.observableRequestMyChavrutas();
     }
 
     @Override
@@ -129,7 +136,7 @@ public class MAPresenter implements MAContractMVP.Presenter {
     public int getItemViewTypeFromPresenter(int position) {
         //selects hostId or userId for inflation
         String hostId = mainActivityModel.getMyChavrutasItem(position).getHostId();
-        String userId = UserDetails.getmUserId();
+        String userId = userDetailsInstance.getUserId();
         // @return 1: hostview, else awaitingConfirmView
         if (hostId.equals(userId)) {
             return 1;
@@ -141,7 +148,7 @@ public class MAPresenter implements MAContractMVP.Presenter {
 
     public void setDataToAwaitingConfirmView(MARepoContract holder, ServerResponse serverResponse) {
         String learnerConfirmed = serverResponse.getConfirmed();
-        String userId = UserDetails.getmUserId();
+        String userId = userDetailsInstance.getUserId();
         boolean userIsConfirmed = learnerConfirmed.equals(userId);
         holder.setUserConfirmedStatus(userIsConfirmed);
 
@@ -159,7 +166,7 @@ public class MAPresenter implements MAContractMVP.Presenter {
 
 
     private void createHostView(MARepoContract holder, ServerResponse chavruta) {
-        holder.setUsersFullName(UserDetails.getmUserName());
+        holder.setUsersFullName(userDetailsInstance.getmUserName());
         boolean hasRequesters = configureRequestersConfirmedStatus(holder, chavruta);
         holder.setDisplayIfRequesters(hasRequesters);
         setHostsAvatar(holder);
@@ -228,9 +235,10 @@ public class MAPresenter implements MAContractMVP.Presenter {
         return hasRequesters;
     }
 
+    //todo: @appCleanUp remove if not necessary
     @Override
     public void appCleanUp() {
-        UserDetails.setmUserId(null);
+        userDetailsInstance.setUserId(null);
     }
 
     private void setHostsRequestItem(MARepoContract holder, ServerResponse chavruta, String requestNumbersId, int requestNumber) {

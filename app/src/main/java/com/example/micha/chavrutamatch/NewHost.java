@@ -375,7 +375,7 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         textValidationPass = textValidator.validateSeferInAddHost(mSefer);
         mLocation = etHostAddress.getText().toString();
         mHostCityState = acCityState.getText().toString();
-        mHostId = userDetailsInstance.getmUserId();
+        mHostId = userDetailsInstance.getUserId();
         mHostAvatarNumber = userDetailsInstance.getmUserAvatarNumberString();
         //@hostAvatarNumber: asign base64array for custom image, or avatar template number if template image
         if (mHostAvatarNumber.equals("999"))

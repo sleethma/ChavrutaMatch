@@ -12,211 +12,192 @@ import io.reactivex.annotations.Nullable;
  * Created by micha on 8/23/2017.
  */
 
-public class UserDetails extends AppCompatActivity{
+public class UserDetails extends AppCompatActivity {
 
-    private static String mUserId;
-    private static String currentUserId;
-    private static String mUserPassword;
-    private static String userAccountKitId;
+    private static String userId, currentUserId, userPassword, userAccountKitId, userFirstName, userName,
+            userLastName, userPhoneNumber, userEmail, userCityState, userCustomAvatarBase64String,
+            userImagePathString, userBio, userCustomAvatarUriString;
 
-    private static String mUserName;
-    private static String mUserAvatarNumberString= "0";
-    private static String mUserFirstName;
-    private static String mUserLastName;
-    private static String mUserPhoneNumber;
-    private static String mUserEmail;
-    private static String mUserCityState;
-    private static  SharedPreferences mPreferences;
-    private static Context mContext;
-    private static String mUserCustomAvatarUriString;
-    private static Uri mUserCustomAvatarUri;
-    private static String mUserImagePathString;
-    private static String mUserCustomAvatarBase64String;
-    private  static byte[] mUserCustomAvatarBase64ByteArray;
-    private static String mUserBio;
-    public static String mUserLoginType = "none";
+    private static SharedPreferences preferences;
+    private static Context context;
+    private static Uri userCustomAvatarUri;
+    private static byte[] userCustomAvatarBase64ByteArray;
+    public static String userLoginType = "none";
     private static boolean newUserKey;
+    private static String userAvatarNumberString = "0";
 
     public UserDetails(String id, String password, String phoneNumber, String email
-    ){
-        mUserId = id;
-        mUserPassword =password;
-        mUserPhoneNumber = phoneNumber;
-        mUserEmail = email;
+    ) {
+        userId = id;
+        userPassword = password;
+        userPhoneNumber = phoneNumber;
+        userEmail = email;
     }
 
     //sets all user data from AddBio.class
+    public void setAllUserDataToUserDetails(String... param) {
+        userName = param[0];
+        userAvatarNumberString = param[1];
+        userFirstName = param[2];
+        userLastName = param[3];
+        userPhoneNumber = param[4];
+        userEmail = param[5];
+        userCityState = param[6];
+        userCustomAvatarUriString = param[7];
+        userId = param[8];
+        userCustomAvatarBase64String = param[9];
+        userBio = param[10];
+}
 
-    public static void setAllUserDataFromAddBio(String...param){
-         mUserName=param[0];
-         mUserAvatarNumberString=param[1];
-         mUserFirstName=param[2];
-        mUserLastName=param[3];
-        mUserPhoneNumber=param[4];
-        mUserEmail=param[5];
-        mUserCityState = param[6];
-        mUserCustomAvatarUriString = param[7];
+    public void setAllAddBioUserDataToUserDetails(String... param) {
+        userName = param[0];
+        userAvatarNumberString = param[1];
+        userFirstName = param[2];
+        userLastName = param[3];
+        userPhoneNumber = param[4];
+        userEmail = param[5];
+        userCityState = param[6];
+        userCustomAvatarUriString = param[7];
+        userBio = param[8];
     }
 
-//    public static void  setUserDetailsFromSP(Context context){
+
     public static boolean getNewUserKey() {
         return newUserKey;
     }
 
-    //    }
     public void setNewUserKey(boolean newUserKey) {
         this.newUserKey = newUserKey;
     }
 
-    //        }
-    public static void setLoginType(String loginType){
-        mUserLoginType = loginType;
+    public void setLoginType(String loginType) {
+        this.userLoginType = loginType;
     }
 
-    //            setByteArrayFromString(mUserCustomAvatarBase64String);
-    public static String getUserAvatarBase64String(){
-        return mUserCustomAvatarBase64String;
+    public String getUserAvatarBase64String() {
+        return userCustomAvatarBase64String;
     }
 
-    //            mUserCustomAvatarUri = Uri.parse(mUserCustomAvatarUriString);
-    //gets application context
-
-    //        if(mUserCustomAvatarUriString != null) {
-    public static void setsApplicationContext(Context context){
-        mContext = context;
-    }
-    //        //convert String to Uri and save in @this
-    public  void setmUserAvatarNumberString(String mUserAvatarNumberString) {
-        this.mUserAvatarNumberString = mUserAvatarNumberString;
+    public void setsApplicationContext(Context applicationContext) {
+        context = applicationContext;
     }
 
-    //
-    public static void setmUserCustomAvatarUriString(String UserCustomAvatarUriString){
-        mUserCustomAvatarUriString = UserCustomAvatarUriString;
+
+    public void setmUserAvatarNumberString(String mUserAvatarNumberString) {
+        userAvatarNumberString = mUserAvatarNumberString;
     }
+
+    public void setmUserCustomAvatarUriString(String UserCustomAvatarUriString) {
+        userCustomAvatarUriString = UserCustomAvatarUriString;
+    }
+
     //        mUserCityState = prefs.getString("user city state key", null);
-    public static byte[] getUserCustomAvatarBase64ByteArray(){
-        return mUserCustomAvatarBase64ByteArray;
+    public byte[] getUserCustomAvatarBase64ByteArray() {
+        return userCustomAvatarBase64ByteArray;
     }
 
-    //        mUserCustomAvatarBase64String = prefs.getString("user avatar base 64 key", "none");
-    public static void setByteArrayFromString(String stringToDecode){
-        mUserCustomAvatarBase64ByteArray = Base64.decode(stringToDecode, Base64.DEFAULT);
+    public void setByteArrayFromString(String stringToDecode) {
+        userCustomAvatarBase64ByteArray = Base64.decode(stringToDecode, Base64.DEFAULT);
     }
 
-    //        mUserCustomAvatarUriString = prefs.getString("user custom avatar key", "none");
-    public static void setUserCityState(String userCityState) {
-        mUserCityState =userCityState;
+    public void setUserCityState(String userCityStateIn) {
+        userCityState = userCityStateIn;
     }
 
-    //        mUserId = prefs.getString("user account id key", null);
-    public static String getUserCityState(){
-        return mUserCityState;
+    public String getUserCityState() {
+        return userCityState;
     }
 
-    //        mUserBio = prefs.getString("user bio key", null);
-    //sdk < 20 must have formatted url php string to succeed
-
-    //        mUserAvatarNumberString = prefs.getString("user avatar number key", "0");
-    public static String getUserCallFormattedCityState(){
-        return mUserCityState.replaceAll(" ", "%20");
+    public String getUserCallFormattedCityState() {
+        return userCityState.replaceAll(" ", "%20");
     }
-    //        mUserLastName = prefs.getString("user last name key", null);
+
     @Nullable
-    public static void setmUserId(String userId) {
-        mUserId = userId;
-    }
-    //        mUserFirstName = prefs.getString("user first name key", null);
-
-    //        mUserName = prefs.getString("user name key", null);
-    public static String getmUserId() {
-        return mUserId;
+    public void setUserId(String userIdIn) {
+        userId = userIdIn;
     }
 
-    //    }
+    public String getUserId() {
+        return this.userId;
+    }
+
     public static String getCurrentUserId() {
         return currentUserId;
     }
 
-    //        currentUserId = userId;
-
-    //    public static void setCurrentUserIdForThisSession(String userId) {
     public static String getmUserPhoneNumber() {
-        return mUserPhoneNumber;
+        return userPhoneNumber;
     }
 
-    //        mUserEmail = prefs.getString("user email key", null);
-    public void setmUserPhoneNumber(String mUserPhoneNumber) {
-        this.mUserPhoneNumber = mUserPhoneNumber;
+    public static void setmUserPhoneNumber(String userPhoneNumberIn) {
+        userPhoneNumber = userPhoneNumberIn;
     }
 
-    //        mUserPhoneNumber = prefs.getString("user phone number key", null);
-    public static Uri getHostAvatarUri(){
-        return mUserCustomAvatarUri;
+    public static Uri getHostAvatarUri() {
+        return userCustomAvatarUri;
     }
 
-    //        //get info from newUserLogin if exists
     public static String getmUserEmail() {
-        return mUserEmail;
+        return userEmail;
     }
 
-    //
-    public static void setmUserEmail(String mUserEmail) {
-        UserDetails.mUserEmail = mUserEmail;
+    public static void setmUserEmail(String userEmailIn) {
+        userEmail = userEmailIn;
     }
 
-    //        SharedPreferences prefs = context.getSharedPreferences("user_data", MODE_PRIVATE);
     public static String getmUserName() {
-        return mUserName;
+        return userName;
     }
 
     public static String getmUserAvatarNumberString() {
-        return mUserAvatarNumberString;
+        return userAvatarNumberString;
     }
 
     public static String getmUserFirstName() {
-        return mUserFirstName;
+        return userFirstName;
     }
 
     public static String getmUserLastName() {
-        return mUserLastName;
+        return userLastName;
     }
 
-    public static void setmUserName(String mUserName) {
-        UserDetails.mUserName = mUserName;
+    public void setmUserName(String userNameIn) {
+        userName = userNameIn;
     }
 
-    public  void setmUserFirstName(String mUserFirstName) {
-        this.mUserFirstName = mUserFirstName;
+    public void setmUserFirstName(String mUserFirstName) {
+        userFirstName = mUserFirstName;
     }
+
     public void setmUserLastName(String mUserLastName) {
-        this.mUserLastName = mUserLastName;
-    }
-    public static void setmUserBio(String mUserBio) {
-        UserDetails.mUserBio = mUserBio;
+        userLastName = mUserLastName;
     }
 
-    public void setmUserPassword(String mUserPassword) {
-        this.mUserPassword = mUserPassword;
+    public static void setmUserBio(String mUserBio) {
+        userBio = mUserBio;
+    }
+
+    public static void setmUserPassword(String mUserPassword) {
+        userPassword = mUserPassword;
     }
 
     public static void setmUserCityState(String mUserCityState) {
-        UserDetails.mUserCityState = mUserCityState;
+        mUserCityState = mUserCityState;
     }
 
     public static void setmUserCustomAvatarUri(Uri mUserCustomAvatarUri) {
-        UserDetails.mUserCustomAvatarUri = mUserCustomAvatarUri;
+        userCustomAvatarUri = mUserCustomAvatarUri;
     }
 
-    public  void setmUserCustomAvatarBase64String(String mUserCustomAvatarBase64String) {
-        UserDetails.mUserCustomAvatarBase64String = mUserCustomAvatarBase64String;
+    public static void setmUserCustomAvatarBase64String(String mUserCustomAvatarBase64String) {
+        userCustomAvatarBase64String = mUserCustomAvatarBase64String;
     }
 
-    public static void setmUserCustomAvatarBase64ByteArray(byte[] mUserCustomAvatarBase64ByteArray) {
-        UserDetails.mUserCustomAvatarBase64ByteArray = mUserCustomAvatarBase64ByteArray;
+    public void setmUserCustomAvatarBase64ByteArray(byte[] mUserCustomAvatarBase64ByteArray) {
+        this.userCustomAvatarBase64ByteArray = mUserCustomAvatarBase64ByteArray;
     }
 
-    public static   String getUserAccountKitId() {
+    public static String getUserAccountKitId() {
         return userAccountKitId;
     }
 

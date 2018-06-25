@@ -1,13 +1,11 @@
 package com.example.micha.chavrutamatch;
 
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
-import com.example.micha.chavrutamatch.Data.HostSessionData;
 import com.example.micha.chavrutamatch.Data.Http.APIModels.MyChavrutas;
 import com.example.micha.chavrutamatch.Data.Http.APIModels.ServerResponse;
 import com.example.micha.chavrutamatch.MVPConstructs.Models.MainActivityModel;
 import com.example.micha.chavrutamatch.MVPConstructs.Presenters.MAPresenter;
 import com.example.micha.chavrutamatch.MVPConstructs.Repos.MARepoContract;
-import com.example.micha.chavrutamatch.Utils.ChavrutaUtils;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -66,14 +64,14 @@ public class PresenterTest {
 
         //arrange
         when(mockServerResponse.getHostId()).thenReturn(fakeHostId);
-        when(mockUserDetailsInstance.getmUserId()).thenReturn(fakeUserId);
+        when(mockUserDetailsInstance.getUserId()).thenReturn(fakeUserId);
 
         //act
         int actualValue = presenter.getItemViewTypeFromPresenter(fakePosition);
 
         //assert
         verify(mockMainActivityModel, times(1)).getMyChavrutasArrayListItem(anyInt());
-        verify(mockUserDetailsInstance, times(1)).getmUserId();
+        verify(mockUserDetailsInstance, times(1)).getUserId();
         assertEquals(expectedValue, actualValue);
     }
 
@@ -107,7 +105,7 @@ public class PresenterTest {
         String lastName = "last_name";
         //arrange
         when(mockHostSessionData.getmConfirmed()).thenReturn(fakeConfirmedIdNum);
-        when(mockUserDetailsInstance.getmUserId()).thenReturn(fakeUserId);
+        when(mockUserDetailsInstance.getUserId()).thenReturn(fakeUserId);
         when(mockHostSessionData.getmHostFirstName()).thenReturn(firstName);
         when(mockHostSessionData.getmHostLastName()).thenReturn(lastName);
 
