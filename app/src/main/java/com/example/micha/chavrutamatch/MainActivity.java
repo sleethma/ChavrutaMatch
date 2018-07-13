@@ -4,8 +4,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -16,7 +14,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -80,7 +77,6 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
 
         if (ConnCheckUtil.isConnected(mContext)) {
             //sets userId in UserDetails if user logged in
-
             presenter.setCurrentUserAccountKit();
 
 
@@ -304,17 +300,17 @@ public class MainActivity extends AppCompatActivity implements OpenChavrutaAdapt
 
     @Override
     public void setUserAvatar() {
-        //sets user avatar. @UserAvatarNumberString = "999" indicates avatar is user photo
+        //sets user avatar. @UserAvatarNumberString = "999" indicates avatar is user custom image
         if (userDetailsInstance.getmUserAvatarNumberString() != null &&
                 !userDetailsInstance.getmUserAvatarNumberString().equals("999")) {
             userAvatar.setImageResource(AvatarImgs.getAvatarNumberResId(
                     Integer.parseInt(userDetailsInstance.getmUserAvatarNumberString())));
         } else {
             try {
-                if (userDetailsInstance.getHostAvatarUri() != null) {
+                if (userDetailsInstance.getUserAvatarUri() != null) {
                     GlideApp
                             .with(mContext)
-                            .load(userDetailsInstance.getHostAvatarUri())
+                            .load(userDetailsInstance.getUserAvatarUri())
                             .placeholder(R.drawable.ic_unknown_user)
                             .circleCrop()
                             .into(userAvatar);

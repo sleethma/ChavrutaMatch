@@ -5,7 +5,6 @@ import com.example.micha.chavrutamatch.Data.Http.APIModels.ServerResponse;
 import com.example.micha.chavrutamatch.MVPConstructs.MAContractMVP;
 import com.example.micha.chavrutamatch.MVPConstructs.Repos.MARepoContract;
 
-import io.reactivex.annotations.Nullable;
 
 
 /**
@@ -243,7 +242,7 @@ public class MAPresenter implements MAContractMVP.Presenter {
 
     private void setHostsRequestItem(MARepoContract holder, ServerResponse chavruta, String requestNumbersId, int requestNumber) {
         String idOfConfirmedUser = chavruta.getConfirmed();
-        @Nullable byte[] customRequesterAvatar = null;
+        byte[] customRequesterAvatar = null;
 
         //if confirmed id of requester matches the chavrutas confirmed requester field
         if (idOfConfirmedUser.equals(requestNumbersId)) {

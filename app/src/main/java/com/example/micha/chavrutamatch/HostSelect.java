@@ -78,25 +78,8 @@ public class HostSelect extends AppCompatActivity implements OpenHostAdapter.Lis
 
         userId = userDetailsInstance.getUserId();
         context = this;
-        //sets HostImage in title bar
-        if (userDetailsInstance.getmUserAvatarNumberString() != null &&
-                !userDetailsInstance.getmUserAvatarNumberString().equals(USER_IMG_AVATAR)) {
-            userPic.setImageResource(AvatarImgs.getAvatarNumberResId(
-                    Integer.parseInt(userDetailsInstance.getmUserAvatarNumberString())));
-        } else {
 
-            try {
-                GlideApp
-                        .with(context)
-                        .load(userDetailsInstance.getHostAvatarUri())
-                        .placeholder(R.drawable.ic_unknown_user)
-                        .circleCrop()
-                        .into(userPic);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-        }
+        setUserAvatar();
 
         //constructs the data source
         openHostArrayList = new ArrayList<>();
@@ -269,6 +252,33 @@ public class HostSelect extends AppCompatActivity implements OpenHostAdapter.Lis
                             flipToSide.animate().rotationY(0).setDuration(FLIP_DURATION).setListener(null);
                         }
                     });
+        }
+    }
+
+    private void setUserAvatar(){
+        if (userDetailsInstance.getmUserAvatarNumberString() != null &&
+                !userDetailsInstance.getmUserAvatarNumberString().equals("999")) {
+            userPic.setImageResource(AvatarImgs.getAvatarNumberResId(
+                    Integer.parseInt(userDetailsInstance.getmUserAvatarNumberString())));
+        } else {
+            try {
+                if (userDetailsInstance.getUserAvatarUri() != null) {
+                    GlideApp
+                            .with(this)
+                            .load(userDetailsInstance.getUserAvatarUri())
+                            .placeholder(R.drawable.ic_unknown_user)
+                            .circleCrop()
+                            .into(userPic);
+                } else if (userDetailsInstance.getUserCustomAvatarBase64ByteArray() != null) {
+                    GlideApp
+                            .with(this)
+                            .load(userDetailsInstance.getUserCustomAvatarBase64ByteArray())
+                            .placeholder(R.drawable.ic_unknown_user)
+                            .into(userPic);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }

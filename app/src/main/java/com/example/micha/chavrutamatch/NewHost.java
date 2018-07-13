@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -28,8 +29,6 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.example.micha.chavrutamatch.AcctLogin.UserDetails;
-import com.example.micha.chavrutamatch.DI.Components.MAComponent;
-import com.example.micha.chavrutamatch.DI.Modules.MAModule;
 import com.example.micha.chavrutamatch.Data.AvatarImgs;
 import com.example.micha.chavrutamatch.Data.ServerConnect;
 import com.example.micha.chavrutamatch.Utils.ChavrutaTextValidation;
@@ -134,22 +133,10 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         if (sp.getString(getString(R.string.user_city_state_key), null) != null) {
             acCityState.setText(sp.getString(getString(R.string.user_city_state_key), null));
         }
-        if (userDetailsInstance.getmUserAvatarNumberString() != null &&
-                !userDetailsInstance.getmUserAvatarNumberString().equals("999")) {
-            ivHostAvatar.setImageResource(AvatarImgs.getAvatarNumberResId(
-                    Integer.parseInt(userDetailsInstance.getmUserAvatarNumberString())));
-        } else {
-            try {
-                GlideApp
-                        .with(this)
-                        .load(userDetailsInstance.getHostAvatarUri())
-                        .placeholder(R.drawable.ic_unknown_user)
-                        .circleCrop()
-                        .into(ivHostAvatar);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+
+        setUserAvatar();
+
+
 
         ibStartTime.setOnClickListener(this);
         ibHostEndTime.setOnClickListener(this);
@@ -410,5 +397,32 @@ public class NewHost extends AppCompatActivity implements View.OnClickListener {
         super.onBackPressed();
         Intent intent = new Intent(this, AddSelect.class);
         startActivity(intent);
+    }
+
+    private void setUserAvatar(){
+        if (userDetailsInstance.getmUserAvatarNumberString() != null &&
+                !userDetailsInstance.getmUserAvatarNumberString().equals("999")) {
+            ivHostAvatar.setImageResource(AvatarImgs.getAvatarNumberResId(
+                    Integer.parseInt(userDetailsInstance.getmUserAvatarNumberString())));
+        } else {
+            try {
+                if (userDetailsInstance.getUserAvatarUri() != null) {
+                    GlideApp
+                            .with(this)
+                            .load(userDetailsInstance.getUserAvatarUri())
+                            .placeholder(R.drawable.ic_unknown_user)
+                            .circleCrop()
+                            .into(ivHostAvatar);
+                } else if (userDetailsInstance.getUserCustomAvatarBase64ByteArray() != null) {
+                    GlideApp
+                            .with(this)
+                            .load(userDetailsInstance.getUserCustomAvatarBase64ByteArray())
+                            .placeholder(R.drawable.ic_unknown_user)
+                            .into(ivHostAvatar);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

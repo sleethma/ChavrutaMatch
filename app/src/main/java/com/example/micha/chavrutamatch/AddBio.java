@@ -178,7 +178,6 @@ public class AddBio extends AppCompatActivity {
             Intent intent = new Intent(getBaseContext(), AvatarSelectMasterList.class);
             intent.putExtra("update_bio", updateBio);
             startActivity(intent);
-            startActivity(intent);
         });
         //set auto-complete for closest US city
         ChavrutaUtils cu = new ChavrutaUtils();
@@ -230,7 +229,7 @@ public class AddBio extends AppCompatActivity {
         if (bioDataChanged) {
             userDetailsInstance.setAllAddBioUserDataToUserDetails(newUserName, newUserAvatarNumberString,
                     newUserFirstName, newUserLastName, newUserPhoneNumber, newUserEmail, newUserCityState,
-                    newCustomUserAvatarString, newUserBio);
+                    newCustomUserAvatarString,  newUserBio);
             if (mCustomUserAvatarBase64String != null)
                 userDetailsInstance.setByteArrayFromString(mCustomUserAvatarBase64String);
 
@@ -406,22 +405,30 @@ public class AddBio extends AppCompatActivity {
 
         //set avatar image if not just chosen
         if (activityOnCreateType.equals("no new custom avatar selected")) {
-            String userAvatarNumberString = userDetailsInstance.getmUserAvatarNumberString();
-            Uri userAvatarUri = userDetailsInstance.getHostAvatarUri();
 
-            mUserAvatarNumberString = userAvatarNumberString;
-            mNewProfImgUri = userAvatarUri;
-
-            //custom avatar was previously chosen
-            if (mUserAvatarNumberString.equals(CUSTOM_AVATAR_NUMBER_STRING)) {
-                GlideApp
-                        .with(this)
-                        .load(mNewProfImgUri)
-                        .into(UserAvatarView);
-
-                //template avatar previously chosen
+            if (userDetailsInstance.getmUserAvatarNumberString() != null &&
+                    !userDetailsInstance.getmUserAvatarNumberString().equals("999")) {
+                UserAvatarView.setImageResource(AvatarImgs.getAvatarNumberResId(
+                        Integer.parseInt(userDetailsInstance.getmUserAvatarNumberString())));
             } else {
-                UserAvatarView.setImageResource(mAvatarsList.get(Integer.parseInt(mUserAvatarNumberString)));
+                try {
+                    if (userDetailsInstance.getUserAvatarUri() != null) {
+                        GlideApp
+                                .with(this)
+                                .load(userDetailsInstance.getUserAvatarUri())
+                                .placeholder(R.drawable.ic_unknown_user)
+                                .circleCrop()
+                                .into(UserAvatarView);
+                    } else if (userDetailsInstance.getUserCustomAvatarBase64ByteArray() != null) {
+                        GlideApp
+                                .with(this)
+                                .load(userDetailsInstance.getUserCustomAvatarBase64ByteArray())
+                                .placeholder(R.drawable.ic_unknown_user)
+                                .into(UserAvatarView);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

@@ -25,6 +25,8 @@ public class UserDetails extends AppCompatActivity {
     public static String userLoginType = "none";
     private static boolean newUserKey;
     private static String userAvatarNumberString = "0";
+    private String bestCustomUserAvatarType;
+
 
     public UserDetails(String id, String password, String phoneNumber, String email
     ) {
@@ -133,7 +135,7 @@ public class UserDetails extends AppCompatActivity {
         userPhoneNumber = userPhoneNumberIn;
     }
 
-    public static Uri getHostAvatarUri() {
+    public static Uri getUserAvatarUri() {
         return userCustomAvatarUri;
     }
 
@@ -196,6 +198,8 @@ public class UserDetails extends AppCompatActivity {
     public void setmUserCustomAvatarBase64ByteArray(byte[] mUserCustomAvatarBase64ByteArray) {
         this.userCustomAvatarBase64ByteArray = mUserCustomAvatarBase64ByteArray;
     }
+
+
 
     public static String getUserAccountKitId() {
         return userAccountKitId;

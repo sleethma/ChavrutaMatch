@@ -274,10 +274,10 @@ public class OpenChavrutaAdapter extends RecyclerView.Adapter<OpenChavrutaAdapte
 
         @Override
         public void setCustomListItemHostAvatar() {
-            if (userDetailsInstance.getHostAvatarUri() != null) {
+            if (userDetailsInstance.getUserAvatarUri() != null) {
                 GlideApp
                         .with(mContext)
-                        .load(userDetailsInstance.getHostAvatarUri())
+                        .load(userDetailsInstance.getUserAvatarUri())
                         .centerCrop()
                         .into(hostAvatar);
             } else if (userDetailsInstance.getUserCustomAvatarBase64ByteArray() != null) {

@@ -39,7 +39,6 @@ public class AccountActivity extends AppCompatActivity {
     }
 
     public void setAccountKitAcct() {
-
         AccountKit.getCurrentAccount(new AccountKitCallback<Account>() {
             @Override
             public void onSuccess(final com.facebook.accountkit.Account account) {
@@ -47,7 +46,6 @@ public class AccountActivity extends AppCompatActivity {
                 userDetailsInstance.setUserId(account.getId());
                 //sets so presenter can access and is aware of
                 PhoneNumber phoneNumber = account.getPhoneNumber();
-
                 if (account.getPhoneNumber() != null) {
                     // if the phone number is available, display it
                     String formattedPhoneNumber = formatPhoneNumber(phoneNumber.toString());

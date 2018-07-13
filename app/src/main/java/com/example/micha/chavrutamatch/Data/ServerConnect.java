@@ -496,6 +496,7 @@ public class ServerConnect extends AsyncTask<String, Void, String> {
                 pDialog.dismiss();
                 break;
             case 6:
+                //gets user details from db
                 boolean isEmptyJsonString = jsonString.length() > 20;
                 if (isEmptyJsonString) {
                     callbackToModel.handlePreviousUserDetailsServerCallback(jsonString);

@@ -279,6 +279,7 @@ public class ServerResponse {
     }
 
     public byte[] getHostCustomAvatarByteArray() {
+        mHostCustomAvatarByteArray = Base64.decode(getHostAvatarNumber(), Base64.DEFAULT);
         return mHostCustomAvatarByteArray;
     }
 
